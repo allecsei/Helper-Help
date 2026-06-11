@@ -55,12 +55,11 @@ local bindableKeys = {
 }
 
 local keyCount = #bindableKeys
--- Folosim buffere FFI proprii ca sa nu avem pointeri invalizi dupa reload (fix crash 0xC0000005)
 local comboStrings = {}
 local comboItemsCArray = ffi.new("const char*[?]", keyCount)
 for i = 1, keyCount do
     local s = ffi.new("char[?]", #bindableKeys[i].name + 1, bindableKeys[i].name)
-    comboStrings[i] = s -- tine referinta in Lua ca sa nu fie colectata de GC
+    comboStrings[i] = s  
     comboItemsCArray[i - 1] = s
 end
 
@@ -358,7 +357,7 @@ local cratesData = {
         "Platinum Skin - Chance: 5%"
     }},
     {name = "Lime Crate", color = imgui.ImVec4(0.5, 0.9, 0.2, 1.0), priceGold = "350 Gold", priceMP = "350 MP", items = {
-        "Respect Points - 15 RP - Chance: 40%",
+        "Respect Points - 15 - Chance: 40%",
         "150 Cotton Materials - Chance: 30%",
         "$70,000 - Chance: 15%",
         "Diamond, Onyx Fragment - Chance: 10%",
@@ -385,7 +384,7 @@ local iniData = inicfg.load({
         key2 = vkeys.VK_F3,
         hduty_x = 1650.0,
         hduty_y = 2.5,
-        lang = 0 -- 0 = Romana, 1 = Engleza (Adaugat)
+        lang = 0 -- 0 = Romana, 1 = Engleza  
     }
 }, directIni)
 inicfg.save(iniData, directIni)
@@ -13180,19 +13179,28 @@ end
     sampRegisterChatCommand("wagon", function() sampSendChat("/veh 590 0 0") end)
     sampRegisterChatCommand("es", function() sampSendChat("/eventsupport") sampSendChat("/join") end)
 
-    sampRegisterChatCommand("fz", function(id) 
-        if #id > 0 then sampSendChat("/freeze " .. id) 
-        else sampAddChatMessage("{00ff00}Syntax: {FFFFFF}/fz <id>", -1) end 
+    sampRegisterChatCommand("fz", function(id)
+        if #id > 0 then
+            sampSendChat("/freeze " .. id)
+        else
+            sampAddChatMessage("{00ff00}Syntax: {FFFFFF}/fz <id>", -1)
+        end
     end)
 
-    sampRegisterChatCommand("unfz", function(id) 
-        if #id > 0 then sampSendChat("/unfreeze " .. id) 
-        else sampAddChatMessage("{00ff00}Syntax: {FFFFFF}/unfz <id>", -1) end 
+    sampRegisterChatCommand("unfz", function(id)
+        if #id > 0 then
+            sampSendChat("/unfreeze " .. id)
+        else
+            sampAddChatMessage("{00ff00}Syntax: {FFFFFF}/unfz <id>", -1)
+        end
     end)
 
-    sampRegisterChatCommand("gt", function(id) 
-        if #id > 0 then sampSendChat("/gethere " .. id) 
-        else sampAddChatMessage("{00ff00}Syntax: {FFFFFF}/gt <id>", -1) end 
+    sampRegisterChatCommand("gt", function(id)
+        if #id > 0 then
+            sampSendChat("/gethere " .. id)
+        else
+            sampAddChatMessage("{00ff00}Syntax: {FFFFFF}/gt <id>", -1)
+        end
     end)
 
     local activeKeysStr = getKeyNameById(iniData.settings.key2)
@@ -13202,12 +13210,10 @@ end
     local cGray  = "{B4B4B4}"
     sampAddChatMessage(cGray .. "______________________________________________________", -1)    
     if iniData.settings.lang == 0 then
-        -- [ TEXT ROMaNa ] --
         sampAddChatMessage(string.format("%s>> %sScriptul %sHelper Help v.2.5 %sa fost incarcat cu succes!", cMain, cWhite, cMain, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sFoloseste comanda %s/%s %ssau tasta %s[%s] %spentru meniu.", cMain, cWhite, cMain, iniData.settings.cmd, cWhite, cMain, activeKeysStr, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sDiscord Support: %sallecsei %s| Inspirat de la %sTupi & Madalin", cMain, cWhite, cMain, cWhite, cWhite), -1)        
     else
-        -- [ TEXT ENGLEZa ] --
         sampAddChatMessage(string.format("%s>> %sScript %sHelper Help v.2.5 %shas been successfully loaded!", cMain, cWhite, cMain, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sUse command %s/%s %sor key %s[%s] %sfor the menu.", cMain, cWhite, cMain, iniData.settings.cmd, cWhite, cMain, activeKeysStr, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sDiscord Support: %sallecsei %s| Inspired by %sTupi & Madalin", cMain, cWhite, cMain, cWhite, cWhite), -1)        
