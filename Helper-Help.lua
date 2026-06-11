@@ -13,7 +13,7 @@ encoding.default = 'CP1251'
 local u8 = encoding.UTF8
 
 -- [ VARIABILE REZERVATE PENTRU HELPER DUTY ] --
-local render_font -- initializat in main() dupa primul wait(0)
+local render_font  
 local isHelperDuty = false
 local isFontScaleSet = false
 
