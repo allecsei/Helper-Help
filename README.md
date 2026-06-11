@@ -11,7 +11,7 @@
 - a fost adaugat comenzile /anskinsilver - /.skinsilver
 - a fost adaugat comenzile /anskinplatium - /.skinplatium
 
-🇬🇧 
+EN
 
 **Helper-Help has been updated to version 2.5**
 *Thanks to everyone for the suggestions, if they appear in the future I'll wait for them privately on discord!* 
