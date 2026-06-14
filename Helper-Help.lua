@@ -2172,16 +2172,16 @@ local function renderMecanicDetails()
             imgui.Separator()
             
             local mecStats = {
-                {"Skill 1", "100 HP", "55 '/. / 83 '/.", "$90 - $650 / $135 - $975"},
-                {"Skill 2", "200 HP", "60 '/. / 90 '/.", "$102 - $718 / $153 - $1,077"},
-                {"Skill 3", "300 HP", "65 '/. / 98 '/.", "$120 - $840 / $180 - $1,260"},
-                {"Skill 4", "400 HP", "70 '/. / 105 '/.", "$145 - $1025 / $217 - $1,537"},
-                {"Skill 5", "500 HP", "75 '/. / 113 '/.", "$185 - $1305 / $277 - $1,957"},
-                {"Skill 6", "600 HP", "80 '/. / 120 '/.", "$225 - $1585 / $337 - $2,377"},
-                {"Skill 7", "700 HP", "85 '/. / 128 '/.", "$280 - $1960 / $420 - $2,940"},
-                {"Skill 8", "800 HP", "90 '/. / 135 '/.", "$335 - $2415 / $502 - $3,622"},
-                {"Skill 9", "900 HP", "95 '/. / 143 '/.", "$415 - $2935 / $622 - $4,402"},
-                {"Skill 10", "1000 HP", "100 '/. / 150 '/.", "$510 - $3390 / $765 - $5,085"}
+                {"Skill 1", "100 HP", "55 '/. | 83 '/.", "$90 - $650 / $135 - $975"},
+                {"Skill 2", "200 HP", "60 '/. | 90 '/.", "$102 - $718 / $153 - $1,077"},
+                {"Skill 3", "300 HP", "65 '/. | 98 '/.", "$120 - $840 / $180 - $1,260"},
+                {"Skill 4", "400 HP", "70 '/. | 105 '/.", "$145 - $1025 / $217 - $1,537"},
+                {"Skill 5", "500 HP", "75 '/. | 113 '/.", "$185 - $1305 / $277 - $1,957"},
+                {"Skill 6", "600 HP", "80 '/. | 120 '/.", "$225 - $1585 / $337 - $2,377"},
+                {"Skill 7", "700 HP", "85 '/. | 128 '/.", "$280 - $1960 / $420 - $2,940"},
+                {"Skill 8", "800 HP", "90 '/. | 135 '/.", "$335 - $2415 / $502 - $3,622"},
+                {"Skill 9", "900 HP", "95 '/. | 143 '/.", "$415 - $2935 / $622 - $4,402"},
+                {"Skill 10", "1000 HP", "100 '/. | 150 '/.", "$510 - $3390 / $765 - $5,085"}
             }
             for _, stat in ipairs(mecStats) do
                 imgui.Text(stat[1]) imgui.NextColumn()
@@ -2197,16 +2197,16 @@ local function renderMecanicDetails()
             imgui.Separator()
             
             local mecStats = {
-                {"Skill 1", "100 HP", "55 '/. / 83 '/.", "$90 - $650 / $135 - $975"},
-                {"Skill 2", "200 HP", "60 '/. / 90 '/.", "$102 - $718 / $153 - $1,077"},
-                {"Skill 3", "300 HP", "65 '/. / 98 '/.", "$120 - $840 / $180 - $1,260"},
-                {"Skill 4", "400 HP", "70 '/. / 105 '/.", "$145 - $1025 / $217 - $1,537"},
-                {"Skill 5", "500 HP", "75 '/. / 113 '/.", "$185 - $1305 / $277 - $1,957"},
-                {"Skill 6", "600 HP", "80 '/. / 120 '/.", "$225 - $1585 / $337 - $2,377"},
-                {"Skill 7", "700 HP", "85 '/. / 128 '/.", "$280 - $1960 / $420 - $2,940"},
-                {"Skill 8", "800 HP", "90 '/. / 135 '/.", "$335 - $2415 / $502 - $3,622"},
-                {"Skill 9", "900 HP", "95 '/. / 143 '/.", "$415 - $2935 / $622 - $4,402"},
-                {"Skill 10", "1000 HP", "100 '/. / 150 '/.", "$510 - $3390 / $765 - $5,085"}
+                {"Skill 1", "100 HP", "55 '/. | 83 '/.", "$90 - $650 / $135 - $975"},
+                {"Skill 2", "200 HP", "60 '/. | 90 '/.", "$102 - $718 / $153 - $1,077"},
+                {"Skill 3", "300 HP", "65 '/. | 98 '/.", "$120 - $840 / $180 - $1,260"},
+                {"Skill 4", "400 HP", "70 '/. | 105 '/.", "$145 - $1025 / $217 - $1,537"},
+                {"Skill 5", "500 HP", "75 '/. | 113 '/.", "$185 - $1305 / $277 - $1,957"},
+                {"Skill 6", "600 HP", "80 '/. | 120 '/.", "$225 - $1585 / $337 - $2,377"},
+                {"Skill 7", "700 HP", "85 '/. | 128 '/.", "$280 - $1960 / $420 - $2,940"},
+                {"Skill 8", "800 HP", "90 '/. | 135 '/.", "$335 - $2415 / $502 - $3,622"},
+                {"Skill 9", "900 HP", "95 '/. | 143 '/.", "$415 - $2935 / $622 - $4,402"},
+                {"Skill 10", "1000 HP", "100 '/. | 150 '/.", "$510 - $3390 / $765 - $5,085"}
             }
             for _, stat in ipairs(mecStats) do
                 imgui.Text(stat[1]) imgui.NextColumn()
@@ -13212,11 +13212,11 @@ end
     local cGray  = "{B4B4B4}"
     sampAddChatMessage(cGray .. "______________________________________________________", -1)    
     if iniData.settings.lang == 0 then
-        sampAddChatMessage(string.format("%s>> %sScriptul %sHelper Help v.2.5 %sa fost incarcat cu succes!", cMain, cWhite, cMain, cWhite), -1)
+        sampAddChatMessage(string.format("%s>> %sScriptul %sHelper Help v2.5 %sa fost incarcat cu succes!", cMain, cWhite, cMain, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sFoloseste comanda %s/%s %ssau tasta %s[%s] %spentru meniu.", cMain, cWhite, cMain, iniData.settings.cmd, cWhite, cMain, activeKeysStr, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sDiscord Support: %sallecsei %s| Inspirat de la %sTupi & Madalin", cMain, cWhite, cMain, cWhite, cWhite), -1)        
     else
-        sampAddChatMessage(string.format("%s>> %sScript %sHelper Help v.2.5 %shas been successfully loaded!", cMain, cWhite, cMain, cWhite), -1)
+        sampAddChatMessage(string.format("%s>> %sScript %sHelper Help v2.5 %shas been successfully loaded!", cMain, cWhite, cMain, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sUse command %s/%s %sor key %s[%s] %sfor the menu.", cMain, cWhite, cMain, iniData.settings.cmd, cWhite, cMain, activeKeysStr, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sDiscord Support: %sallecsei %s| Inspired by %sTupi & Madalin", cMain, cWhite, cMain, cWhite, cWhite), -1)        
     end
