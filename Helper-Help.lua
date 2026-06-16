@@ -1852,7 +1852,7 @@ local function renderDrugsDealerDetails()
         end
         imgui.Separator()
         
-        imgui.BeginChild("DrugCastiguriChild", imgui.ImVec2(0, 200), true)
+        imgui.BeginChild("DrugCastiguriChild", imgui.ImVec2(0, 140), true)
             imgui.Columns(3, "drugProfitCols", false)
             if iniData.settings.lang == 0 then
                 imgui.Text("Skill") imgui.NextColumn()
@@ -1920,7 +1920,9 @@ local function renderDrugsDealerDetails()
         end
         imgui.Spacing()
 
-        imgui.BeginChild("DrugComenziChild", imgui.ImVec2(0, 160), true)
+       local isRO = (iniData.settings.lang == 0)
+
+        imgui.BeginChild("DrugComenziChild", imgui.ImVec2(0, 220), true)
             imgui.Columns(2, "drugComenziCols", false)
 
             imgui.TextColored(imgui.ImVec4(0, 1, 0.5, 1), "/getdrugs")
@@ -1931,6 +1933,36 @@ local function renderDrugsDealerDetails()
             imgui.Separator() imgui.NextColumn()
             imgui.Separator() imgui.NextColumn()
 
+            -- Traducere pentru sectiunea de sus
+            if isRO then
+                imgui.BulletText("Skill 1/2: Nu pot cumpara.")
+                imgui.BulletText("Skill 3/4: Max 25g/h.")
+                imgui.BulletText("Skill 5: Max 50g/h.")
+                imgui.NextColumn()
+                imgui.TextWrapped("Foloseste pentru a vinde droguri altor jucatori.")
+            else
+                imgui.BulletText("Skill 1/2: Cannot buy.")
+                imgui.BulletText("Skill 3/4: Max 25g/h.")
+                imgui.BulletText("Skill 5: Max 50g/h.")
+                imgui.NextColumn()
+                imgui.TextWrapped("Use to sell drugs to other players.")
+            end
+            
+            imgui.Columns(1) -- Resetam coloanele
+            
+            imgui.Spacing()
+            imgui.Separator()
+            imgui.Spacing()
+
+            -- Traducere pentru lista drogurilor
+            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("Informatii Droguri:") or "Drugs Information:")      
+            imgui.Text(isRO and u8("Marijuana: +10 HP, 1 '/. dependenta, cooldown scurt (12g)") or "Marijuana: +10 HP, 1 '/. addiction, short cooldown (12g)")
+            imgui.Text(isRO and u8("Cocaina: +30 HP, 3 '/. dependenta, recuperare rapida (18g)") or "Cocaine: +30 HP, 3 '/. addiction, fast recovery (18g)")
+            imgui.Text(isRO and u8("Ecstasy: +70 HP, 8 '/. dependenta, imobilizare scurta (26g)") or "Ecstasy: +70 HP, 8 '/. addiction, short immobilization (26g)")
+            imgui.Text(isRO and u8("Metamfetamina: Sanatate completa, 15 '/. dependenta, 15s imob. (38g)") or "Methamphetamine: Full health, 15 '/. addiction, 15s imob. (38g)")
+
+        imgui.EndChild()
+            
             if iniData.settings.lang == 0 then
                 imgui.BulletText("Skill 1 - Nu poate cumpara droguri de la un sediu (crack house).")
                 imgui.BulletText("Skill 2 - Nu poate cumpara droguri de la un sediu (crack house).")
@@ -2172,16 +2204,16 @@ local function renderMecanicDetails()
             imgui.Separator()
             
             local mecStats = {
-                {"Skill 1", "100 HP", "55 '/. | 83 '/.", "$90 - $650 / $135 - $975"},
-                {"Skill 2", "200 HP", "60 '/. | 90 '/.", "$102 - $718 / $153 - $1,077"},
-                {"Skill 3", "300 HP", "65 '/. | 98 '/.", "$120 - $840 / $180 - $1,260"},
-                {"Skill 4", "400 HP", "70 '/. | 105 '/.", "$145 - $1025 / $217 - $1,537"},
-                {"Skill 5", "500 HP", "75 '/. | 113 '/.", "$185 - $1305 / $277 - $1,957"},
-                {"Skill 6", "600 HP", "80 '/. | 120 '/.", "$225 - $1585 / $337 - $2,377"},
-                {"Skill 7", "700 HP", "85 '/. | 128 '/.", "$280 - $1960 / $420 - $2,940"},
-                {"Skill 8", "800 HP", "90 '/. | 135 '/.", "$335 - $2415 / $502 - $3,622"},
-                {"Skill 9", "900 HP", "95 '/. | 143 '/.", "$415 - $2935 / $622 - $4,402"},
-                {"Skill 10", "1000 HP", "100 '/. | 150 '/.", "$510 - $3390 / $765 - $5,085"}
+                {"Skill 1", "100 HP", "55 '/. / 83 '/.", "$90 - $650 / $135 - $975"},
+                {"Skill 2", "200 HP", "60 '/. / 90 '/.", "$102 - $718 / $153 - $1,077"},
+                {"Skill 3", "300 HP", "65 '/. / 98 '/.", "$120 - $840 / $180 - $1,260"},
+                {"Skill 4", "400 HP", "70 '/. / 105 '/.", "$145 - $1025 / $217 - $1,537"},
+                {"Skill 5", "500 HP", "75 '/. / 113 '/.", "$185 - $1305 / $277 - $1,957"},
+                {"Skill 6", "600 HP", "80 '/. / 120 '/.", "$225 - $1585 / $337 - $2,377"},
+                {"Skill 7", "700 HP", "85 '/. / 128 '/.", "$280 - $1960 / $420 - $2,940"},
+                {"Skill 8", "800 HP", "90 '/. / 135 '/.", "$335 - $2415 / $502 - $3,622"},
+                {"Skill 9", "900 HP", "95 '/. / 143 '/.", "$415 - $2935 / $622 - $4,402"},
+                {"Skill 10", "1000 HP", "100 '/. / 150 '/.", "$510 - $3390 / $765 - $5,085"}
             }
             for _, stat in ipairs(mecStats) do
                 imgui.Text(stat[1]) imgui.NextColumn()
@@ -2197,16 +2229,16 @@ local function renderMecanicDetails()
             imgui.Separator()
             
             local mecStats = {
-                {"Skill 1", "100 HP", "55 '/. | 83 '/.", "$90 - $650 / $135 - $975"},
-                {"Skill 2", "200 HP", "60 '/. | 90 '/.", "$102 - $718 / $153 - $1,077"},
-                {"Skill 3", "300 HP", "65 '/. | 98 '/.", "$120 - $840 / $180 - $1,260"},
-                {"Skill 4", "400 HP", "70 '/. | 105 '/.", "$145 - $1025 / $217 - $1,537"},
-                {"Skill 5", "500 HP", "75 '/. | 113 '/.", "$185 - $1305 / $277 - $1,957"},
-                {"Skill 6", "600 HP", "80 '/. | 120 '/.", "$225 - $1585 / $337 - $2,377"},
-                {"Skill 7", "700 HP", "85 '/. | 128 '/.", "$280 - $1960 / $420 - $2,940"},
-                {"Skill 8", "800 HP", "90 '/. | 135 '/.", "$335 - $2415 / $502 - $3,622"},
-                {"Skill 9", "900 HP", "95 '/. | 143 '/.", "$415 - $2935 / $622 - $4,402"},
-                {"Skill 10", "1000 HP", "100 '/. | 150 '/.", "$510 - $3390 / $765 - $5,085"}
+                {"Skill 1", "100 HP", "55 '/. / 83 '/.", "$90 - $650 / $135 - $975"},
+                {"Skill 2", "200 HP", "60 '/. / 90 '/.", "$102 - $718 / $153 - $1,077"},
+                {"Skill 3", "300 HP", "65 '/. / 98 '/.", "$120 - $840 / $180 - $1,260"},
+                {"Skill 4", "400 HP", "70 '/. / 105 '/.", "$145 - $1025 / $217 - $1,537"},
+                {"Skill 5", "500 HP", "75 '/. / 113 '/.", "$185 - $1305 / $277 - $1,957"},
+                {"Skill 6", "600 HP", "80 '/. / 120 '/.", "$225 - $1585 / $337 - $2,377"},
+                {"Skill 7", "700 HP", "85 '/. / 128 '/.", "$280 - $1960 / $420 - $2,940"},
+                {"Skill 8", "800 HP", "90 '/. / 135 '/.", "$335 - $2415 / $502 - $3,622"},
+                {"Skill 9", "900 HP", "95 '/. / 143 '/.", "$415 - $2935 / $622 - $4,402"},
+                {"Skill 10", "1000 HP", "100 '/. / 150 '/.", "$510 - $3390 / $765 - $5,085"}
             }
             for _, stat in ipairs(mecStats) do
                 imgui.Text(stat[1]) imgui.NextColumn()
@@ -4412,7 +4444,8 @@ end, function(player)
             {name = "Masini Tutorial", nameEN = "Tutorial Vehicles", keywords = "masini tutorial faggio perrenial bobcat bravura landstalker vehicul"},
             {name = "Economie & Preturi", nameEN = "Economy & Prices", keywords = "economie preturi combustibil arme bauturi obiecte asigurari job uri"},
             {name = "Amenzi & Legislatie", nameEN = "Fines & Legislation", keywords = "amenzi legislatie circulatie confiscari permis suspendare reguli"},
-            {name = "Trader Shop", nameEN = "Trader Shop", keywords = "trader shop reroll fuziune fuziune skin diamond onyx reciclare reciclare puncte tichete crate uri"}
+            {name = "Trader Shop", nameEN = "Trader Shop", keywords = "trader shop reroll fuziune fuziune skin diamond onyx reciclare reciclare puncte tichete crate uri"},
+            {name = "PayDay", nameEN = "PayDay", keywords = "payday payday bonusuri happy hour respect rob escape clear fp dobanda premium nivel payday"},
         }
 
             for idx, sys in ipairs(systemsData) do
@@ -5875,9 +5908,9 @@ end, function(player)
                                 -- RARITATE
                                 imgui.TextColored(imgui.ImVec4(1.0, 0.4, 1.0, 1.0), isRO and u8("RARITATE SKINURI") or "SKIN RARITY")
                                 imgui.BeginChild("RarityBox", imgui.ImVec2(0, 95), true)
-                                    imgui.TextColored(imgui.ImVec4(1, 0.84, 0, 1), "Legendary: 4 bonusuri speciale (20'/.+)")
-                                    imgui.TextColored(imgui.ImVec4(0.5, 0.5, 1, 1), "Very Rare: 3 bonusuri speciale (15'/.+)")
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Uncommon: 2 bonusuri speciale (10'/.+)")
+                                    imgui.TextColored(imgui.ImVec4(1, 0.84, 0, 1), "Legendary: 4 bonusuri speciale (20%+)")
+                                    imgui.TextColored(imgui.ImVec4(0.5, 0.5, 1, 1), "Very Rare: 3 bonusuri speciale (15%+)")
+                                    imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Uncommon: 2 bonusuri speciale (10%+)")
                                     imgui.Text("Common: Restul")
                                 imgui.EndChild()
                                 -- RECICLARE 
@@ -5918,6 +5951,47 @@ end, function(player)
                                     end
                                     imgui.Columns(1)
                                 imgui.EndChild()
+                            
+                            elseif sm.id == 21 then -- PAYDAY
+                            local isRO = (iniData.settings.lang == 0)
+                            imgui.TextColored(imgui.ImVec4(0.0, 0.8, 1.0, 1.0), isRO and u8("--- PAYDAY ---") or "--- PAYDAY ---")
+                            imgui.Separator()
+                            imgui.BeginChild("PayDayMainBox", imgui.ImVec2(0, 720), true)
+                                
+                                -- CARACTERISTICI GENERALE
+                                imgui.TextColored(imgui.ImVec4(1.0, 0.8, 0.0, 1.0), isRO and u8("Caracteristici Generale") or "General Features")
+                            imgui.BeginChild("MainPayday", imgui.ImVec2(0, 120), true)
+                                imgui.TextWrapped(isRO and u8("Payday-ul se acorda la ora exacta (XX:00). Necesita 30 min jucate.") or "Payday is granted at the exact hour (XX:00). Requires 30 mins played.")
+                                imgui.Spacing()
+                                imgui.BulletText(isRO and u8("Standard: 1 Respect, 1 Rob, 1 Escape, 1 Clear FP, 1 Accept Point.") or "Standard: 1 Respect, 1 Rob, 1 Escape, 1 Clear FP, 1 Accept Point.")
+                                imgui.BulletText(isRO and u8("Premium: +25 '/. salariu. La 5 ore: bonus de puncte suplimentare.") or "Premium: +25 '/. salary. Every 5 hours: extra points bonus.")
+                                imgui.BulletText(isRO and u8("AFK/Sleep: Acumuleaza doar 1/3 din timp (20min din 60).") or "AFK/Sleep: Accumulates only 1/3 of time (20min out of 60).")
+                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("Dobanda: Standard 0.01 '/. | Dobanda: Premium 0.03 '/.") or "Interest: Standard 0.01 '/. | Interest: Premium 0.03 '/.")
+                            imgui.EndChild()
+                            imgui.Spacing()
+                            -- Bonusuri Detaliate
+                            imgui.TextColored(imgui.ImVec4(0.4, 1.0, 0.4, 1.0), isRO and u8("Happy Hour & Bonusuri Detaliate") or "Happy Hour & Detailed Bonuses")
+                            imgui.BeginChild("HappyHour", imgui.ImVec2(0, 260), true)
+                                imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), isRO and u8("Happy Hour: 19:00 - 22:00 (Beneficii Duble!)") or "Happy Hour: 19:00 - 22:00 (Double Benefits!)")                 
+                                imgui.Separator()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("Bonusuri Payday:") or "Payday Bonuses:")
+                                imgui.BulletText(isRO and u8("Lvl 100: Cont Premium PERMANENT.") or "Lvl 100: PERMANENT Premium Account.")
+                                imgui.BulletText(isRO and u8("3 Payday-uri: Dublu puncte de Respect.") or "3 Paydays: Double Respect points.")
+                                imgui.BulletText(isRO and u8("4 Payday-uri: Dublu: Jaf, Evadare, Clear FP, Accept Lawyer.") or "4 Paydays: Double: Rob, Escape, Clear FP, Accept Lawyer.")
+                                imgui.BulletText(isRO and u8("6 Payday-uri: 10 MP, 1 Accept Lawyer, 100 Droguri.") or "6 Paydays: 10 MP, 1 Accept Lawyer, 100 Drugs.")
+                                imgui.BulletText(isRO and u8("10 Payday-uri: Triplu: Respect, FP, Jaf, Evadare + 10 Gold + 1 /bail.") or "10 Paydays: Triple: Respect, FP, Rob, Escape + 10 Gold + 1 /bail.")
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), isRO and u8("Bonusuri in functie de Nivel:") or "Level-based Bonuses:")
+                                imgui.TextWrapped(isRO and u8("Job: Lvl 110-129 (5 '/.), 130-149 (10 '/.), 150-169 (15 '/.). Creste cu 5'/. la fiecare 20 nivele pana la 100 '/. (Lvl 490).") or "Job: Lvl 110-129 (5 '/.), 130-149 (10 '/.), 150-169 (15 '/.). Increases by 5'/. every 20 levels up to 100 '/. (Lvl 490).")
+                                imgui.Spacing()
+                                imgui.TextWrapped(isRO and u8("Rob: Lvl 120-139 (5 '/.), 140-159 (10 '/.), 160-179 (15 '/.). Creste cu 5'/. la fiecare 20 nivele pana la 100 '/. (Lvl 500).") or "Rob: Lvl 120-139 (5 '/.), 140-159 (10 '/.), 160-179 (15 '/.). Increases by 5'/. every 20 levels up to 100 '/. (Lvl 500).")
+                            imgui.EndChild()
+                            -- Informatii Payday
+                            imgui.TextColored(imgui.ImVec4(1.0, 0.4, 1.0, 1.0), isRO and u8("Informatii afisate la Payday") or "Information displayed at Payday")
+                            imgui.BeginChild("RarityBox", imgui.ImVec2(0, 50), true)
+                                imgui.TextWrapped(isRO and u8("Plata, Bonus (25 '/. Premium), Taxa Primar, Chirie, Sold, Dobanda, Profit Business.") or "Payment, Bonus (25 '/. Premium), Mayor Tax, Rent, Balance, Interest, Business Profit.")
+                                imgui.TextColored(imgui.ImVec4(1, 0, 0, 1), isRO and u8("Nota: Jucatorii cu bani > $5.000.000/$10.000.000 nu primesc dobanda.") or "Note: Players with money > $5.000.000/$10.000.000 do not receive interest.")
+                                imgui.EndChild()    
 
                             imgui.EndChild()    
                             end    
@@ -8898,8 +8972,8 @@ end, function(player)
                     
                     imgui.BeginChild("SystemsScrollNavigation", imgui.ImVec2(0, 0), false)
                     -- Definim traducerile
-                    local sys_buttons = {"Misiuni", "Bunker", "Job Goal", "Cufar", "Skinuri Speciale", "Clan XP", "Rob ATM", "Rob Solo", "Rob Team", "Escape", "Jail", "Skinuri Factiuni", "Licente", "Niveluri Minime", "Referral", "Safebox", "Masini Tutoriale", "Economie", "Amenzi", "Trader Shop",}
-                    local sys_buttons_en = {"Missions", "Bunker", "Job Goal", "Chest", "Special Skins", "Clan XP", "Rob ATM", "Rob Solo", "Rob Team", "Escape", "Jail", "Faction Skins", "Licenses", "Min Levels", "Referral", "Safebox", "Tutorial Cars", "Economy", "Fines", "Trader Shop"}
+                    local sys_buttons = {"Misiuni", "Bunker", "Job Goal", "Cufar", "Skinuri Speciale", "Clan XP", "Rob ATM", "Rob Solo", "Rob Team", "Escape", "Jail", "Skinuri Factiuni", "Licente", "Niveluri Minime", "Referral", "Safebox", "Masini Tutoriale", "Economie", "Amenzi", "Trader Shop", "Payday"}
+                    local sys_buttons_en = {"Missions", "Bunker", "Job Goal", "Chest", "Special Skins", "Clan XP", "Rob ATM", "Rob Solo", "Rob Team", "Escape", "Jail", "Faction Skins", "Licenses", "Min Levels", "Referral", "Safebox", "Tutorial Cars", "Economy", "Fines", "Trader Shop", "Payday"}
 
                     local themeButton = imgui.GetStyle().Colors[imgui.Col.Button]
                     local themeHovered = imgui.GetStyle().Colors[imgui.Col.ButtonHovered]
@@ -10011,9 +10085,9 @@ end, function(player)
                         -- RARITATE
                         imgui.TextColored(imgui.ImVec4(1.0, 0.4, 1.0, 1.0), isRO and u8("RARITATE SKINURI") or "SKIN RARITY")
                         imgui.BeginChild("RarityBox", imgui.ImVec2(0, 95), true)
-                            imgui.TextColored(imgui.ImVec4(1, 0.84, 0, 1), "Legendary: 4 bonusuri speciale (20'/.+)")
-                            imgui.TextColored(imgui.ImVec4(0.5, 0.5, 1, 1), "Very Rare: 3 bonusuri speciale (15'/.+)")
-                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Uncommon: 2 bonusuri speciale (10'/.+)")
+                            imgui.TextColored(imgui.ImVec4(1, 0.84, 0, 1), "Legendary: 4 bonusuri speciale (20%+)")
+                            imgui.TextColored(imgui.ImVec4(0.5, 0.5, 1, 1), "Very Rare: 3 bonusuri speciale (15%+)")
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Uncommon: 2 bonusuri speciale (10%+)")
                             imgui.Text("Common: Restul")
                         imgui.EndChild()
                         -- RECICLARE 
@@ -10055,6 +10129,46 @@ end, function(player)
                             imgui.Columns(1)
                         imgui.EndChild()
 
+                        elseif selected_system == 21 then -- Payday
+                        local isRO = (iniData.settings.lang == 0)
+                        imgui.TextColored(imgui.ImVec4(0.0, 0.8, 1.0, 1.0), isRO and u8("--- PayDay ---") or "--- Payday ---")
+                        imgui.Separator()
+                        imgui.BeginChild("PayDayInfo", imgui.ImVec2(0, 720), true)
+                            -- Caracteristici Generale
+                        imgui.TextColored(imgui.ImVec4(1.0, 0.8, 0.0, 1.0), isRO and u8("Caracteristici Generale") or "General Features")
+                            imgui.BeginChild("MainPayday", imgui.ImVec2(0, 120), true)
+                                imgui.TextWrapped(isRO and u8("Payday-ul se acorda la ora exacta (XX:00). Necesita 30 min jucate.") or "Payday is granted at the exact hour (XX:00). Requires 30 mins played.")
+                                imgui.Spacing()
+                                imgui.BulletText(isRO and u8("Standard: 1 Respect, 1 Rob, 1 Escape, 1 Clear FP, 1 Accept Point.") or "Standard: 1 Respect, 1 Rob, 1 Escape, 1 Clear FP, 1 Accept Point.")
+                                imgui.BulletText(isRO and u8("Premium: +25 '/. salariu. La 5 ore: bonus de puncte suplimentare.") or "Premium: +25 '/. salary. Every 5 hours: extra points bonus.")
+                                imgui.BulletText(isRO and u8("AFK/Sleep: Acumuleaza doar 1/3 din timp (20min din 60).") or "AFK/Sleep: Accumulates only 1/3 of time (20min out of 60).")
+                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("Dobanda: Standard 0.01 '/. | Dobanda: Premium 0.03 '/.") or "Interest: Standard 0.01 '/. | Interest: Premium 0.03 '/.")
+                            imgui.EndChild()
+                            imgui.Spacing()
+                            -- Bonusuri Detaliate
+                            imgui.TextColored(imgui.ImVec4(0.4, 1.0, 0.4, 1.0), isRO and u8("Happy Hour & Bonusuri Detaliate") or "Happy Hour & Detailed Bonuses")
+                            imgui.BeginChild("HappyHour", imgui.ImVec2(0, 260), true)
+                                imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), isRO and u8("Happy Hour: 19:00 - 22:00 (Beneficii Duble!)") or "Happy Hour: 19:00 - 22:00 (Double Benefits!)")                 
+                                imgui.Separator()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("Bonusuri Payday:") or "Payday Bonuses:")
+                                imgui.BulletText(isRO and u8("Lvl 100: Cont Premium PERMANENT.") or "Lvl 100: PERMANENT Premium Account.")
+                                imgui.BulletText(isRO and u8("3 Payday-uri: Dublu puncte de Respect.") or "3 Paydays: Double Respect points.")
+                                imgui.BulletText(isRO and u8("4 Payday-uri: Dublu: Jaf, Evadare, Clear FP, Accept Lawyer.") or "4 Paydays: Double: Rob, Escape, Clear FP, Accept Lawyer.")
+                                imgui.BulletText(isRO and u8("6 Payday-uri: 10 MP, 1 Accept Lawyer, 100 Droguri.") or "6 Paydays: 10 MP, 1 Accept Lawyer, 100 Drugs.")
+                                imgui.BulletText(isRO and u8("10 Payday-uri: Triplu: Respect, FP, Jaf, Evadare + 10 Gold + 1 /bail.") or "10 Paydays: Triple: Respect, FP, Rob, Escape + 10 Gold + 1 /bail.")
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), isRO and u8("Bonusuri in functie de Nivel:") or "Level-based Bonuses:")
+                                imgui.TextWrapped(isRO and u8("Job: Lvl 110-129 (5 '/.), 130-149 (10 '/.), 150-169 (15 '/.). Creste cu 5'/. la fiecare 20 nivele pana la 100 '/. (Lvl 490).") or "Job: Lvl 110-129 (5 '/.), 130-149 (10 '/.), 150-169 (15 '/.). Increases by 5'/. every 20 levels up to 100 '/. (Lvl 490).")
+                                imgui.Spacing()
+                                imgui.TextWrapped(isRO and u8("Rob: Lvl 120-139 (5 '/.), 140-159 (10 '/.), 160-179 (15 '/.). Creste cu 5'/. la fiecare 20 nivele pana la 100 '/. (Lvl 500).") or "Rob: Lvl 120-139 (5 '/.), 140-159 (10 '/.), 160-179 (15 '/.). Increases by 5'/. every 20 levels up to 100 '/. (Lvl 500).")
+                            imgui.EndChild()
+                            -- Informatii Payday
+                            imgui.TextColored(imgui.ImVec4(1.0, 0.4, 1.0, 1.0), isRO and u8("Informatii afisate la Payday") or "Information displayed at Payday")
+                            imgui.BeginChild("RarityBox", imgui.ImVec2(0, 50), true)
+                                imgui.TextWrapped(isRO and u8("Plata, Bonus (25 '/. Premium), Taxa Primar, Chirie, Sold, Dobanda, Profit Business.") or "Payment, Bonus (25 '/. Premium), Mayor Tax, Rent, Balance, Interest, Business Profit.")
+                                imgui.TextColored(imgui.ImVec4(1, 0, 0, 1), isRO and u8("Nota: Jucatorii cu bani > $5.000.000/$10.000.000 nu primesc dobanda.") or "Note: Players with money > $5.000.000/$10.000.000 do not receive interest.")
+                            imgui.EndChild()
+                       
                     imgui.EndChild()
                 end            
 
@@ -13212,11 +13326,11 @@ end
     local cGray  = "{B4B4B4}"
     sampAddChatMessage(cGray .. "______________________________________________________", -1)    
     if iniData.settings.lang == 0 then
-        sampAddChatMessage(string.format("%s>> %sScriptul %sHelper Help v2.5 %sa fost incarcat cu succes!", cMain, cWhite, cMain, cWhite), -1)
+        sampAddChatMessage(string.format("%s>> %sScriptul %sHelper Help v.2.5 %sa fost incarcat cu succes!", cMain, cWhite, cMain, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sFoloseste comanda %s/%s %ssau tasta %s[%s] %spentru meniu.", cMain, cWhite, cMain, iniData.settings.cmd, cWhite, cMain, activeKeysStr, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sDiscord Support: %sallecsei %s| Inspirat de la %sTupi & Madalin", cMain, cWhite, cMain, cWhite, cWhite), -1)        
     else
-        sampAddChatMessage(string.format("%s>> %sScript %sHelper Help v2.5 %shas been successfully loaded!", cMain, cWhite, cMain, cWhite), -1)
+        sampAddChatMessage(string.format("%s>> %sScript %sHelper Help v.2.5 %shas been successfully loaded!", cMain, cWhite, cMain, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sUse command %s/%s %sor key %s[%s] %sfor the menu.", cMain, cWhite, cMain, iniData.settings.cmd, cWhite, cMain, activeKeysStr, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sDiscord Support: %sallecsei %s| Inspired by %sTupi & Madalin", cMain, cWhite, cMain, cWhite, cWhite), -1)        
     end
