@@ -90,17 +90,17 @@ local selected_biz = 0
 
 -- [ VEHICLES DATA ] --
 local vehiclesData = {
-    {Name = "Cheetah", Price = "$2.085.000", Gold = "2.229 Gold", Speed = "192 KM/h", Model = "Ferrari 512 TR", Seats = "2", Tune = "Transfender"},
-    {Name = "Bullet", Price = "$2.355.000", Gold = "2.849 Gold", Speed = "203 KM/h", Model = "Ford GT-40", Seats = "2", Tune = "Transfender"},
-    {Name = "Infernus", Price = "$2.430.000", Gold = "2.999 Gold", Speed = "222 KM/h", Model = "Acura NSX", Seats = "2", Tune = "Transfender"},
-    {Name = "Turismo", Price = "$2.160.000", Gold = "2.499 Gold", Speed = "193 KM/h", Model = "Ferrari F40", Seats = "2", Tune = "Transfender"},
-    {Name = "Banshee", Price = "$2.265.000", Gold = "2.599 Gold", Speed = "201 KM/h", Model = "1991 Dodge Viper", Seats = "2", Tune = "Transfender"},
-    {Name = "Hotring", Price = "$12.000.000", Gold = "3.799 Gold", Speed = "214 KM/h", Model = "1987 Chevy Monte Carlo SS", Seats = "2", Tune = "Transfender"},
-    {Name = "Hotring A", Price = "$12.000.000", Gold = "3.799 Gold", Speed = "214 KM/h", Model = "1985 Chevrolet Camaro", Seats = "2", Tune = "Transfender"},
-    {Name = "Hotring B", Price = "$12.000.000", Gold = "3.799 Gold", Speed = "142 KM/h", Model = "1982 Ford Thunderbird", Seats = "2", Tune = "Transfender"},
+    {Name = "Cheetah", Price_Gold = "$695.000", Price = "$2.085.000", Gold = "2.229 Gold", Speed = "192 KM/h", Model = "Ferrari 512 TR", Seats = "2", Tune = "Transfender"},
+    {Name = "Bullet", Price_Gold = "$785.000", Price = "$2.355.000", Gold = "2.849 Gold", Speed = "203 KM/h", Model = "Ford GT-40", Seats = "2", Tune = "Transfender"},
+    {Name = "Infernus", Price_Gold = "$810.000", Price = "$2.430.000", Gold = "2.999 Gold", Speed = "222 KM/h", Model = "Acura NSX", Seats = "2", Tune = "Transfender"},
+    {Name = "Turismo", Price_Gold = "$720.000", Price = "$2.160.000", Gold = "2.499 Gold", Speed = "193 KM/h", Model = "Ferrari F40", Seats = "2", Tune = "Transfender"},
+    {Name = "Banshee", Price_Gold = "$755.000", Price = "$2.265.000", Gold = "2.599 Gold", Speed = "201 KM/h", Model = "1991 Dodge Viper", Seats = "2", Tune = "Transfender"},
+    {Name = "Hotring", Price_Gold = "$1.150.000", Price = "$12.000.000", Gold = "3.799 Gold", Speed = "214 KM/h", Model = "1987 Chevy Monte Carlo SS", Seats = "2", Tune = "Transfender"},
+    {Name = "Hotring A", Price_Gold = "$1.150.000", Price = "$12.000.000", Gold = "3.799 Gold", Speed = "214 KM/h", Model = "1985 Chevrolet Camaro", Seats = "2", Tune = "Transfender"},
+    {Name = "Hotring B", Price_Gold = "$1.150.000", Price = "$12.000.000", Gold = "3.799 Gold", Speed = "142 KM/h", Model = "1982 Ford Thunderbird", Seats = "2", Tune = "Transfender"},
     {Name = "Landstalker", Price = "$25.500", Gold = "N/A", Speed = "158 KM/h", Model = "Jeep Grand Cherokee", Seats = "4", Tune = "Transfender"},
     {Name = "Bravura", Price = "$21.450", Gold = "N/A", Speed = "147 KM/h", Model = "Oldsmobile Calais", Seats = "2", Tune = "Transfender"},
-    {Name = "Buffalo", Price = "$1.950.000", Gold = "2.149 Gold", Speed = "186 KM/h", Model = "Chevrolet Camaro", Seats = "2", Tune = "Transfender"},
+    {Name = "Buffalo", Price_Gold = "$260.000", Price = "$1.950.000", Gold = "2.149 Gold", Speed = "186 KM/h", Model = "Chevrolet Camaro", Seats = "2", Tune = "Transfender"},
     {Name = "Perennial", Price = "$4.500", Gold = "N/A", Speed = "133 KM/h", Model = "Ford Falcon Wagon", Seats = "4", Tune = "Transfender"},
     {Name = "Sentinel", Price = "$1.605.000", Gold = "N/A", Speed = "164 KM/h", Model = "1991 BMW 525i", Seats = "4", Tune = "Transfender"},
     {Name = "Stretch", Price = "$607.500", Gold = "N/A", Speed = "168 KM/h", Model = "Lincoln Town Car", Seats = "4", Tune = "Transfender"},
@@ -112,7 +112,7 @@ local vehiclesData = {
     {Name = "Washington", Price = "$333.000", Gold = "N/A", Speed = "154 KM/h", Model = "1982 Lincoln Continental", Seats = "4", Tune = "Transfender"},
     {Name = "Bobcat", Price = "$7.500", Gold = "N/A", Speed = "140 KM/h", Model = "GMC", Seats = "2", Tune = "Transfender"},
     {Name = "BF Injection", Price = "$202.500", Gold = "N/A", Speed = "135 KM/h", Model = "Volkswagen Beach Buggy", Seats = "2", Tune = "Transfender"},
-    {Name = "Premier", Price = "$283.500", Gold = "299 Gold", Speed = "173 KM/h", Model = "1991 Chevrolet Caprice", Seats = "4", Tune = "Transfender"},
+    {Name = "Premier", Price_Gold = "$94.500", Price = "$283.500", Gold = "299 Gold", Speed = "173 KM/h", Model = "1991 Chevrolet Caprice", Seats = "4", Tune = "Transfender"},
     {Name = "Hotknife", Price = "$1.702.500", Gold = "N/A", Speed = "167 KM/h", Model = "1932 Ford (Custom)", Seats = "2", Tune = "Transfender"},
     {Name = "Previon", Price = "$79.500", Gold = "N/A", Speed = "149 KM/h", Model = "1988 Nissan Pulsar", Seats = "2", Tune = "Transfender"},
     {Name = "Stallion", Price = "$255.000", Gold = "N/A", Speed = "168 KM/h", Model = "Ford Mustang", Seats = "2", Tune = "Transfender"},
@@ -123,24 +123,24 @@ local vehiclesData = {
     {Name = "Glendale", Price = "$11.700", Gold = "N/A", Speed = "147 KM/h", Model = "1961 Dodge Sedan", Seats = "4", Tune = "Transfender"},
     {Name = "Oceanic", Price = "$49.500", Gold = "N/A", Speed = "140 KM/h", Model = "1958 Dodge Coronet", Seats = "4", Tune = "Transfender"},
     {Name = "Hermes", Price = "$12.375", Gold = "N/A", Speed = "149 KM/h", Model = "1948 Mercury (Custom)", Seats = "2", Tune = "Transfender"},
-    {Name = "Sabre", Price = "$1.425.000", Gold = "1.699 Gold", Speed = "173 KM/h", Model = "1969 Oldsmobile Cutlass", Seats = "2", Tune = "Transfender"},
+    {Name = "Sabre", Price_Gold = "$190.000", Price = "$1.425.000", Gold = "1.699 Gold", Speed = "173 KM/h", Model = "1969 Oldsmobile Cutlass", Seats = "2", Tune = "Transfender"},
     {Name = "ZR-350", Price = "$1.777.500", Gold = "N/A", Speed = "186 KM/h", Model = "Mazda RX7", Seats = "2", Tune = "Transfender"},
     {Name = "Walton", Price = "$6.600", Gold = "N/A", Speed = "118 KM/h", Model = "1956 Chevrolet Task Force", Seats = "2", Tune = "Transfender"},
     {Name = "Regina", Price = "$235.500", Gold = "N/A", Speed = "140 KM/h", Model = "Ford LTD Wagon", Seats = "4", Tune = "Transfender"},
-    {Name = "Comet", Price = "$1.822.500", Gold = "1.949 Gold", Speed = "184 KM/h", Model = "Porsche 911", Seats = "2", Tune = "Transfender"},
+    {Name = "Comet", Price_Gold = "$607.500", Price = "$1.822.500", Gold = "1.949 Gold", Speed = "184 KM/h", Model = "Porsche 911", Seats = "2", Tune = "Transfender"},
     {Name = "Burrito", Price = "$36.000", Gold = "N/A", Speed = "157 KM/h", Model = "GMC G15 Vandura", Seats = "4", Tune = "Transfender"},
     {Name = "Camper", Price = "$90.000", Gold = "N/A", Speed = "123 KM/h", Model = "Volkswagen Transporter", Seats = "3", Tune = "Transfender"},
     {Name = "Majestic", Price = "$367.500", Gold = "N/A", Speed = "156 KM/h", Model = "1985 Buick Regal", Seats = "2", Tune = "Transfender"},
-    {Name = "Sandking", Price = "$1.380.000", Gold = "1.599 Gold", Speed = "176 KM/h", Model = "1985 Mitsubishi Pajero", Seats = "2", Tune = "Transfender"},
+    {Name = "Sandking", Price_Gold = "$588.000", Price = "$1.380.000", Gold = "1.599 Gold", Speed = "176 KM/h", Model = "1985 Mitsubishi Pajero", Seats = "2", Tune = "Transfender"},
     {Name = "Blista Compact", Price = "$124.500", Gold = "N/A", Speed = "161 KM/h", Model = "1985 Honda CRX", Seats = "2", Tune = "Transfender"},
     {Name = "Mesa", Price = "$562.500", Gold = "N/A", Speed = "140 KM/h", Model = "Jeep Wrangler", Seats = "2", Tune = "Transfender"},
-    {Name = "Super GT", Price = "$1.764.000", Gold = "1.899 Gold", Speed = "179 KM/h", Model = "Mitsubishi 300GT", Seats = "2", Tune = "Transfender"},
+    {Name = "Super GT", Price_Gold = "$588.000", Price = "$1.764.000", Gold = "1.899 Gold", Speed = "179 KM/h", Model = "Mitsubishi 300GT", Seats = "2", Tune = "Transfender"},
     {Name = "Elegant", Price = "$795.000", Gold = "N/A", Speed = "166 KM/h", Model = "Buick Roadmaster", Seats = "4", Tune = "Transfender"},
     {Name = "Journey", Price = "$105.000", Gold = "N/A", Speed = "108 KM/h", Model = "Chevrolet Winnebago", Seats = "2", Tune = "Transfender"},
     {Name = "Buccaneer", Price = "$180.000", Gold = "N/A", Speed = "164 KM/h", Model = "1970 Chevrolet Monte Carlo", Seats = "2", Tune = "Transfender"},
     {Name = "Cadrona", Price = "$30.000", Gold = "N/A", Speed = "149 KM/h", Model = "1989 Chevrolet Z24", Seats = "2", Tune = "Transfender"},
     {Name = "Willard", Price = "$222.000", Gold = "N/A", Speed = "149 KM/h", Model = "1991 Dodge Dynasty", Seats = "4", Tune = "Transfender"},
-    {Name = "Feltzer", Price = "$937.500", Gold = "999 Gold", Speed = "167 KM/h", Model = "1990 Mercedes Benz SL", Seats = "2", Tune = "Transfender"},
+    {Name = "Feltzer", Price_Gold = "$312.500", Price = "$937.500", Gold = "999 Gold", Speed = "167 KM/h", Model = "1990 Mercedes Benz SL", Seats = "2", Tune = "Transfender"},
     {Name = "Remington", Price = "$1.072.500", Gold = "N/A", Speed = "168 KM/h", Model = "1977 Lincoln Continental", Seats = "2", Tune = "Loco Low Co."},
     {Name = "Slamvan", Price = "$1.005.000", Gold = "N/A", Speed = "158 KM/h", Model = "Dodge Sidewinder (Custom)", Seats = "2", Tune = "Loco Low Co."},
     {Name = "Blade", Price = "$1.305.000", Gold = "N/A", Speed = "173 KM/h", Model = "1965 Chevrolet Impala", Seats = "2", Tune = "Loco Low Co."},
@@ -155,23 +155,23 @@ local vehiclesData = {
     {Name = "Yosemite", Price = "$172.500", Gold = "N/A", Speed = "144 KM/h", Model = "1998 Chevrolet Silverado", Seats = "4", Tune = "Transfender"},
     {Name = "Windsor", Price = "$810.000", Gold = "N/A", Speed = "158 KM/h", Model = "1966 Jaguar XKE", Seats = "2", Tune = "Transfender"},
     {Name = "Uranus", Price = "$982.500", Gold = "N/A", Speed = "156 KM/h", Model = "1991 Mitsubishi Eclipse", Seats = "2", Tune = "Wheel Arch Angels"},
-    {Name = "Jester", Price = "$1.672.500", Gold = "1.799 Gold", Speed = "178 KM/h", Model = "Toyota Supra", Seats = "2", Tune = "Wheel Arch Angels"},
-    {Name = "Sultan", Price = "$2.025.000", Gold = "2.199 Gold", Speed = "169 KM/h", Model = "Subaru Impreza", Seats = "4", Tune = "Wheel Arch Angels"},
+    {Name = "Jester", Price_Gold = "$557.500", Price = "$1.672.500", Gold = "1.799 Gold", Speed = "178 KM/h", Model = "Toyota Supra", Seats = "2", Tune = "Wheel Arch Angels"},
+    {Name = "Sultan", Price_Gold = "$675.000", Price = "$2.025.000", Gold = "2.199 Gold", Speed = "169 KM/h", Model = "Subaru Impreza", Seats = "4", Tune = "Wheel Arch Angels"},
     {Name = "Stratum", Price = "$960.000", Gold = "N/A", Speed = "154 KM/h", Model = "Ford Taurus Wagon", Seats = "4", Tune = "Wheel Arch Angels"},
-    {Name = "Elegy", Price = "$1.897.500", Gold = "2.099 Gold", Speed = "178 KM/h", Model = "Nissan Skyline R33", Seats = "2", Tune = "Wheel Arch Angels"},
+    {Name = "Elegy", Price_Gold = "$632.500", Price = "$1.897.500", Gold = "2.099 Gold", Speed = "178 KM/h", Model = "Nissan Skyline R33", Seats = "2", Tune = "Wheel Arch Angels"},
     {Name = "Flash", Price = "$1.500.000", Gold = "N/A", Speed = "165 KM/h", Model = "1990 Honda Civic", Seats = "2", Tune = "Wheel Arch Angels"},
     {Name = "Tahoma", Price = "$412.500", Gold = "N/A", Speed = "160 KM/h", Model = "6th Pontiac Bonneville", Seats = "4", Tune = "Loco Low Co."},
-    {Name = "Savanna", Price = "$1.185.000", Gold = "1.499 Gold", Speed = "173 KM/h", Model = "1964 Chevrolet Imala", Seats = "4", Tune = "Loco Low Co."},
+    {Name = "Savanna", Price_Gold = "$395.000", Price = "$1.185.000", Gold = "1.499 Gold", Speed = "173 KM/h", Model = "1964 Chevrolet Imala", Seats = "4", Tune = "Loco Low Co."},
     {Name = "Broadway", Price = "$877.500", Gold = "N/A", Speed = "158 KM/h", Model = "1948 Cadillac", Seats = "2", Tune = "Loco Low Co."},
     {Name = "Tornado", Price = "$75.000", Gold = "N/A", Speed = "158 KM/h", Model = "1960 Chevrolet Bel Air", Seats = "2", Tune = "Loco Low Co."},
-    {Name = "Huntley", Price = "$1.050.000", Gold = "1.299 Gold", Speed = "158 KM/h", Model = "Range Rover", Seats = "4", Tune = "Transfender"},
+    {Name = "Huntley", Price_Gold = "$350.000", Price = "$1.050.000", Gold = "1.299 Gold", Speed = "158 KM/h", Model = "Range Rover", Seats = "4", Tune = "Transfender"},
     {Name = "Stafford", Price = "$450.000", Gold = "N/A", Speed = "153 KM/h", Model = "1974 Rolls Royce Shadow", Seats = "4", Tune = "Transfender"},
     {Name = "Emperor", Price = "$123.000", Gold = "N/A", Speed = "153 KM/h", Model = "Jaguar XJ6", Seats = "4", Tune = "Transfender"},
     {Name = "Euros", Price = "$1.110.000", Gold = "N/A", Speed = "165 KM/h", Model = "Nissan 300ZX", Seats = "2", Tune = "Transfender"},
     {Name = "Club", Price = "$295.500", Gold = "N/A", Speed = "163 KM/h", Model = "Volkswagen Golf", Seats = "2", Tune = "Transfender"},
     {Name = "Picador", Price = "$238.500", Gold = "N/A", Speed = "151 KM/h", Model = "1968 Chevrolet El Camino", Seats = "2", Tune = "Transfender"},
     {Name = "Alpha", Price = "$1.560.000", Gold = "N/A", Speed = "169 KM/h", Model = "Mitsubishi 300GT", Seats = "2", Tune = "Transfender"},
-    {Name = "Phoenix", Price = "$289.500", Gold = "349 Gold", Speed = "171 KM/h", Model = "1979 Pontiac Trans Am", Seats = "2", Tune = "Transfender"},
+    {Name = "Phoenix", Price_Gold = "$96.500", Price = "$289.500", Gold = "349 Gold", Speed = "171 KM/h", Model = "1979 Pontiac Trans Am", Seats = "2", Tune = "Transfender"},
     {Name = "Nebula", Price = "$411.000", Gold = "N/A", Speed = "157 KM/h", Model = "1987 Buick Century", Seats = "4", Tune = "Transfender"},
     {Name = "Primo", Price = "$283.500", Gold = "N/A", Speed = "143 KM/h", Model = "1987 Toyota Corolla", Seats = "4", Tune = "Transfender"},
     {Name = "Fortune", Price = "$475.500", Gold = "N/A", Speed = "158 KM/h", Model = "1992 Ford Thunderbird", Seats = "2", Tune = "Transfender"},
@@ -190,15 +190,15 @@ local vehiclesData = {
     {Name = "Tug", Price = "$772.500", Gold = "N/A", Speed = "85 KM/h", Model = "Clark CT-50", Seats = "1", Tune = "Transfender"},
     {Name = "Hotdog", Price = "$885.000", Gold = "N/A", Speed = "108 KM/h", Model = "1964 Dodge A100", Seats = "2", Tune = "Transfender"},
     {Name = "Bandito", Price = "$375.000", Gold = "N/A", Speed = "146 KM/h", Model = "Necunoscut", Seats = "1", Tune = "Transfender"},
-    {Name = "Monster Truck", Price = "$12.000.000", Gold = "3.499 Gold", Speed = "110 KM/h", Model = "Necunoscut", Seats = "2", Tune = "Transfender"},
-    {Name = "Monster Truck A", Price = "$12.000.000", Gold = "3.499 Gold", Speed = "110 KM/h", Model = "Necunoscut", Seats = "2", Tune = "Transfender"},
-    {Name = "Monster Truck B", Price = "$12.000.000", Gold = "3.499 Gold", Speed = "110 KM/h", Model = "Necunoscut", Seats = "2", Tune = "Transfender"},
+    {Name = "Monster Truck", Price_Gold = "$1.150.000", Price = "$12.000.000", Gold = "3.499 Gold", Speed = "110 KM/h", Model = "Necunoscut", Seats = "2", Tune = "Transfender"},
+    {Name = "Monster Truck A", Price_Gold = "$1.150.000", Price = "$12.000.000", Gold = "3.499 Gold", Speed = "110 KM/h", Model = "Necunoscut", Seats = "2", Tune = "Transfender"},
+    {Name = "Monster Truck B", Price_Gold = "$1.150.000", Price = "$12.000.000", Gold = "3.499 Gold", Speed = "110 KM/h", Model = "Necunoscut", Seats = "2", Tune = "Transfender"},
     {Name = "RC Raider", Price = "$22.500", Gold = "N/A", Speed = "40 KM/h", Model = "Necunoscut", Seats = "1", Tune = "N/A"},
     {Name = "RC Cam", Price = "$22.500", Gold = "N/A", Speed = "60 KM/h", Model = "Necunoscut", Seats = "1", Tune = "N/A"},
     {Name = "RC Tiger", Price = "$22.500", Gold = "N/A", Speed = "88 KM/h", Model = "Necunoscut", Seats = "1", Tune = "N/A"},
     {Name = "RC Bandit", Price = "$22.500", Gold = "N/A", Speed = "75 KM/h", Model = "Necunoscut", Seats = "1", Tune = "N/A"},
     {Name = "RC Goblin", Price = "$22.500", Gold = "N/A", Speed = "30 KM/h", Model = "Necunoscut", Seats = "1", Tune = "N/A"},
-    {Name = "Freeway", Price = "$622.500", Gold = "649 Gold", Speed = "157 KM/h", Model = "Harley-Davidson", Seats = "2", Tune = "N/A"},
+    {Name = "Freeway", Price_Gold = "$207.500", Price = "$622.500", Gold = "649 Gold", Speed = "157 KM/h", Model = "Harley-Davidson", Seats = "2", Tune = "N/A"},
     {Name = "PCJ-600", Price = "$307.500", Gold = "N/A", Speed = "171 KM/h", Model = "'80s Suzuki GSX", Seats = "2", Tune = "N/A"},
     {Name = "Faggio", Price = "$2.250", Gold = "N/A", Speed = "122 KM/h", Model = "Piaggio", Seats = "2", Tune = "N/A"},
     {Name = "Sanchez", Price = "$481.500", Gold = "N/A", Speed = "157 KM/h", Model = "Yamaha DT 200", Seats = "2", Tune = "N/A"},
@@ -206,8 +206,8 @@ local vehiclesData = {
     {Name = "Bike", Price = "$725", Gold = "N/A", Speed = "83 KM/h", Model = "Necunoscut", Seats = "1", Tune = "N/A"},
     {Name = "BMX", Price = "$1.500", Gold = "N/A", Speed = "100 KM/h", Model = "Necunoscut", Seats = "1", Tune = "N/A"},
     {Name = "Mountain bike", Price = "$750", Gold = "N/A", Speed = "90 KM/h", Model = "Necunoscut", Seats = "1", Tune = "N/A"},
-    {Name = "FCR-900", Price = "$915.000", Gold = "899 Gold", Speed = "176 KM/h", Model = "Ducatti 900 SS", Seats = "2", Tune = "N/A"},
-    {Name = "NRG-500", Price = "$1.725.000", Gold = "1.899 Gold", Speed = "191 KM/h", Model = "Honda NSR500", Seats = "2", Tune = "N/A"},
+    {Name = "FCR-900",Price_Gold = "$305.000", Price = "$915.000", Gold = "899 Gold", Speed = "176 KM/h", Model = "Ducatti 900 SS", Seats = "2", Tune = "N/A"},
+    {Name = "NRG-500",Price_Gold = "$575.000", Price = "$1.725.000", Gold = "1.899 Gold", Speed = "191 KM/h", Model = "Honda NSR500", Seats = "2", Tune = "N/A"},
     {Name = "BF-400", Price = "$213.000", Gold = "N/A", Speed = "159 KM/h", Model = "Suzuki Bandit", Seats = "2", Tune = "N/A"},
     {Name = "Wayfarer", Price = "$8.700", Gold = "N/A", Speed = "157 KM/h", Model = "Honda Gold Wing", Seats = "2", Tune = "N/A"},
     {Name = "Squalo", Price = "$1.695.000", Gold = "N/A", Speed = "226 KM/h", Model = "Chris-Craft Stinger", Seats = "1", Tune = "N/A"},
@@ -220,8 +220,8 @@ local vehiclesData = {
     {Name = "Launch", Price = "$934.500", Gold = "N/A", Speed = "113 KM/h", Model = "Necunoscut", Seats = "1", Tune = "N/A"},
     {Name = "Shamal", Price = "$15.000.000", Gold = "N/A", Speed = "270 KM/h", Model = "Gulfstream G650", Seats = "1", Tune = "N/A"},
     {Name = "Stuntplane", Price = "$4.500.000", Gold = "N/A", Speed = "160 KM/h", Model = "Pitts Special S-1", Seats = "1", Tune = "N/A"},
-    {Name = "Sparrow", Price = "$9.000.000", Gold = "2.399 Gold", Speed = "133 KM/h", Model = "Bell 47", Seats = "2", Tune = "N/A"},
-    {Name = "Maverick", Price = "$12.000.000", Gold = "4.999 Gold", Speed = "180 KM/h", Model = "Bell Long Ranger", Seats = "4", Tune = "N/A"},
+    {Name = "Sparrow", Price_Gold = "$710.000", Price = "$9.000.000", Gold = "2.399 Gold", Speed = "133 KM/h", Model = "Bell 47", Seats = "2", Tune = "N/A"},
+    {Name = "Maverick", Price_Gold = "$1.875.000", Price = "$12.000.000", Gold = "4.999 Gold", Speed = "180 KM/h", Model = "Bell Long Ranger", Seats = "4", Tune = "N/A"},
     {Name = "Dune", Price = "$25.000.000", Gold = "5.000 Gold", Speed = "110 KM/h", Model = "KAMAZ 4991 Rally Truck", Seats = "2", Tune = "Transfender"},
     {Name = "Flatbed", Price = "$30.000.000", Gold = "6.000 Gold", Speed = "157 KM/h", Model = "M-939 US Army Truck", Seats = "2", Tune = "Transfender"},
     {Name = "Coach", Price = "$30.000.000", Gold = "6.000 Gold", Speed = "157 KM/h", Model = "1990s MCI 102", Seats = "8", Tune = "Transfender"},
@@ -3470,10 +3470,36 @@ local function renderVehicleDetailsPanel(vehName)
             imgui.TextColored(imgui.ImVec4(0.9, 0.3, 0.3, 1.0), formattedRefund)
         end
 
+        if data.Price_Gold and data.Price_Gold ~= "" then
+            local cleanGoldPrice = data.Price_Gold:gsub("[%$%.]", "")
+            local numericGoldPrice = tonumber(cleanGoldPrice)
+
+            if numericGoldPrice and numericGoldPrice > 0 then
+                local goldRefundValue = math.floor(numericGoldPrice * 0.4)
+                
+                local formattedGoldRefund = tostring(goldRefundValue):reverse():gsub("(%d%d%d)", "%1."):reverse()
+                if formattedGoldRefund:sub(1, 1) == "." then formattedGoldRefund = formattedGoldRefund:sub(2) end
+                formattedGoldRefund = "$" .. formattedGoldRefund
+
+                if iniData.settings.lang == 0 then
+                    imgui.Text(u8("Returnare DealerShip Gold: "))
+                else
+                    imgui.Text("DealerShip Gold Refund: ")
+                end
+                imgui.SameLine()
+                imgui.TextColored(imgui.ImVec4(1.0, 0.85, 0.2, 1.0), formattedGoldRefund)
+            end
+        end
         if iniData.settings.lang == 0 then
-            imgui.Text("Pret Gold: ")
-            imgui.SameLine()
-            imgui.TextColored(imgui.ImVec4(1.0, 0.85, 0.2, 1.0), data.Gold)
+            if data.Gold ~= "N/A" then
+                if iniData.settings.lang == 0 then
+                    imgui.Text("Pret Gold: ")
+                else
+                    imgui.Text("Gold Price: ")
+                end
+                imgui.SameLine()
+                imgui.TextColored(imgui.ImVec4(1.0, 0.85, 0.2, 1.0), data.Gold)
+            end
             
             imgui.Text("Viteza Maxima: ")
             imgui.SameLine()
@@ -3491,9 +3517,15 @@ local function renderVehicleDetailsPanel(vehName)
             imgui.SameLine()
             imgui.TextColored(imgui.ImVec4(0.8, 0.4, 0.9, 1.0), data.Tune)
         else
-            imgui.Text("Gold Price: ")
-            imgui.SameLine()
-            imgui.TextColored(imgui.ImVec4(1.0, 0.85, 0.2, 1.0), data.Gold)
+            if data.Gold ~= "N/A" then
+                if iniData.settings.lang == 0 then
+                    imgui.Text("Pret Gold: ")
+                else
+                    imgui.Text("Gold Price: ")
+                end
+                imgui.SameLine()
+                imgui.TextColored(imgui.ImVec4(1.0, 0.85, 0.2, 1.0), data.Gold)
+            end
             
             imgui.Text("Maximum Speed: ")
             imgui.SameLine()
