@@ -3455,6 +3455,21 @@ local function renderVehicleDetailsPanel(vehName)
         imgui.SameLine()
         imgui.TextColored(imgui.ImVec4(0.2, 0.9, 0.2, 1.0), data.Price)
         
+        if numericPrice > 0 and numericPrice <= 20000000 then
+            local refundValue = math.floor(numericPrice * 0.6)
+            local formattedRefund = tostring(refundValue):reverse():gsub("(%d%d%d)", "%1."):reverse()
+            if formattedRefund:sub(1, 1) == "." then formattedRefund = formattedRefund:sub(2) end
+            formattedRefund = "$" .. formattedRefund
+
+            if iniData.settings.lang == 0 then
+                imgui.Text(u8("Returnare DealerShip: "))
+            else
+                imgui.Text("DealerShip Refund: ")
+            end
+            imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9, 0.3, 0.3, 1.0), formattedRefund)
+        end
+
         if iniData.settings.lang == 0 then
             imgui.Text("Pret Gold: ")
             imgui.SameLine()
