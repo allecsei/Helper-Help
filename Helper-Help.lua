@@ -3555,7 +3555,7 @@ local function renderVehicleDetailsPanel(vehName)
             imgui.TextWrapped(data.Source)
         end
 
-        if data.Price:find("000.000") and (not data.Source or data.Source == "") then
+        if (data.Price:find("0.000.000") or data.Price:find("25.000.000") or data.Price:find("30.000.000")) and (not data.Source or data.Source == "") then
             imgui.Spacing()
             imgui.Separator()
             if iniData.settings.lang == 0 then
@@ -6974,8 +6974,8 @@ end, function(player)
                                 imgui.SetCursorPosX((w - imgui.CalcTextSize(city1).x) / 2)
                                 imgui.TextColored(imgui.ImVec4(0.3, 0.7, 1, 1), city1)
                                 imgui.SetWindowFontScale(1.0); imgui.Separator()
-                                imgui.BulletText("Rent Car LS (Gara) - ID 24")
-                                imgui.BulletText("Rent Bike LS (Santa Maria) - ID 26")
+                                imgui.BulletText("Rent Car LS - ID 24")
+                                imgui.BulletText("Rent Bike LS - ID 26")
                             imgui.EndChild()
 
                             -- LV
@@ -6984,9 +6984,9 @@ end, function(player)
                                 imgui.SetCursorPosX((w - imgui.CalcTextSize(city2).x) / 2)
                                 imgui.TextColored(imgui.ImVec4(1, 0.8, 0.2, 1), city2)
                                 imgui.SetWindowFontScale(1.0); imgui.Separator()
-                                imgui.BulletText("Rent Car LV (Gara) - ID 25")
-                                imgui.BulletText("Rent Plane LV (Aeroport) - ID 42")
-                                imgui.BulletText("Rent Boat LV (Bayside) - ID 30")
+                                imgui.BulletText("Rent Car LV - ID 25")
+                                imgui.BulletText("Rent Plane LV - ID 42")
+                                imgui.BulletText("Rent Boat LV - ID 40")
                             imgui.EndChild()
 
                             -- SF
@@ -6995,8 +6995,8 @@ end, function(player)
                                 imgui.SetCursorPosX((w - imgui.CalcTextSize(city3).x) / 2)
                                 imgui.TextColored(imgui.ImVec4(0.2, 1, 0.2, 1), city3)
                                 imgui.SetWindowFontScale(1.0); imgui.Separator()
-                                imgui.BulletText("Rent Car SF (Gara) - ID 129")
-                                imgui.BulletText("Rent Boat SF (Pier 69) - ID 131")
+                                imgui.BulletText("Rent Car SF - ID 129")
+                                imgui.BulletText("Rent Boat SF - ID 131")
                             imgui.EndChild()
 
                             imgui.Spacing(); imgui.Separator()
@@ -11187,8 +11187,8 @@ end, function(player)
                         imgui.TextColored(imgui.ImVec4(0.3, 0.7, 1, 1), city1)
                         imgui.SetWindowFontScale(1.0)
                         imgui.Separator()
-                        imgui.BulletText("Rent Car LS (Gara) - ID 24")
-                        imgui.BulletText("Rent Bike LS (Santa Maria) - ID 26")
+                        imgui.BulletText("Rent Car LS - ID 24")
+                        imgui.BulletText("Rent Bike LS - ID 26")
                     imgui.EndChild()
                     
                     -- LV
@@ -11199,9 +11199,9 @@ end, function(player)
                         imgui.TextColored(imgui.ImVec4(1, 0.8, 0.2, 1), city2)
                         imgui.SetWindowFontScale(1.0)
                         imgui.Separator()
-                        imgui.BulletText("Rent Car LV (Gara) - ID 25")
-                        imgui.BulletText("Rent Plane LV (Aeroport) - ID 42")
-                        imgui.BulletText("Rent Boat LV (Bayside) - ID 30")
+                        imgui.BulletText("Rent Car LV - ID 25")
+                        imgui.BulletText("Rent Plane LV - ID 42")
+                        imgui.BulletText("Rent Boat LV - ID 40")
                     imgui.EndChild()
                     
                     -- SF
@@ -11212,8 +11212,8 @@ end, function(player)
                         imgui.TextColored(imgui.ImVec4(0.2, 1, 0.2, 1), city3)
                         imgui.SetWindowFontScale(1.0)
                         imgui.Separator()
-                        imgui.BulletText("Rent Car SF (Gara) - ID 129")
-                        imgui.BulletText("Rent Boat SF (Pier 69) - ID 131")
+                        imgui.BulletText("Rent Car SF - ID 129")
+                        imgui.BulletText("Rent Boat SF - ID 131")
                     imgui.EndChild()
                     
                     imgui.SetCursorPosY(645)
@@ -13373,11 +13373,11 @@ end
     local cGray  = "{B4B4B4}"
     sampAddChatMessage(cGray .. "______________________________________________________", -1)    
     if iniData.settings.lang == 0 then
-        sampAddChatMessage(string.format("%s>> %sScriptul %sHelper Help v.2.5 %sa fost incarcat cu succes!", cMain, cWhite, cMain, cWhite), -1)
+        sampAddChatMessage(string.format("%s>> %sScriptul %sHelper Help v2.5 %sa fost incarcat cu succes!", cMain, cWhite, cMain, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sFoloseste comanda %s/%s %ssau tasta %s[%s] %spentru meniu.", cMain, cWhite, cMain, iniData.settings.cmd, cWhite, cMain, activeKeysStr, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sDiscord Support: %sallecsei %s| Inspirat de la %sTupi & Madalin", cMain, cWhite, cMain, cWhite, cWhite), -1)        
     else
-        sampAddChatMessage(string.format("%s>> %sScript %sHelper Help v.2.5 %shas been successfully loaded!", cMain, cWhite, cMain, cWhite), -1)
+        sampAddChatMessage(string.format("%s>> %sScript %sHelper Help v2.5 %shas been successfully loaded!", cMain, cWhite, cMain, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sUse command %s/%s %sor key %s[%s] %sfor the menu.", cMain, cWhite, cMain, iniData.settings.cmd, cWhite, cMain, activeKeysStr, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sDiscord Support: %sallecsei %s| Inspired by %sTupi & Madalin", cMain, cWhite, cMain, cWhite, cWhite), -1)        
     end
