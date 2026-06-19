@@ -3717,26 +3717,26 @@ local function renderThemeSettings()
     imgui.SetColumnWidth(0, 150)
     imgui.SetColumnWidth(1, 150)
 
-    if radioButtonBoolWhite("Dark Cherry", iniData.settings.theme == 1) then iniData.settings.theme = 1; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Cyberpunk Orange", iniData.settings.theme == 2) then iniData.settings.theme = 2; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Deep Ocean Blue", iniData.settings.theme == 3) then iniData.settings.theme = 3; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Sunset Glow", iniData.settings.theme == 4) then iniData.settings.theme = 4; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Forest Night", iniData.settings.theme == 5) then iniData.settings.theme = 5; inicfg.save(iniData, directIni) end
+    if radioButtonBoolWhite("Cyber Purple", iniData.settings.theme == 1) then iniData.settings.theme = 1; inicfg.save(iniData, directIni) end
+    if radioButtonBoolWhite("Golden Amber", iniData.settings.theme == 2) then iniData.settings.theme = 2; inicfg.save(iniData, directIni) end
+    if radioButtonBoolWhite("Glacial Blue", iniData.settings.theme == 3) then iniData.settings.theme = 3; inicfg.save(iniData, directIni) end
+    if radioButtonBoolWhite("Ruby Velvet", iniData.settings.theme == 4) then iniData.settings.theme = 4; inicfg.save(iniData, directIni) end
+    if radioButtonBoolWhite("Forest Emerald", iniData.settings.theme == 5) then iniData.settings.theme = 5; inicfg.save(iniData, directIni) end
 
     imgui.NextColumn()  
 
-    if radioButtonBoolWhite("Neon Matrix", iniData.settings.theme == 6) then iniData.settings.theme = 6; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Retro Wave", iniData.settings.theme == 7) then iniData.settings.theme = 7; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Emerald Mint", iniData.settings.theme == 8) then iniData.settings.theme = 8; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Ashen Quartz", iniData.settings.theme == 9) then iniData.settings.theme = 9; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Volcanic Fury", iniData.settings.theme == 10) then iniData.settings.theme = 10; inicfg.save(iniData, directIni) end
+    if radioButtonBoolWhite("Toxic Lime", iniData.settings.theme == 6) then iniData.settings.theme = 6; inicfg.save(iniData, directIni) end
+    if radioButtonBoolWhite("Mystic Orchid", iniData.settings.theme == 7) then iniData.settings.theme = 7; inicfg.save(iniData, directIni) end
+    if radioButtonBoolWhite("Deep Sea Teal", iniData.settings.theme == 8) then iniData.settings.theme = 8; inicfg.save(iniData, directIni) end
+    if radioButtonBoolWhite("Iron Grey", iniData.settings.theme == 9) then iniData.settings.theme = 9; inicfg.save(iniData, directIni) end
+    if radioButtonBoolWhite("Magma", iniData.settings.theme == 10) then iniData.settings.theme = 10; inicfg.save(iniData, directIni) end
 
     imgui.NextColumn()
 
-    if radioButtonBoolWhite("Neon Sunset", iniData.settings.theme == 11) then iniData.settings.theme = 11; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Toxic Waste", iniData.settings.theme == 12) then iniData.settings.theme = 12; inicfg.save(iniData, directIni) end
+    if radioButtonBoolWhite("Cyberpunk Pink", iniData.settings.theme == 11) then iniData.settings.theme = 11; inicfg.save(iniData, directIni) end
+    if radioButtonBoolWhite("Neon Acid", iniData.settings.theme == 12) then iniData.settings.theme = 12; inicfg.save(iniData, directIni) end
     if radioButtonBoolWhite("Royal Gold", iniData.settings.theme == 13) then iniData.settings.theme = 13; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Deep Space", iniData.settings.theme == 14) then iniData.settings.theme = 14; inicfg.save(iniData, directIni) end
+    if radioButtonBoolWhite("Void Space", iniData.settings.theme == 14) then iniData.settings.theme = 14; inicfg.save(iniData, directIni) end
     if radioButtonBoolWhite("Blood Moon", iniData.settings.theme == 15) then iniData.settings.theme = 15; inicfg.save(iniData, directIni) end
 
     imgui.Columns(1)  
@@ -3957,192 +3957,217 @@ local function applyTheme(themeId)
     local colors = style.Colors
     local alpha = iniData.settings.win_alpha
     
-    if themeId == 1 then  
-        colors[imgui.Col.WindowBg]           = imgui.ImVec4(0.07, 0.05, 0.10, alpha)
-        colors[imgui.Col.ChildBg]            = imgui.ImVec4(0.11, 0.08, 0.16, 1.00)
-        colors[imgui.Col.Border]             = imgui.ImVec4(0.50, 0.14, 1.00, 0.40)
-        colors[imgui.Col.FrameBg]            = imgui.ImVec4(0.15, 0.10, 0.22, 1.00)
-        colors[imgui.Col.FrameBgHovered]     = imgui.ImVec4(0.23, 0.14, 0.35, 1.00)
-        colors[imgui.Col.FrameBgActive]      = imgui.ImVec4(0.30, 0.16, 0.45, 1.00)
-        colors[imgui.Col.Button]             = imgui.ImVec4(0.50, 0.14, 1.00, 0.60)
-        colors[imgui.Col.ButtonHovered]      = imgui.ImVec4(0.50, 0.14, 1.00, 0.80)
-        colors[imgui.Col.ButtonActive]       = imgui.ImVec4(0.50, 0.14, 1.00, 1.00)
-        colors[imgui.Col.Header]             = imgui.ImVec4(0.35, 0.11, 0.55, 0.70)
-        colors[imgui.Col.HeaderHovered]      = imgui.ImVec4(0.50, 0.14, 1.00, 0.80)
-        colors[imgui.Col.HeaderActive]       = imgui.ImVec4(0.50, 0.14, 1.00, 1.00)
-        colors[imgui.Col.Text]               = imgui.ImVec4(0.95, 0.95, 1.00, 1.00)
-    elseif themeId == 2 then  
-        colors[imgui.Col.WindowBg]           = imgui.ImVec4(0.06, 0.06, 0.08, alpha)
-        colors[imgui.Col.ChildBg]            = imgui.ImVec4(0.10, 0.10, 0.13, 1.00)
-        colors[imgui.Col.Border]             = imgui.ImVec4(1.00, 0.65, 0.00, 0.30)
-        colors[imgui.Col.FrameBg]            = imgui.ImVec4(0.14, 0.14, 0.18, 1.00)
-        colors[imgui.Col.FrameBgHovered]     = imgui.ImVec4(0.22, 0.22, 0.28, 1.00)
-        colors[imgui.Col.FrameBgActive]      = imgui.ImVec4(0.28, 0.28, 0.35, 1.00)
-        colors[imgui.Col.Button]             = imgui.ImVec4(1.00, 0.65, 0.00, 0.60)
-        colors[imgui.Col.ButtonHovered]      = imgui.ImVec4(1.00, 0.70, 0.10, 0.80)
-        colors[imgui.Col.ButtonActive]       = imgui.ImVec4(1.00, 0.75, 0.20, 1.00)
-        colors[imgui.Col.Header]             = imgui.ImVec4(1.00, 0.65, 0.00, 0.40)
-        colors[imgui.Col.HeaderHovered]      = imgui.ImVec4(1.00, 0.65, 0.00, 0.60)
-        colors[imgui.Col.HeaderActive]       = imgui.ImVec4(1.00, 0.65, 0.00, 0.80)
-        colors[imgui.Col.Text]               = imgui.ImVec4(0.90, 0.93, 0.95, 1.00)
-    elseif themeId == 3 then  
-        colors[imgui.Col.WindowBg]           = imgui.ImVec4(0.05, 0.09, 0.14, alpha)
-        colors[imgui.Col.ChildBg]            = imgui.ImVec4(0.09, 0.13, 0.20, 1.00)
-        colors[imgui.Col.Border]             = imgui.ImVec4(0.15, 0.45, 0.65, 0.40)
-        colors[imgui.Col.FrameBg]            = imgui.ImVec4(0.12, 0.18, 0.27, 1.00)
-        colors[imgui.Col.FrameBgHovered]     = imgui.ImVec4(0.18, 0.26, 0.38, 1.00)
-        colors[imgui.Col.FrameBgActive]      = imgui.ImVec4(0.22, 0.32, 0.45, 1.00)
-        colors[imgui.Col.Button]             = imgui.ImVec4(0.15, 0.45, 0.65, 0.60)
-        colors[imgui.Col.ButtonHovered]      = imgui.ImVec4(0.20, 0.55, 0.75, 0.80)
-        colors[imgui.Col.ButtonActive]       = imgui.ImVec4(0.25, 0.60, 0.85, 1.00)
-        colors[imgui.Col.Header]             = imgui.ImVec4(0.15, 0.35, 0.55, 0.50)
-        colors[imgui.Col.HeaderHovered]      = imgui.ImVec4(0.15, 0.45, 0.65, 0.70)
-        colors[imgui.Col.HeaderActive]       = imgui.ImVec4(0.20, 0.55, 0.75, 0.90)
-        colors[imgui.Col.Text]               = imgui.ImVec4(0.85, 0.92, 0.98, 1.00)
-    elseif themeId == 4 then  
-        colors[imgui.Col.WindowBg]           = imgui.ImVec4(0.15, 0.08, 0.12, alpha)
-        colors[imgui.Col.ChildBg]            = imgui.ImVec4(0.22, 0.10, 0.14, 1.00)
-        colors[imgui.Col.Border]             = imgui.ImVec4(1.00, 0.35, 0.10, 0.30)
-        colors[imgui.Col.FrameBg]            = imgui.ImVec4(0.30, 0.12, 0.16, 1.00)
-        colors[imgui.Col.FrameBgHovered]     = imgui.ImVec4(0.45, 0.18, 0.20, 1.00)
-        colors[imgui.Col.FrameBgActive]      = imgui.ImVec4(0.55, 0.25, 0.28, 1.00)
-        colors[imgui.Col.Button]             = imgui.ImVec4(1.00, 0.50, 0.25, 0.70)
-        colors[imgui.Col.ButtonHovered]      = imgui.ImVec4(1.00, 0.60, 0.30, 0.85)
-        colors[imgui.Col.ButtonActive]       = imgui.ImVec4(1.00, 0.70, 0.35, 1.00)
-        colors[imgui.Col.Header]             = imgui.ImVec4(1.00, 0.45, 0.25, 0.55)
-        colors[imgui.Col.HeaderHovered]      = imgui.ImVec4(1.00, 0.55, 0.30, 0.75)
-        colors[imgui.Col.HeaderActive]       = imgui.ImVec4(1.00, 0.65, 0.40, 0.90)
-        colors[imgui.Col.Text]               = imgui.ImVec4(1.00, 0.95, 0.90, 1.00)
-    elseif themeId == 5 then  
-        colors[imgui.Col.WindowBg]           = imgui.ImVec4(0.06, 0.10, 0.06, alpha)
-        colors[imgui.Col.ChildBg]            = imgui.ImVec4(0.09, 0.16, 0.09, 1.00)
-        colors[imgui.Col.Border]             = imgui.ImVec4(0.18, 0.45, 0.20, 0.30)
-        colors[imgui.Col.FrameBg]            = imgui.ImVec4(0.12, 0.20, 0.12, 1.00)
-        colors[imgui.Col.FrameBgHovered]     = imgui.ImVec4(0.18, 0.28, 0.18, 1.00)
-        colors[imgui.Col.FrameBgActive]      = imgui.ImVec4(0.24, 0.34, 0.24, 1.00)
-        colors[imgui.Col.Button]             = imgui.ImVec4(0.20, 0.55, 0.30, 0.70)
-        colors[imgui.Col.ButtonHovered]      = imgui.ImVec4(0.30, 0.70, 0.40, 0.85)
-        colors[imgui.Col.ButtonActive]       = imgui.ImVec4(0.40, 0.85, 0.55, 1.00)
-        colors[imgui.Col.Header]             = imgui.ImVec4(0.18, 0.45, 0.25, 0.50)
-        colors[imgui.Col.HeaderHovered]      = imgui.ImVec4(0.24, 0.60, 0.30, 0.70)
-        colors[imgui.Col.HeaderActive]       = imgui.ImVec4(0.28, 0.75, 0.38, 0.90)
-        colors[imgui.Col.Text]               = imgui.ImVec4(0.92, 0.98, 0.92, 1.00)
-    elseif themeId == 6 then  
-        colors[imgui.Col.WindowBg]           = imgui.ImVec4(0.03, 0.05, 0.03, alpha)
-        colors[imgui.Col.ChildBg]            = imgui.ImVec4(0.06, 0.10, 0.06, 1.00)
-        colors[imgui.Col.Border]             = imgui.ImVec4(0.12, 0.80, 0.12, 0.30)
-        colors[imgui.Col.FrameBg]            = imgui.ImVec4(0.08, 0.16, 0.08, 1.00)
-        colors[imgui.Col.FrameBgHovered]     = imgui.ImVec4(0.12, 0.30, 0.12, 1.00)
-        colors[imgui.Col.FrameBgActive]      = imgui.ImVec4(0.16, 0.40, 0.16, 1.00)
-        colors[imgui.Col.Button]             = imgui.ImVec4(0.15, 0.80, 0.15, 0.70)
-        colors[imgui.Col.ButtonHovered]      = imgui.ImVec4(0.25, 0.95, 0.25, 0.85)
-        colors[imgui.Col.ButtonActive]       = imgui.ImVec4(0.35, 1.00, 0.35, 1.00)
-        colors[imgui.Col.Header]             = imgui.ImVec4(0.10, 0.60, 0.10, 0.50)
-        colors[imgui.Col.HeaderHovered]      = imgui.ImVec4(0.15, 0.80, 0.15, 0.70)
-        colors[imgui.Col.HeaderActive]       = imgui.ImVec4(0.20, 0.95, 0.20, 0.90)
-        colors[imgui.Col.Text]               = imgui.ImVec4(0.78, 1.00, 0.78, 1.00)
-    elseif themeId == 7 then  
-        colors[imgui.Col.WindowBg]           = imgui.ImVec4(0.10, 0.05, 0.15, alpha)
-        colors[imgui.Col.ChildBg]            = imgui.ImVec4(0.14, 0.07, 0.22, 1.00)
-        colors[imgui.Col.Border]             = imgui.ImVec4(0.98, 0.00, 0.55, 0.40)
-        colors[imgui.Col.FrameBg]            = imgui.ImVec4(0.18, 0.09, 0.28, 1.00)
-        colors[imgui.Col.FrameBgHovered]     = imgui.ImVec4(0.25, 0.12, 0.38, 1.00)
-        colors[imgui.Col.FrameBgActive]      = imgui.ImVec4(0.98, 0.00, 0.55, 0.40)
-        colors[imgui.Col.Button]             = imgui.ImVec4(0.00, 0.80, 0.85, 0.60)
-        colors[imgui.Col.ButtonHovered]      = imgui.ImVec4(0.00, 0.95, 1.00, 0.80)
-        colors[imgui.Col.ButtonActive]       = imgui.ImVec4(0.98, 0.00, 0.55, 1.00)
-        colors[imgui.Col.Header]             = imgui.ImVec4(0.98, 0.00, 0.55, 0.40)
-        colors[imgui.Col.HeaderHovered]      = imgui.ImVec4(0.00, 0.80, 0.85, 0.70)
-        colors[imgui.Col.HeaderActive]       = imgui.ImVec4(0.00, 0.95, 1.00, 0.90)
-        colors[imgui.Col.Text]               = imgui.ImVec4(0.95, 0.95, 1.00, 1.00)
-    elseif themeId == 8 then  
-        colors[imgui.Col.WindowBg]           = imgui.ImVec4(0.04, 0.08, 0.07, alpha)
-        colors[imgui.Col.ChildBg]            = imgui.ImVec4(0.07, 0.13, 0.11, 1.00)
-        colors[imgui.Col.Border]             = imgui.ImVec4(0.00, 0.75, 0.45, 0.35)
-        colors[imgui.Col.FrameBg]            = imgui.ImVec4(0.10, 0.18, 0.15, 1.00)
-        colors[imgui.Col.FrameBgHovered]     = imgui.ImVec4(0.15, 0.26, 0.22, 1.00)
-        colors[imgui.Col.FrameBgActive]      = imgui.ImVec4(0.00, 0.75, 0.45, 0.40)
-        colors[imgui.Col.Button]             = imgui.ImVec4(0.00, 0.60, 0.35, 0.60)
-        colors[imgui.Col.ButtonHovered]      = imgui.ImVec4(0.00, 0.75, 0.45, 0.80)
-        colors[imgui.Col.ButtonActive]       = imgui.ImVec4(0.10, 0.90, 0.55, 1.00)
-        colors[imgui.Col.Header]             = imgui.ImVec4(0.07, 0.40, 0.25, 0.50)
-        colors[imgui.Col.HeaderHovered]      = imgui.ImVec4(0.00, 0.60, 0.35, 0.70)
-        colors[imgui.Col.HeaderActive]       = imgui.ImVec4(0.00, 0.75, 0.45, 0.90)
-        colors[imgui.Col.Text]               = imgui.ImVec4(0.88, 0.97, 0.93, 1.00)
-    elseif themeId == 9 then  
-        colors[imgui.Col.WindowBg]           = imgui.ImVec4(0.10, 0.10, 0.11, alpha)
-        colors[imgui.Col.ChildBg]            = imgui.ImVec4(0.15, 0.15, 0.16, 1.00)
-        colors[imgui.Col.Border]             = imgui.ImVec4(0.45, 0.45, 0.48, 0.35)
-        colors[imgui.Col.FrameBg]            = imgui.ImVec4(0.20, 0.20, 0.22, 1.00)
-        colors[imgui.Col.FrameBgHovered]     = imgui.ImVec4(0.28, 0.28, 0.30, 1.00)
-        colors[imgui.Col.FrameBgActive]      = imgui.ImVec4(0.35, 0.35, 0.38, 1.00)
-        colors[imgui.Col.Button]             = imgui.ImVec4(0.35, 0.35, 0.38, 0.60)
-        colors[imgui.Col.ButtonHovered]      = imgui.ImVec4(0.45, 0.45, 0.48, 0.80)
-        colors[imgui.Col.ButtonActive]       = imgui.ImVec4(0.60, 0.60, 0.65, 1.00)
-        colors[imgui.Col.Header]             = imgui.ImVec4(0.25, 0.25, 0.28, 0.50)
-        colors[imgui.Col.HeaderHovered]      = imgui.ImVec4(0.35, 0.35, 0.38, 0.70)
-        colors[imgui.Col.HeaderActive]       = imgui.ImVec4(0.45, 0.45, 0.48, 0.90)
-        colors[imgui.Col.Text]               = imgui.ImVec4(0.92, 0.92, 0.95, 1.00)
-    elseif themeId == 10 then  
-        colors[imgui.Col.WindowBg]           = imgui.ImVec4(0.08, 0.04, 0.04, alpha)
-        colors[imgui.Col.ChildBg]            = imgui.ImVec4(0.14, 0.06, 0.06, 1.00)
-        colors[imgui.Col.Border]             = imgui.ImVec4(0.85, 0.15, 0.15, 0.35)
-        colors[imgui.Col.FrameBg]            = imgui.ImVec4(0.20, 0.09, 0.09, 1.00)
-        colors[imgui.Col.FrameBgHovered]     = imgui.ImVec4(0.28, 0.12, 0.12, 1.00)
-        colors[imgui.Col.FrameBgActive]      = imgui.ImVec4(0.85, 0.15, 0.15, 0.40)
-        colors[imgui.Col.Button]             = imgui.ImVec4(0.70, 0.10, 0.10, 0.60)
-        colors[imgui.Col.ButtonHovered]      = imgui.ImVec4(0.85, 0.15, 0.15, 0.80)
-        colors[imgui.Col.ButtonActive]       = imgui.ImVec4(1.00, 0.20, 0.20, 1.00)
-        colors[imgui.Col.Header]             = imgui.ImVec4(0.50, 0.08, 0.08, 0.50)
-        colors[imgui.Col.HeaderHovered]      = imgui.ImVec4(0.70, 0.10, 0.10, 0.70)
-        colors[imgui.Col.HeaderActive]       = imgui.ImVec4(0.85, 0.15, 0.15, 0.90)
-        colors[imgui.Col.Text]               = imgui.ImVec4(0.98, 0.92, 0.92, 1.00)
-    elseif themeId == 11 then -- Neon Sunset (Mov vibrant cu portocaliu)
-        colors[imgui.Col.WindowBg] = imgui.ImVec4(0.12, 0.08, 0.18, alpha)
-        colors[imgui.Col.ChildBg] = imgui.ImVec4(0.18, 0.12, 0.28, 1.00)
-        colors[imgui.Col.Border] = imgui.ImVec4(1.00, 0.40, 0.80, 0.40)
-        colors[imgui.Col.FrameBg] = imgui.ImVec4(0.25, 0.15, 0.35, 1.00)
-        colors[imgui.Col.Button] = imgui.ImVec4(1.00, 0.30, 0.60, 0.60)
-        colors[imgui.Col.ButtonHovered] = imgui.ImVec4(1.00, 0.40, 0.70, 0.80)
-        colors[imgui.Col.ButtonActive] = imgui.ImVec4(1.00, 0.50, 0.80, 1.00)
-        colors[imgui.Col.Text] = imgui.ImVec4(1.00, 0.90, 1.00, 1.00)
-    elseif themeId == 12 then -- Toxic Waste (Verde neon agresiv)
-        colors[imgui.Col.WindowBg] = imgui.ImVec4(0.05, 0.08, 0.05, alpha)
-        colors[imgui.Col.ChildBg] = imgui.ImVec4(0.08, 0.15, 0.08, 1.00)
-        colors[imgui.Col.Border] = imgui.ImVec4(0.50, 1.00, 0.00, 0.50)
-        colors[imgui.Col.FrameBg] = imgui.ImVec4(0.12, 0.25, 0.12, 1.00)
-        colors[imgui.Col.Button] = imgui.ImVec4(0.40, 0.80, 0.00, 0.60)
-        colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.60, 1.00, 0.00, 0.80)
-        colors[imgui.Col.ButtonActive] = imgui.ImVec4(0.70, 1.00, 0.20, 1.00)
-        colors[imgui.Col.Text] = imgui.ImVec4(0.90, 1.00, 0.80, 1.00)
-    elseif themeId == 13 then -- Royal Gold (Negru mat cu auriu regal)
-        colors[imgui.Col.WindowBg] = imgui.ImVec4(0.08, 0.07, 0.05, alpha)
-        colors[imgui.Col.ChildBg] = imgui.ImVec4(0.12, 0.10, 0.06, 1.00)
-        colors[imgui.Col.Border] = imgui.ImVec4(0.90, 0.70, 0.20, 0.50)
-        colors[imgui.Col.FrameBg] = imgui.ImVec4(0.18, 0.15, 0.08, 1.00)
-        colors[imgui.Col.Button] = imgui.ImVec4(0.70, 0.50, 0.10, 0.60)
-        colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.85, 0.65, 0.15, 0.80)
-        colors[imgui.Col.ButtonActive] = imgui.ImVec4(1.00, 0.80, 0.30, 1.00)
-        colors[imgui.Col.Text] = imgui.ImVec4(1.00, 0.90, 0.60, 1.00)
-    elseif themeId == 14 then -- Deep Space (Albastru cosmic foarte inchis)
-        colors[imgui.Col.WindowBg] = imgui.ImVec4(0.02, 0.03, 0.06, alpha)
-        colors[imgui.Col.ChildBg] = imgui.ImVec4(0.04, 0.06, 0.10, 1.00)
-        colors[imgui.Col.Border] = imgui.ImVec4(0.30, 0.50, 0.90, 0.40)
-        colors[imgui.Col.FrameBg] = imgui.ImVec4(0.08, 0.12, 0.20, 1.00)
-        colors[imgui.Col.Button] = imgui.ImVec4(0.20, 0.35, 0.60, 0.60)
-        colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.30, 0.45, 0.75, 0.80)
-        colors[imgui.Col.ButtonActive] = imgui.ImVec4(0.40, 0.60, 0.90, 1.00)
-        colors[imgui.Col.Text] = imgui.ImVec4(0.80, 0.90, 1.00, 1.00)
-    elseif themeId == 15 then -- Blood Moon (Rosu sangeriu intens)
-        colors[imgui.Col.WindowBg] = imgui.ImVec4(0.08, 0.02, 0.02, alpha)
-        colors[imgui.Col.ChildBg] = imgui.ImVec4(0.15, 0.04, 0.04, 1.00)
-        colors[imgui.Col.Border] = imgui.ImVec4(0.90, 0.10, 0.10, 0.40)
-        colors[imgui.Col.FrameBg] = imgui.ImVec4(0.25, 0.06, 0.06, 1.00)
-        colors[imgui.Col.Button] = imgui.ImVec4(0.60, 0.08, 0.08, 0.70)
-        colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.80, 0.12, 0.12, 0.90)
-        colors[imgui.Col.ButtonActive] = imgui.ImVec4(1.00, 0.20, 0.20, 1.00)
-        colors[imgui.Col.Text] = imgui.ImVec4(1.00, 0.80, 0.80, 1.00)    
-    end
+  if themeId == 1 then -- Cyber Purple
+    colors[imgui.Col.WindowBg] = imgui.ImVec4(0.06, 0.04, 0.10, alpha)
+    colors[imgui.Col.ChildBg] = imgui.ImVec4(0.10, 0.07, 0.15, 1.00)
+    colors[imgui.Col.Border] = imgui.ImVec4(0.40, 0.30, 0.80, 0.50)
+    colors[imgui.Col.FrameBg] = imgui.ImVec4(0.15, 0.12, 0.22, 1.00)
+    colors[imgui.Col.FrameBgHovered] = imgui.ImVec4(0.22, 0.18, 0.35, 1.00)
+    colors[imgui.Col.FrameBgActive] = imgui.ImVec4(0.30, 0.25, 0.45, 1.00)
+    colors[imgui.Col.Button] = imgui.ImVec4(0.35, 0.25, 0.60, 0.60)
+    colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.45, 0.35, 0.80, 0.80)
+    colors[imgui.Col.ButtonActive] = imgui.ImVec4(0.55, 0.45, 0.95, 1.00)
+    colors[imgui.Col.Header] = imgui.ImVec4(0.25, 0.20, 0.40, 0.70)
+    colors[imgui.Col.HeaderHovered] = imgui.ImVec4(0.40, 0.30, 0.60, 0.80)
+    colors[imgui.Col.HeaderActive] = imgui.ImVec4(0.50, 0.40, 0.75, 1.00)
+    colors[imgui.Col.Text] = imgui.ImVec4(0.90, 0.85, 1.00, 1.00)
+elseif themeId == 2 then -- Golden Amber
+    colors[imgui.Col.WindowBg] = imgui.ImVec4(0.10, 0.08, 0.04, alpha)
+    colors[imgui.Col.ChildBg] = imgui.ImVec4(0.15, 0.12, 0.07, 1.00)
+    colors[imgui.Col.Border] = imgui.ImVec4(0.80, 0.60, 0.20, 0.40)
+    colors[imgui.Col.FrameBg] = imgui.ImVec4(0.22, 0.18, 0.10, 1.00)
+    colors[imgui.Col.FrameBgHovered] = imgui.ImVec4(0.35, 0.28, 0.15, 1.00)
+    colors[imgui.Col.FrameBgActive] = imgui.ImVec4(0.45, 0.38, 0.20, 1.00)
+    colors[imgui.Col.Button] = imgui.ImVec4(0.60, 0.45, 0.15, 0.60)
+    colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.80, 0.60, 0.25, 0.80)
+    colors[imgui.Col.ButtonActive] = imgui.ImVec4(1.00, 0.75, 0.35, 1.00)
+    colors[imgui.Col.Header] = imgui.ImVec4(0.40, 0.30, 0.10, 0.70)
+    colors[imgui.Col.HeaderHovered] = imgui.ImVec4(0.60, 0.45, 0.15, 0.80)
+    colors[imgui.Col.HeaderActive] = imgui.ImVec4(0.80, 0.60, 0.25, 1.00)
+    colors[imgui.Col.Text] = imgui.ImVec4(1.00, 0.95, 0.80, 1.00)
+elseif themeId == 3 then -- Glacial Blue
+    colors[imgui.Col.WindowBg] = imgui.ImVec4(0.04, 0.07, 0.10, alpha)
+    colors[imgui.Col.ChildBg] = imgui.ImVec4(0.07, 0.12, 0.18, 1.00)
+    colors[imgui.Col.Border] = imgui.ImVec4(0.30, 0.70, 1.00, 0.40)
+    colors[imgui.Col.FrameBg] = imgui.ImVec4(0.12, 0.22, 0.35, 1.00)
+    colors[imgui.Col.FrameBgHovered] = imgui.ImVec4(0.18, 0.35, 0.55, 1.00)
+    colors[imgui.Col.FrameBgActive] = imgui.ImVec4(0.25, 0.50, 0.75, 1.00)
+    colors[imgui.Col.Button] = imgui.ImVec4(0.20, 0.45, 0.70, 0.60)
+    colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.35, 0.65, 0.90, 0.80)
+    colors[imgui.Col.ButtonActive] = imgui.ImVec4(0.50, 0.85, 1.00, 1.00)
+    colors[imgui.Col.Header] = imgui.ImVec4(0.15, 0.30, 0.50, 0.70)
+    colors[imgui.Col.HeaderHovered] = imgui.ImVec4(0.25, 0.50, 0.75, 0.80)
+    colors[imgui.Col.HeaderActive] = imgui.ImVec4(0.40, 0.70, 0.95, 1.00)
+    colors[imgui.Col.Text] = imgui.ImVec4(0.80, 0.95, 1.00, 1.00)
+elseif themeId == 4 then -- Ruby Velvet
+    colors[imgui.Col.WindowBg] = imgui.ImVec4(0.12, 0.04, 0.06, alpha)
+    colors[imgui.Col.ChildBg] = imgui.ImVec4(0.18, 0.06, 0.10, 1.00)
+    colors[imgui.Col.Border] = imgui.ImVec4(0.70, 0.10, 0.20, 0.40)
+    colors[imgui.Col.FrameBg] = imgui.ImVec4(0.30, 0.08, 0.12, 1.00)
+    colors[imgui.Col.FrameBgHovered] = imgui.ImVec4(0.45, 0.15, 0.20, 1.00)
+    colors[imgui.Col.FrameBgActive] = imgui.ImVec4(0.60, 0.22, 0.30, 1.00)
+    colors[imgui.Col.Button] = imgui.ImVec4(0.55, 0.12, 0.18, 0.60)
+    colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.80, 0.20, 0.30, 0.80)
+    colors[imgui.Col.ButtonActive] = imgui.ImVec4(1.00, 0.30, 0.40, 1.00)
+    colors[imgui.Col.Header] = imgui.ImVec4(0.40, 0.08, 0.12, 0.70)
+    colors[imgui.Col.HeaderHovered] = imgui.ImVec4(0.60, 0.15, 0.20, 0.80)
+    colors[imgui.Col.HeaderActive] = imgui.ImVec4(0.85, 0.25, 0.35, 1.00)
+    colors[imgui.Col.Text] = imgui.ImVec4(1.00, 0.85, 0.90, 1.00)
+elseif themeId == 5 then -- Forest Emerald
+    colors[imgui.Col.WindowBg] = imgui.ImVec4(0.04, 0.08, 0.06, alpha)
+    colors[imgui.Col.ChildBg] = imgui.ImVec4(0.06, 0.12, 0.09, 1.00)
+    colors[imgui.Col.Border] = imgui.ImVec4(0.20, 0.60, 0.30, 0.40)
+    colors[imgui.Col.FrameBg] = imgui.ImVec4(0.10, 0.20, 0.15, 1.00)
+    colors[imgui.Col.FrameBgHovered] = imgui.ImVec4(0.18, 0.35, 0.25, 1.00)
+    colors[imgui.Col.FrameBgActive] = imgui.ImVec4(0.25, 0.50, 0.35, 1.00)
+    colors[imgui.Col.Button] = imgui.ImVec4(0.15, 0.40, 0.25, 0.60)
+    colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.25, 0.60, 0.40, 0.80)
+    colors[imgui.Col.ButtonActive] = imgui.ImVec4(0.35, 0.80, 0.55, 1.00)
+    colors[imgui.Col.Header] = imgui.ImVec4(0.12, 0.30, 0.20, 0.70)
+    colors[imgui.Col.HeaderHovered] = imgui.ImVec4(0.20, 0.45, 0.30, 0.80)
+    colors[imgui.Col.HeaderActive] = imgui.ImVec4(0.30, 0.65, 0.45, 1.00)
+    colors[imgui.Col.Text] = imgui.ImVec4(0.85, 1.00, 0.90, 1.00)
+elseif themeId == 6 then -- Toxic Lime
+    colors[imgui.Col.WindowBg] = imgui.ImVec4(0.05, 0.06, 0.02, alpha)
+    colors[imgui.Col.ChildBg] = imgui.ImVec4(0.08, 0.10, 0.04, 1.00)
+    colors[imgui.Col.Border] = imgui.ImVec4(0.60, 0.80, 0.10, 0.50)
+    colors[imgui.Col.FrameBg] = imgui.ImVec4(0.15, 0.20, 0.08, 1.00)
+    colors[imgui.Col.FrameBgHovered] = imgui.ImVec4(0.25, 0.35, 0.12, 1.00)
+    colors[imgui.Col.FrameBgActive] = imgui.ImVec4(0.35, 0.50, 0.18, 1.00)
+    colors[imgui.Col.Button] = imgui.ImVec4(0.40, 0.60, 0.05, 0.60)
+    colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.60, 0.85, 0.10, 0.80)
+    colors[imgui.Col.ButtonActive] = imgui.ImVec4(0.80, 1.00, 0.20, 1.00)
+    colors[imgui.Col.Header] = imgui.ImVec4(0.25, 0.40, 0.05, 0.70)
+    colors[imgui.Col.HeaderHovered] = imgui.ImVec4(0.40, 0.60, 0.08, 0.80)
+    colors[imgui.Col.HeaderActive] = imgui.ImVec4(0.60, 0.85, 0.12, 1.00)
+    colors[imgui.Col.Text] = imgui.ImVec4(0.95, 1.00, 0.80, 1.00)
+elseif themeId == 7 then -- Mystic Orchid
+    colors[imgui.Col.WindowBg] = imgui.ImVec4(0.08, 0.04, 0.08, alpha)
+    colors[imgui.Col.ChildBg] = imgui.ImVec4(0.12, 0.06, 0.12, 1.00)
+    colors[imgui.Col.Border] = imgui.ImVec4(0.90, 0.30, 0.80, 0.40)
+    colors[imgui.Col.FrameBg] = imgui.ImVec4(0.22, 0.10, 0.20, 1.00)
+    colors[imgui.Col.FrameBgHovered] = imgui.ImVec4(0.35, 0.18, 0.32, 1.00)
+    colors[imgui.Col.FrameBgActive] = imgui.ImVec4(0.50, 0.25, 0.45, 1.00)
+    colors[imgui.Col.Button] = imgui.ImVec4(0.60, 0.20, 0.55, 0.60)
+    colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.80, 0.35, 0.75, 0.80)
+    colors[imgui.Col.ButtonActive] = imgui.ImVec4(1.00, 0.50, 0.95, 1.00)
+    colors[imgui.Col.Header] = imgui.ImVec4(0.40, 0.15, 0.35, 0.70)
+    colors[imgui.Col.HeaderHovered] = imgui.ImVec4(0.60, 0.25, 0.55, 0.80)
+    colors[imgui.Col.HeaderActive] = imgui.ImVec4(0.80, 0.35, 0.75, 1.00)
+    colors[imgui.Col.Text] = imgui.ImVec4(1.00, 0.90, 0.98, 1.00)
+elseif themeId == 8 then -- Deep Sea Teal
+    colors[imgui.Col.WindowBg] = imgui.ImVec4(0.02, 0.06, 0.06, alpha)
+    colors[imgui.Col.ChildBg] = imgui.ImVec4(0.04, 0.10, 0.10, 1.00)
+    colors[imgui.Col.Border] = imgui.ImVec4(0.10, 0.50, 0.50, 0.40)
+    colors[imgui.Col.FrameBg] = imgui.ImVec4(0.08, 0.20, 0.20, 1.00)
+    colors[imgui.Col.FrameBgHovered] = imgui.ImVec4(0.15, 0.35, 0.35, 1.00)
+    colors[imgui.Col.FrameBgActive] = imgui.ImVec4(0.25, 0.50, 0.50, 1.00)
+    colors[imgui.Col.Button] = imgui.ImVec4(0.10, 0.40, 0.40, 0.60)
+    colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.20, 0.60, 0.60, 0.80)
+    colors[imgui.Col.ButtonActive] = imgui.ImVec4(0.30, 0.80, 0.80, 1.00)
+    colors[imgui.Col.Header] = imgui.ImVec4(0.08, 0.30, 0.30, 0.70)
+    colors[imgui.Col.HeaderHovered] = imgui.ImVec4(0.15, 0.45, 0.45, 0.80)
+    colors[imgui.Col.HeaderActive] = imgui.ImVec4(0.25, 0.65, 0.65, 1.00)
+    colors[imgui.Col.Text] = imgui.ImVec4(0.80, 1.00, 1.00, 1.00)
+elseif themeId == 9 then -- Iron Grey
+    colors[imgui.Col.WindowBg] = imgui.ImVec4(0.08, 0.08, 0.08, alpha)
+    colors[imgui.Col.ChildBg] = imgui.ImVec4(0.12, 0.12, 0.12, 1.00)
+    colors[imgui.Col.Border] = imgui.ImVec4(0.40, 0.40, 0.40, 0.40)
+    colors[imgui.Col.FrameBg] = imgui.ImVec4(0.18, 0.18, 0.18, 1.00)
+    colors[imgui.Col.FrameBgHovered] = imgui.ImVec4(0.28, 0.28, 0.28, 1.00)
+    colors[imgui.Col.FrameBgActive] = imgui.ImVec4(0.40, 0.40, 0.40, 1.00)
+    colors[imgui.Col.Button] = imgui.ImVec4(0.30, 0.30, 0.30, 0.60)
+    colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.45, 0.45, 0.45, 0.80)
+    colors[imgui.Col.ButtonActive] = imgui.ImVec4(0.60, 0.60, 0.60, 1.00)
+    colors[imgui.Col.Header] = imgui.ImVec4(0.22, 0.22, 0.22, 0.70)
+    colors[imgui.Col.HeaderHovered] = imgui.ImVec4(0.35, 0.35, 0.35, 0.80)
+    colors[imgui.Col.HeaderActive] = imgui.ImVec4(0.50, 0.50, 0.50, 1.00)
+    colors[imgui.Col.Text] = imgui.ImVec4(0.95, 0.95, 0.95, 1.00)
+elseif themeId == 10 then -- Magma
+    colors[imgui.Col.WindowBg] = imgui.ImVec4(0.10, 0.04, 0.04, alpha)
+    colors[imgui.Col.ChildBg] = imgui.ImVec4(0.15, 0.06, 0.06, 1.00)
+    colors[imgui.Col.Border] = imgui.ImVec4(0.90, 0.30, 0.10, 0.50)
+    colors[imgui.Col.FrameBg] = imgui.ImVec4(0.25, 0.08, 0.08, 1.00)
+    colors[imgui.Col.FrameBgHovered] = imgui.ImVec4(0.40, 0.15, 0.15, 1.00)
+    colors[imgui.Col.FrameBgActive] = imgui.ImVec4(0.55, 0.25, 0.25, 1.00)
+    colors[imgui.Col.Button] = imgui.ImVec4(0.70, 0.20, 0.08, 0.60)
+    colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.90, 0.35, 0.15, 0.80)
+    colors[imgui.Col.ButtonActive] = imgui.ImVec4(1.00, 0.50, 0.25, 1.00)
+    colors[imgui.Col.Header] = imgui.ImVec4(0.50, 0.12, 0.08, 0.70)
+    colors[imgui.Col.HeaderHovered] = imgui.ImVec4(0.70, 0.25, 0.12, 0.80)
+    colors[imgui.Col.HeaderActive] = imgui.ImVec4(0.90, 0.40, 0.20, 1.00)
+    colors[imgui.Col.Text] = imgui.ImVec4(1.00, 0.90, 0.80, 1.00)
+elseif themeId == 11 then -- Cyberpunk Pink
+    colors[imgui.Col.WindowBg] = imgui.ImVec4(0.06, 0.04, 0.10, alpha)
+    colors[imgui.Col.ChildBg] = imgui.ImVec4(0.10, 0.06, 0.15, 1.00)
+    colors[imgui.Col.Border] = imgui.ImVec4(1.00, 0.00, 0.60, 0.50)
+    colors[imgui.Col.FrameBg] = imgui.ImVec4(0.20, 0.08, 0.25, 1.00)
+    colors[imgui.Col.FrameBgHovered] = imgui.ImVec4(0.35, 0.15, 0.40, 1.00)
+    colors[imgui.Col.FrameBgActive] = imgui.ImVec4(0.50, 0.22, 0.60, 1.00)
+    colors[imgui.Col.Button] = imgui.ImVec4(0.70, 0.15, 0.50, 0.60)
+    colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.90, 0.25, 0.70, 0.80)
+    colors[imgui.Col.ButtonActive] = imgui.ImVec4(1.00, 0.35, 0.90, 1.00)
+    colors[imgui.Col.Header] = imgui.ImVec4(0.50, 0.10, 0.40, 0.70)
+    colors[imgui.Col.HeaderHovered] = imgui.ImVec4(0.70, 0.20, 0.55, 0.80)
+    colors[imgui.Col.HeaderActive] = imgui.ImVec4(0.90, 0.30, 0.75, 1.00)
+    colors[imgui.Col.Text] = imgui.ImVec4(1.00, 0.90, 1.00, 1.00)
+elseif themeId == 12 then -- Neon Acid
+    colors[imgui.Col.WindowBg] = imgui.ImVec4(0.04, 0.06, 0.04, alpha)
+    colors[imgui.Col.ChildBg] = imgui.ImVec4(0.07, 0.12, 0.07, 1.00)
+    colors[imgui.Col.Border] = imgui.ImVec4(0.40, 1.00, 0.10, 0.50)
+    colors[imgui.Col.FrameBg] = imgui.ImVec4(0.12, 0.25, 0.12, 1.00)
+    colors[imgui.Col.FrameBgHovered] = imgui.ImVec4(0.20, 0.40, 0.20, 1.00)
+    colors[imgui.Col.FrameBgActive] = imgui.ImVec4(0.30, 0.60, 0.30, 1.00)
+    colors[imgui.Col.Button] = imgui.ImVec4(0.30, 0.70, 0.15, 0.60)
+    colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.45, 0.90, 0.25, 0.80)
+    colors[imgui.Col.ButtonActive] = imgui.ImVec4(0.60, 1.00, 0.40, 1.00)
+    colors[imgui.Col.Header] = imgui.ImVec4(0.20, 0.50, 0.10, 0.70)
+    colors[imgui.Col.HeaderHovered] = imgui.ImVec4(0.35, 0.70, 0.20, 0.80)
+    colors[imgui.Col.HeaderActive] = imgui.ImVec4(0.50, 0.90, 0.30, 1.00)
+    colors[imgui.Col.Text] = imgui.ImVec4(0.90, 1.00, 0.90, 1.00)
+elseif themeId == 13 then -- Royal Gold
+    colors[imgui.Col.WindowBg] = imgui.ImVec4(0.06, 0.05, 0.03, alpha)
+    colors[imgui.Col.ChildBg] = imgui.ImVec4(0.10, 0.08, 0.05, 1.00)
+    colors[imgui.Col.Border] = imgui.ImVec4(1.00, 0.75, 0.10, 0.50)
+    colors[imgui.Col.FrameBg] = imgui.ImVec4(0.18, 0.15, 0.08, 1.00)
+    colors[imgui.Col.FrameBgHovered] = imgui.ImVec4(0.30, 0.25, 0.12, 1.00)
+    colors[imgui.Col.FrameBgActive] = imgui.ImVec4(0.45, 0.38, 0.20, 1.00)
+    colors[imgui.Col.Button] = imgui.ImVec4(0.60, 0.45, 0.10, 0.60)
+    colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.80, 0.60, 0.20, 0.80)
+    colors[imgui.Col.ButtonActive] = imgui.ImVec4(1.00, 0.75, 0.30, 1.00)
+    colors[imgui.Col.Header] = imgui.ImVec4(0.40, 0.30, 0.08, 0.70)
+    colors[imgui.Col.HeaderHovered] = imgui.ImVec4(0.60, 0.45, 0.15, 0.80)
+    colors[imgui.Col.HeaderActive] = imgui.ImVec4(0.80, 0.60, 0.25, 1.00)
+    colors[imgui.Col.Text] = imgui.ImVec4(1.00, 0.95, 0.80, 1.00)
+elseif themeId == 14 then -- Void Space
+    colors[imgui.Col.WindowBg] = imgui.ImVec4(0.02, 0.02, 0.06, alpha)
+    colors[imgui.Col.ChildBg] = imgui.ImVec4(0.04, 0.04, 0.10, 1.00)
+    colors[imgui.Col.Border] = imgui.ImVec4(0.30, 0.40, 0.90, 0.40)
+    colors[imgui.Col.FrameBg] = imgui.ImVec4(0.08, 0.10, 0.22, 1.00)
+    colors[imgui.Col.FrameBgHovered] = imgui.ImVec4(0.15, 0.20, 0.35, 1.00)
+    colors[imgui.Col.FrameBgActive] = imgui.ImVec4(0.25, 0.30, 0.50, 1.00)
+    colors[imgui.Col.Button] = imgui.ImVec4(0.20, 0.30, 0.60, 0.60)
+    colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.35, 0.45, 0.80, 0.80)
+    colors[imgui.Col.ButtonActive] = imgui.ImVec4(0.50, 0.60, 1.00, 1.00)
+    colors[imgui.Col.Header] = imgui.ImVec4(0.15, 0.20, 0.40, 0.70)
+    colors[imgui.Col.HeaderHovered] = imgui.ImVec4(0.25, 0.35, 0.60, 0.80)
+    colors[imgui.Col.HeaderActive] = imgui.ImVec4(0.40, 0.50, 0.80, 1.00)
+    colors[imgui.Col.Text] = imgui.ImVec4(0.85, 0.90, 1.00, 1.00)
+elseif themeId == 15 then -- Blood Moon
+    colors[imgui.Col.WindowBg] = imgui.ImVec4(0.06, 0.02, 0.02, alpha)
+    colors[imgui.Col.ChildBg] = imgui.ImVec4(0.10, 0.04, 0.04, 1.00)
+    colors[imgui.Col.Border] = imgui.ImVec4(1.00, 0.15, 0.15, 0.40)
+    colors[imgui.Col.FrameBg] = imgui.ImVec4(0.22, 0.08, 0.08, 1.00)
+    colors[imgui.Col.FrameBgHovered] = imgui.ImVec4(0.35, 0.15, 0.15, 1.00)
+    colors[imgui.Col.FrameBgActive] = imgui.ImVec4(0.50, 0.25, 0.25, 1.00)
+    colors[imgui.Col.Button] = imgui.ImVec4(0.65, 0.15, 0.15, 0.60)
+    colors[imgui.Col.ButtonHovered] = imgui.ImVec4(0.85, 0.25, 0.25, 0.80)
+    colors[imgui.Col.ButtonActive] = imgui.ImVec4(1.00, 0.35, 0.35, 1.00)
+    colors[imgui.Col.Header] = imgui.ImVec4(0.45, 0.08, 0.08, 0.70)
+    colors[imgui.Col.HeaderHovered] = imgui.ImVec4(0.65, 0.20, 0.20, 0.80)
+    colors[imgui.Col.HeaderActive] = imgui.ImVec4(0.85, 0.30, 0.30, 1.00)
+    colors[imgui.Col.Text] = imgui.ImVec4(1.00, 0.80, 0.80, 1.00)
+end
 end
 
 local function applyStyle(styleId)
@@ -8881,6 +8906,15 @@ end, function(player)
                 DrawCmdCard("/anplate / .plate", "Schimbare numar auto", "Change license plate")
                 DrawCmdCard("/cninfo / .info", "Salut! Nu detinem aceasta informatie", "Hello! We don't have this information")
                 DrawCmdCard("/anroata / .roata", "Cum obtii rotiri pentru Roata Norocului", "How to get spins for the Lucky Wheel")
+            end
+            imgui.Spacing()
+
+             -- Header COMENZI & GENERALE
+            if imgui.CollapsingHeader((iniData.settings.lang == 0) and u8("COMENZI GENERALE") or "GENERAL COMMANDS") then
+                imgui.Spacing()
+                DrawCmdCard("/anmester / .mester", "Informatii despre mester", "Info about mester")
+                DrawCmdCard("/anspawn / .spawn", "Informatii despre spawnchange", "Info about spawnchange")
+                DrawCmdCard("/anpaint / .paint", "Informatii despre cum dai parasesti paintball", "Info about how to leave paintball")
                 imgui.Spacing()
             end
 
@@ -12875,8 +12909,8 @@ end
         if command:lower():match("^/sleep") then
             if isHelperDuty then
                 local msg = (iniData.settings.lang == 0) and 
-                    "{FF0000}[Protectie Helper]{FFFFFF} Nu poti folosi comanda {FF0000}/sleep{FFFFFF} cat timp esti {00FF00}Duty{FFFFFF}!" or 
-                    "{FF0000}[Helper Protection]{FFFFFF} You cannot use {FF0000}/sleep{FFFFFF} while on {00FF00}Duty{FFFFFF}!"
+                    "{FF0000}[Protectie Helper]{FFFFFF} Nu poti folosi comanda {FF0000}/sleep{FFFFFF} cat timp esti {00FF00}Helper Duty{FFFFFF}!" or 
+                    "{FF0000}[Helper Protection]{FFFFFF} You cannot use {FF0000}/sleep{FFFFFF} while on {00FF00}Helper Duty{FFFFFF}!"
                 sampAddChatMessage(msg, -1)
                 return false
             end
@@ -13205,6 +13239,51 @@ end
         local isRO = (iniData.settings.lang == 0)
         local msg = isRO and "{09ff00}Salut! {FFFFFF}La Job Clash, primele 3 locuri primesc: {09ff00}Loc 1: $200.000, Loc 2: $100.000, Loc 3: $50.000." 
                         or "{09ff00}Hi! {FFFFFF}At Job Clash, the top 3 players receive: {09ff00}1st: $200,000, 2nd: $100,000, 3rd: $50,000."
+        sampAddChatMessage(msg, -1)
+    end)
+
+      -- Comenzi Mester
+    sampRegisterChatCommand("anmester", function()
+        local isRO = (iniData.settings.lang == 0)
+        local msg = isRO and "/an Salut! Pentru a inchiria instrumentele necesare la Mester trebuie sa mergi la bizul cu ID: 160." 
+                        or "/an Hi! To rent the necessary tools at Mester you need to go to business with ID: 160."
+        sampSendChat(msg)
+    end)
+
+    sampRegisterChatCommand(".mester", function()
+        local isRO = (iniData.settings.lang == 0)
+        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a inchiria instrumentele necesare la Mester trebuie sa mergi la bizul cu ID: 160." 
+                        or "{09ff00}Hi! {FFFFFF}To rent the necessary tools at Mester you need to go to business with ID: 160."
+        sampAddChatMessage(msg, -1)
+    end)
+
+        -- Comenzi Spawnchange
+    sampRegisterChatCommand("anspawn", function()
+        local isRO = (iniData.settings.lang == 0)
+        local msg = isRO and "/an Salut! Pentru a schimba spawnul trebuie sa tastezi comanda /spawnchange." 
+                        or "/an Hi! To change your spawn you need to type the command /spawnchange."
+        sampSendChat(msg)
+    end)
+
+    sampRegisterChatCommand(".spawn", function()
+        local isRO = (iniData.settings.lang == 0)
+        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a schimba spawnul trebuie sa tastezi comanda /spawnchange." 
+                        or "{09ff00}Hi! {FFFFFF}To change your spawn you need to type the command /spawnchange."
+        sampAddChatMessage(msg, -1)
+    end)
+
+         -- Comenzi Paintball
+    sampRegisterChatCommand("anpaint", function()
+        local isRO = (iniData.settings.lang == 0)
+        local msg = isRO and "/an Salut! Pentru a parasi arena de Paintball, foloseste comanda /leavepaintball." 
+                        or "/an Hi! To leave the Paintball arena, use the command /leavepaintball."
+        sampSendChat(msg)
+    end)
+
+    sampRegisterChatCommand(".paint", function()
+        local isRO = (iniData.settings.lang == 0)
+        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a parasi arena de Paintball, foloseste comanda /leavepaintball." 
+                        or "{09ff00}Hi! {FFFFFF}To leave the Paintball arena, use the command /leavepaintball."
         sampAddChatMessage(msg, -1)
     end)
 
