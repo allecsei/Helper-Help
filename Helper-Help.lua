@@ -5917,7 +5917,7 @@ end, function(player)
                                 imgui.TextWrapped(u8("Condus neregulamentar/Incurcare trafic: 600$ + conf. permis"))
                                 imgui.TextWrapped(u8("Viteza <50km/h: 840$ | Viteza >50km/h: 1200$ + conf. permis (LVL 8+)"))
                                 imgui.TextWrapped(u8("NOS: 480$ + conf. permis | Hidraulice: 240$ + conf. permis"))
-                                imgui.TextWrapped(u8("Alcoolemie >3.0: 150$ + conf. permis"))
+                                imgui.TextWrapped(u8("Alcoolemie >3.0: 600$ + conf. permis"))
                                 
                                 imgui.Separator()
                                 imgui.Spacing()
@@ -6322,46 +6322,59 @@ end, function(player)
                             imgui.Spacing()
                             imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), iniData.settings.lang == 0 and u8("LOCATII PE ORASE:") or "LOCATIONS BY CITY:")
 
-                            -- Child LS
-                            imgui.BeginChild("LS247_Search", imgui.ImVec2(0, 105), true)
-                                imgui.SetWindowFontScale(1.5); local city1 = "Los Santos"
-                                imgui.SetCursorPosX((w - imgui.CalcTextSize(city1).x) / 2)
-                                imgui.TextColored(imgui.ImVec4(0.3, 0.7, 1, 1), city1)
-                                imgui.SetWindowFontScale(1.0); imgui.Separator()
-                                imgui.Columns(2, "lsCols_Search", false)
-                                imgui.BulletText("Idlewood - ID 16"); imgui.BulletText("Commerce - ID 15")
-                                imgui.NextColumn()
-                                imgui.BulletText("Vinewood 1 - ID 13"); imgui.BulletText("Vinewood 2 - ID 14")
-                                imgui.Columns(1)
-                            imgui.EndChild()
+                            imgui.BeginChild("LS247", imgui.ImVec2(0, 130), true)
+                            imgui.SetWindowFontScale(1.5)
+                            local city1 = "Los Santos"
+                            imgui.SetCursorPosX((w - imgui.CalcTextSize(city1).x) / 2)
+                            imgui.TextColored(imgui.ImVec4(0.3, 0.7, 1, 1), city1)
+                            imgui.SetWindowFontScale(1.0)
+                            imgui.Separator()
+                            imgui.Columns(2, "lsCols", false)
+                            imgui.BulletText("24/7 Vinewood LS 1 - 13")
+                            imgui.BulletText("24/7 Vinewood LS 2 - 14")
+                            imgui.BulletText("24/7 Commerce LS - 15")
+                            imgui.BulletText("24/7 Idlewood LS - 16")
+                            imgui.NextColumn()
+                            imgui.Columns(1)
+                        imgui.EndChild()
 
-                            -- Child LV
-                            imgui.BeginChild("LV247_Search", imgui.ImVec2(0, 140), true)
-                                imgui.SetWindowFontScale(1.5); local city2 = "Las Venturas"
-                                imgui.SetCursorPosX((w - imgui.CalcTextSize(city2).x) / 2)
-                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0.2, 1), city2)
-                                imgui.SetWindowFontScale(1.0); imgui.Separator()
-                                imgui.Columns(2, "lvCols_Search", false)
-                                imgui.BulletText("Starfish 1 - ID 19"); imgui.BulletText("Starfish 2 - ID 22")
-                                imgui.BulletText("Emerald Isle - ID 18"); imgui.BulletText("Redsands E. - ID 17")
-                                imgui.NextColumn()
-                                imgui.BulletText("Roca Esc. - ID 20"); imgui.BulletText("Old Strip - ID 21"); imgui.BulletText("Creek - ID 23")
-                                imgui.Columns(1)
-                            imgui.EndChild()
+                        -- Las Venturas
+                        imgui.BeginChild("LV247", imgui.ImVec2(0, 130), true)
+                            imgui.SetWindowFontScale(1.5)
+                            local city2 = "Las Venturas"
+                            imgui.SetCursorPosX((w - imgui.CalcTextSize(city2).x) / 2)
+                            imgui.TextColored(imgui.ImVec4(1, 0.8, 0.2, 1), city2)
+                            imgui.SetWindowFontScale(1.0)
+                            imgui.Separator()
+                            imgui.Columns(2, "lvCols", false)
+                            imgui.BulletText("24/7 Redsands East LV - 17")
+                            imgui.BulletText("24/7 Emerald Isle LV - 18")
+                            imgui.BulletText("24/7 Starfish Casino LV 1 - 19")
+                            imgui.BulletText("24/7 Roca Escalante LV - 20")
+                            imgui.NextColumn()
+                            imgui.BulletText("24/7 Old Venturas Strip LV - 21")
+                            imgui.BulletText("24/7 Starfish Casino LV 2 - 22")
+                            imgui.BulletText("24/7 Creek LV - 23")
+                            imgui.Columns(1)
+                        imgui.EndChild()
 
-                            -- Child SF
-                            imgui.BeginChild("SF247_Search", imgui.ImVec2(0, 115), true)
-                                imgui.SetWindowFontScale(1.5); local city3 = "San Fierro"
-                                imgui.SetCursorPosX((w - imgui.CalcTextSize(city3).x) / 2)
-                                imgui.TextColored(imgui.ImVec4(0.2, 1, 0.2, 1), city3)
-                                imgui.SetWindowFontScale(1.0); imgui.Separator()
-                                imgui.Columns(2, "sfCols_Search", false)
-                                imgui.BulletText("Garcia 1 - ID 125"); imgui.BulletText("Garcia 2 - ID 126")
-                                imgui.BulletText("Hashbury - ID 127")
-                                imgui.NextColumn()
-                                imgui.BulletText("Juniper Hill - ID 124"); imgui.BulletText("Chinatown - ID 128")
-                                imgui.Columns(1)
-                            imgui.EndChild()
+                        -- San Fierro
+                        imgui.BeginChild("SF247", imgui.ImVec2(0, 120), true)
+                            imgui.SetWindowFontScale(1.5)
+                            local city3 = "San Fierro"
+                            imgui.SetCursorPosX((w - imgui.CalcTextSize(city3).x) / 2)
+                            imgui.TextColored(imgui.ImVec4(0.2, 1, 0.2, 1), city3)
+                            imgui.SetWindowFontScale(1.0)
+                            imgui.Separator()
+                            imgui.Columns(2, "sfCols", false)
+                            imgui.BulletText("24/7 Juniper Hill SF - 124")
+                            imgui.BulletText("24/7 Garcia SF 1 - 125")
+                            imgui.BulletText("24/7 Garcia SF 2 - 126")
+                            imgui.NextColumn()
+                            imgui.BulletText("24/7 Hashbury SF - 127")
+                            imgui.BulletText("24/7 Chinatown SF - 128")
+                            imgui.Columns(1)
+                        imgui.EndChild()
 
                             imgui.Spacing(); imgui.Separator()
                             if iniData.settings.lang == 0 then
@@ -6398,35 +6411,52 @@ end, function(player)
                             imgui.EndChild()
                             
                             imgui.Spacing()
-                            imgui.BeginChild("FF_LongList_Search", imgui.ImVec2(0, 600), true)
-                                -- LOS SANTOS
-                                imgui.TextColored(imgui.ImVec4(1.0, 0.0, 0.0, 1.0), ">> " .. (iniData.settings.lang == 0 and u8("Fast Fooduri din Los Santos") or "Fast Foods in Los Santos"))
+                            imgui.BeginChild("FF_LongList_Search", imgui.ImVec2(0, 800), true)
+                            local lang = iniData.settings.lang == 0
+                            local city_order = {"Los Santos", "Las Venturas", "San Fierro"}
+
+                            local categories = {
+                                {
+                                    name = lang and u8("Pizza") or "Pizza",
+                                    data = {
+                                        ["Los Santos"] = {"Pizza Idlewood LS - 59", "Pizza Red County LS - 60", "Pizza Montgomery LS - 61", "Pizza Palomino Creek LS - 62"},
+                                        ["Las Venturas"] = {"Pizza Emerald Isle LV - 63", "Pizza Starfish Casino LV - 64", "Pizza Creek LV - 65", "Pizza Escalante LV - 66"},
+                                        ["San Fierro"] = {"Pizza Financial SF - 38", "Pizza Esplanade North SF - 37"}
+                                    }
+                                },
+                                {
+                                    name = "Cluckin' Bell",
+                                    data = {
+                                        ["Los Santos"] = {"Cluckin Bell Market LS - 50", "Cluckin Bell Willowfield LS - 51", "Cluckin Bell East Los Santos LS - 52"},
+                                        ["Las Venturas"] = {"Cluckin Bell Emerald Isle LV - 53", "Cluckin Bell Old Venturas - 54", "Cluckin Bell Pilgrim LV - 55", "Cluckin Bell Creek LV - 56", "Cluckin Bell Bone County LV - 57"},
+                                        ["San Fierro"] = {"Cluckin Bell Tierra Robada SF - 58", "Cluckin Bell Downtown SF - 117", "Cluckin Bell Ocean Flats SF - 118"}
+                                    }
+                                },
+                                {
+                                    name = "Burger Shot",
+                                    data = {
+                                        ["Los Santos"] = {"Burger Shot Marina LS - 43", "Burger Shot Vinewood LS - 44"},
+                                        ["Las Venturas"] = {"Burger Shot Old Venturas LV 1 - 47", "Burger Shot Old Venturas LV 2 - 48", "Burger Shot Whitewood LV - 45", "Burger Shot Redsands LV - 46", "Burger Shot Spinybed LV - 49"},
+                                        ["San Fierro"] = {"Burger Shot Garcia SF - 27", "Burger Shot Downtown SF - 28", "Burger Shot Hollow SF - 33"}
+                                    }
+                                }
+                            }
+
+                            -- Afisare
+                            for _, cat in ipairs(categories) do
+                                imgui.TextColored(imgui.ImVec4(1.0, 0.0, 0.0, 1.0), ">> " .. cat.name)
                                 imgui.Separator()
-                                local ls_ids = {"Pizza Idlewood LS - ID 59", "Pizza Red County LS - ID 60", "Pizza Montgomery LS - ID 61", "Cluckin' Bell Market LS - ID 50", "Cluckin' Bell Willowfield LS - ID 51", "Cluckin' Bell East LS - ID 52", "Burger Shot Vinewood LS - ID 44", "Burger Shot Marina LS - ID 43"}
-                                for _, text in ipairs(ls_ids) do
-                                    imgui.TextColored(imgui.ImVec4(0.26, 0.65, 0.39, 1), ">> ") imgui.SameLine()
-                                    imgui.Text(text)
-                                end
                                 
-                                imgui.Spacing(); imgui.Spacing()
-                                -- LAS VENTURAS
-                                imgui.TextColored(imgui.ImVec4(1.0, 0.0, 0.0, 1.0), ">> " .. (iniData.settings.lang == 0 and u8("Fast Fooduri din Las Venturas") or "Fast Foods in Las Venturas"))
-                                imgui.Separator()
-                                local lv_ids = {"Pizza Emerald Isle LV - ID 63", "Pizza Starfish Casino LV - ID 64", "Pizza Creek LV - ID 65", "Pizza Roca Escalante LV - ID 66", "Cluckin' Bell Emerald Isle LV - ID 53", "Cluckin' Bell Old Venturas LV - ID 54", "Cluckin' Bell Pilgrim LV - ID 55", "Cluckin' Bell Creek LV - ID 56", "Cluckin' Bell Bone County LV - ID 57", "Burger Shot Whitewood Estates LV - ID 45", "Burger Shot Redsands East LV - ID 46", "Burger Shot Old Venturas LV 1 - ID 47", "Burger Shot Old Venturas LV 2 - ID 48", "Burger Shot Spinybed LV - ID 49"}
-                                for _, text in ipairs(lv_ids) do
-                                    imgui.TextColored(imgui.ImVec4(0.26, 0.65, 0.39, 1), ">> ") imgui.SameLine()
-                                    imgui.Text(text)
+                                for _, city_name in ipairs(city_order) do
+                                    imgui.TextColored(imgui.ImVec4(1.0, 1.0, 0.0, 1.0), ">> " .. city_name)
+                                    for _, text in ipairs(cat.data[city_name]) do
+                                        imgui.TextColored(imgui.ImVec4(0.26, 0.65, 0.39, 1), ">> ") imgui.SameLine()
+                                        imgui.Text(text)
+                                    end
                                 end
-                                
                                 imgui.Spacing(); imgui.Spacing()
-                                -- SAN FIERRO
-                                imgui.TextColored(imgui.ImVec4(1.0, 0.0, 0.0, 1.0), ">> " .. (iniData.settings.lang == 0 and u8("Fast Fooduri din San Fierro") or "Fast Foods in San Fierro"))
-                                imgui.Separator()
-                                local sf_ids = {"Pizza Esplanade North SF - ID 37", "Pizza Financial SF - ID 38", "Burger Shot Garcia SF - ID 27", "Burger Shot Downtown SF - ID 28", "Burger Shot Juniper Hollow SF - ID 33", "Cluckin' Bell Tierra Robada SF - ID 58", "Cluckin' Bell Ocean Flats SF - ID 118", "Cluckin' Bell Downtown SF - ID 117"}
-                                for _, text in ipairs(sf_ids) do
-                                    imgui.TextColored(imgui.ImVec4(0.26, 0.65, 0.39, 1), ">> ") imgui.SameLine()
-                                    imgui.Text(text)
-                                end
+                            end
+                            imgui.EndChild()
 
                             elseif bm.id == 5 then -- CLOTHING STORES
                             local w = imgui.GetWindowWidth() - 40
@@ -6471,42 +6501,52 @@ end, function(player)
                             imgui.Spacing()
                             imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), iniData.settings.lang == 0 and u8("LOCATII PE ORASE:") or "LOCATIONS BY CITY:")
 
-                            -- LS
-                            imgui.BeginChild("Cloth_LS_Search", imgui.ImVec2(0, 120), true)
+                            -- Los Santos
+                            imgui.BeginChild("Cloth_LS_Search", imgui.ImVec2(0, 140), true)
                                 imgui.SetWindowFontScale(1.5); local city1 = "Los Santos"
                                 imgui.SetCursorPosX((w - imgui.CalcTextSize(city1).x) / 2)
                                 imgui.TextColored(imgui.ImVec4(0.3, 0.7, 1, 1), city1)
                                 imgui.SetWindowFontScale(1.0); imgui.Separator()
                                 imgui.Columns(2, "lsClothCols_Search", false)
-                                imgui.BulletText("Binco Ganton: 101"); imgui.BulletText("Suburban Jefferson: 109"); imgui.BulletText("Zip Downtown: 104")
+                                imgui.BulletText("Clothes Store Ganton LS - 101")
+                                imgui.BulletText("Clothes Store Downtown LS - 104")
+                                imgui.BulletText("Clothes Store Rodeo LS 1 - 107")
                                 imgui.NextColumn()
-                                imgui.BulletText("Prolaps Rodeo: 107"); imgui.BulletText("DidierSachs Rodeo: 111"); imgui.BulletText("Victim Rodeo: 123")
+                                imgui.BulletText("Clothes Store Jefferson LS - 109")
+                                imgui.BulletText("Clothes Store Rodeo LS 2 - 111")
+                                imgui.BulletText("Clothes Store Rodeo LS - 123")
                                 imgui.Columns(1)
                             imgui.EndChild()
 
-                            -- LV
-                            imgui.BeginChild("Cloth_LV_Search", imgui.ImVec2(0, 120), true)
+                            -- Las Venturas
+                            imgui.BeginChild("Cloth_LV_Search", imgui.ImVec2(0, 155), true)
                                 imgui.SetWindowFontScale(1.5); local city2 = "Las Venturas"
                                 imgui.SetCursorPosX((w - imgui.CalcTextSize(city2).x) / 2)
                                 imgui.TextColored(imgui.ImVec4(1, 0.8, 0.2, 1), city2)
                                 imgui.SetWindowFontScale(1.0); imgui.Separator()
                                 imgui.Columns(2, "lvClothCols_Search", false)
-                                imgui.BulletText("Binco Airport: 101"); imgui.BulletText("Binco Emerald Isle: 103"); imgui.BulletText("Zip Emerald Isle: 105")
+                                imgui.BulletText("Clothes Store LV Airport - 102")
+                                imgui.BulletText("Clothes Store Emerald Isle LV 1 - 103")
+                                imgui.BulletText("Clothes Store Emerald Isle LV 2 - 105")
+                                imgui.BulletText("Clothes Store Starfish Casino LV - 106")
                                 imgui.NextColumn()
-                                imgui.BulletText("Zip Starfish: 106"); imgui.BulletText("Prolaps Creek: 108"); imgui.BulletText("Suburban Creek: 110")
+                                imgui.BulletText("Clothes Store Creek LV 1 - 108")
+                                imgui.BulletText("Clothes Store Creek LV 2 - 110")
                                 imgui.Columns(1)
                             imgui.EndChild()
 
-                            -- SF
-                            imgui.BeginChild("Cloth_SF_Search", imgui.ImVec2(0, 95), true)
+                            -- San Fierro
+                            imgui.BeginChild("Cloth_SF_Search", imgui.ImVec2(0, 110), true)
                                 imgui.SetWindowFontScale(1.5); local city3 = "San Fierro"
                                 imgui.SetCursorPosX((w - imgui.CalcTextSize(city3).x) / 2)
                                 imgui.TextColored(imgui.ImVec4(0.2, 1, 0.2, 1), city3)
                                 imgui.SetWindowFontScale(1.0); imgui.Separator()
                                 imgui.Columns(2, "sfClothCols_Search", false)
-                                imgui.BulletText("Suburban Hashbury: 119"); imgui.BulletText("Binco Juniper Hill: 120")
+                                imgui.BulletText("Clothes Store Hashbury SF - 119")
+                                imgui.BulletText("Clothes Store Juniper Hill SF - 120")
                                 imgui.NextColumn()
-                                imgui.BulletText("Zip Downtown: 121"); imgui.BulletText("Victim Downtown: 122")
+                                imgui.BulletText("Clothes Store Downtown SF 1 - 121")
+                                imgui.BulletText("Clothes Store Downtown SF 2 - 122")
                                 imgui.Columns(1)
                             imgui.EndChild()
 
@@ -6993,14 +7033,14 @@ end, function(player)
                             imgui.Spacing()
                             imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), iniData.settings.lang == 0 and u8("LOCATII RENT PE ORASE:") or "RENT LOCATIONS BY CITY:")
 
-                            -- LS
+                           -- LS
                             imgui.BeginChild("Rent_LS_Search", imgui.ImVec2(0, 100), true)
                                 imgui.SetWindowFontScale(1.5); local city1 = "Los Santos"
                                 imgui.SetCursorPosX((w - imgui.CalcTextSize(city1).x) / 2)
                                 imgui.TextColored(imgui.ImVec4(0.3, 0.7, 1, 1), city1)
                                 imgui.SetWindowFontScale(1.0); imgui.Separator()
                                 imgui.BulletText("Rent Car LS - ID 24")
-                                imgui.BulletText("Rent Bike LS - ID 26")
+                                imgui.BulletText("Rent Bike LS - ID 36")  
                             imgui.EndChild()
 
                             -- LV
@@ -7009,9 +7049,10 @@ end, function(player)
                                 imgui.SetCursorPosX((w - imgui.CalcTextSize(city2).x) / 2)
                                 imgui.TextColored(imgui.ImVec4(1, 0.8, 0.2, 1), city2)
                                 imgui.SetWindowFontScale(1.0); imgui.Separator()
-                                imgui.BulletText("Rent Car LV - ID 25")
-                                imgui.BulletText("Rent Plane LV - ID 42")
+                                imgui.BulletText("Rent Plane LV - ID 148") 
                                 imgui.BulletText("Rent Boat LV - ID 40")
+                                imgui.BulletText("Rent Car LV - ID 25")
+                                imgui.BulletText("Rent Bike LV - ID 67")  
                             imgui.EndChild()
 
                             -- SF
@@ -7021,7 +7062,7 @@ end, function(player)
                                 imgui.TextColored(imgui.ImVec4(0.2, 1, 0.2, 1), city3)
                                 imgui.SetWindowFontScale(1.0); imgui.Separator()
                                 imgui.BulletText("Rent Car SF - ID 129")
-                                imgui.BulletText("Rent Boat SF - ID 131")
+                                imgui.BulletText("Rent Bike SF - ID 130")  
                             imgui.EndChild()
 
                             imgui.Spacing(); imgui.Separator()
@@ -7046,10 +7087,12 @@ end, function(player)
                                 imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), iniData.settings.lang == 0 and u8("DETALII:") or "DETAILS:")
                                 if iniData.settings.lang == 0 then
                                     imgui.BulletText(u8("Aceste arme sunt ideale pentru lupte de proximitate (Melee)."))
-                                    imgui.BulletText(u8("Comanda: Foloseste [/buy] in interiorul magazinului."))
+                                    imgui.BulletText(u8("Pentru a putea cumpara o arma alba dintr-un White Weapon Store, jucatorul va trebui sa mearga"))
+                                    imgui.BulletText(u8("la indicatorul din interiorul afacerii si sa apese pe tasta Y."))
                                 else
                                     imgui.BulletText("These weapons are ideal for melee combat.")
-                                    imgui.BulletText("Command: Use [/buy] inside the store.")
+                                    imgui.BulletText("In order to purchase a white weapon from a White Weapon Store, the player will need to go")
+                                    imgui.BulletText("to the indicator inside the business and press the Y key.")
                                 end
                             imgui.EndChild()
                             
@@ -7068,7 +7111,7 @@ end, function(player)
                                     {"Katana", "$1.000", "2.6"},
                                     {"Golf Club", "$250", "4.6"},
                                     {"Baseball Bat", "$250", "4.6"},
-                                    {iniData.settings.lang == 0 and u8("Lopata") or "Shovel", "$5.000", "4.6"},
+                                    {iniData.settings.lang == 0 and u8("Lopata") or "Shovel", "$500", "4.6"},
                                     {"Brass Knuckles", "$500", "1.3"}
                                 }
                                 
@@ -7490,11 +7533,11 @@ end, function(player)
                                 imgui.TextColored(imgui.ImVec4(0.4, 0.8, 1, 1), iniData.settings.lang == 0 and u8("COMUNICATII SI INMATRICULARE:") or "COMMUNICATION AND REGISTRATION:")
                                 imgui.Separator()
                                 if iniData.settings.lang == 0 then
-                                    imgui.BulletText(u8("Phone Co. (ID 26): SMS ($20), Apel ($650 / 30 sec)."))
+                                    imgui.BulletText(u8("Phone Co. (ID 26): SMS ($2), Apel ($6 / 30s)."))
                                     imgui.BulletText(u8("Car Plating (ID 146): Inmatriculare vehicul ($500)."))
                                     imgui.TextColored(imgui.ImVec4(0.6, 0.6, 0.6, 1), u8("Locatie: In apropierea sediului Primariei."))
                                 else
-                                    imgui.BulletText("Phone Co. (ID 26): SMS ($20), Call ($650 / 30 sec).")
+                                    imgui.BulletText("Phone Co. (ID 26): SMS ($2), Call ($6 / 30s).")
                                     imgui.BulletText("Car Plating (ID 146): Vehicle registration ($500).")
                                     imgui.TextColored(imgui.ImVec4(0.6, 0.6, 0.6, 1), "Location: Near City Hall.")
                                 end
@@ -10103,7 +10146,7 @@ end, function(player)
                         imgui.TextWrapped(u8("Condus neregulamentar/Incurcare trafic: 600$ + conf. permis"))
                         imgui.TextWrapped(u8("Viteza <50km/h: 840$ | Viteza >50km/h: 1200$ + conf. permis (LVL 8+)"))
                         imgui.TextWrapped(u8("NOS: 480$ + conf. permis | Hidraulice: 240$ + conf. permis"))
-                        imgui.TextWrapped(u8("Alcoolemie >3.0: 150$ + conf. permis"))
+                        imgui.TextWrapped(u8("Alcoolemie >3.0: 600$ + conf. permis"))
                         
                         imgui.Separator()
                         imgui.Spacing()
@@ -10166,9 +10209,9 @@ end, function(player)
                         -- RARITATE
                         imgui.TextColored(imgui.ImVec4(1.0, 0.4, 1.0, 1.0), isRO and u8("RARITATE SKINURI") or "SKIN RARITY")
                         imgui.BeginChild("RarityBox", imgui.ImVec2(0, 95), true)
-                            imgui.TextColored(imgui.ImVec4(1, 0.84, 0, 1), "Legendary: 4 bonusuri speciale (20%+)")
-                            imgui.TextColored(imgui.ImVec4(0.5, 0.5, 1, 1), "Very Rare: 3 bonusuri speciale (15%+)")
-                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Uncommon: 2 bonusuri speciale (10%+)")
+                            imgui.TextColored(imgui.ImVec4(1, 0.84, 0, 1), "Legendary: 4 bonusuri speciale (20'/.+)")
+                            imgui.TextColored(imgui.ImVec4(0.5, 0.5, 1, 1), "Very Rare: 3 bonusuri speciale (15'/.+)")
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Uncommon: 2 bonusuri speciale (10'/.+)")
                             imgui.Text("Common: Restul")
                         imgui.EndChild()
                         -- RECICLARE 
@@ -10399,11 +10442,11 @@ end, function(player)
                         imgui.SetWindowFontScale(1.0)
                         imgui.Separator()
                         imgui.Columns(2, "lsGasList", false)
-                        imgui.BulletText("Idlewood - ID 69")
-                        imgui.BulletText("Vinewood - ID 68")
+                        imgui.BulletText("Gas Station Vinewood LS - ID 68")
+                        imgui.BulletText("Gas Station Idlewood LS - ID 69")
                         imgui.NextColumn()
-                        imgui.BulletText("Dilimore - ID 73")
-                        imgui.BulletText("Montgomery - ID 72")
+                        imgui.BulletText("Gas Station Montgomery LS - ID 72")
+                        imgui.BulletText("Gas Station Dillimore LS - ID 73")
                         imgui.Columns(1)
                     imgui.EndChild()
                     
@@ -10416,14 +10459,14 @@ end, function(player)
                         imgui.SetWindowFontScale(1.0)
                         imgui.Separator()
                         imgui.Columns(2, "lvGasList", false)
-                        imgui.BulletText("Fort Carson - ID 81")
-                        imgui.BulletText("Bone County - ID 79")
-                        imgui.BulletText("Redsands W. - ID 84")
-                        imgui.BulletText("Emerald Isle - ID 78")
+                        imgui.BulletText("Gas Station Emerald Isle LV - ID 78")
+                        imgui.BulletText("Gas Station Bone County LV - ID 79")
+                        imgui.BulletText("Gas Station Fort Carson LV - ID 81")
+                        imgui.BulletText("Gas Station 4 Dragons LV - ID 82")
                         imgui.NextColumn()
-                        imgui.BulletText("Spinybed - ID 86")
-                        imgui.BulletText("GSLV - ID 83")
-                        imgui.BulletText("4 Dragons - ID 82")
+                        imgui.BulletText("Gas Station GSLV - ID 83")
+                        imgui.BulletText("Gas Station Redsands LV - ID 84")
+                        imgui.BulletText("Gas Station Spinybed LV - ID 86")
                         imgui.Columns(1)
                     imgui.EndChild()
                     
@@ -10436,15 +10479,15 @@ end, function(player)
                         imgui.SetWindowFontScale(1.0)
                         imgui.Separator()
                         imgui.Columns(2, "sfGasList", false)
-                        imgui.BulletText("Easter Basin - ID 77")
-                        imgui.BulletText("Doherty - ID 74")
-                        imgui.BulletText("Juniper Hollow - ID 75")
-                        imgui.BulletText("Tierra Robada 2 - ID 85")
+                        imgui.BulletText("Gas Station Flint County SF - ID 70")
+                        imgui.BulletText("Gas Station Whetstone SF - ID 71")
+                        imgui.BulletText("Gas Station Doherty SF - ID 74")
+                        imgui.BulletText("Gas Station Juniper Hollow SF - ID 75")
                         imgui.NextColumn()
-                        imgui.BulletText("Tierra Robada 1 - ID 80")
-                        imgui.BulletText("Angel Pine - ID 76")
-                        imgui.BulletText("Flint County - ID 70")
-                        imgui.BulletText("Whetstone - ID 71")
+                        imgui.BulletText("Gas Station Angel Pine SF - ID 76")
+                        imgui.BulletText("Gas Station Easter Basin SF - ID 77")
+                        imgui.BulletText("Gas Station Tierra Robada SF 1 - ID 80")
+                        imgui.BulletText("Gas Station Tierra Robada SF 2 - ID 85")
                         imgui.Columns(1)
                     imgui.EndChild()
                     
@@ -10466,7 +10509,7 @@ end, function(player)
                     imgui.Spacing()
                     
                     imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRO and u8("PRODUSE SI COMENZI") or "PRODUCTS AND COMMANDS")
-                    imgui.BeginChild("Prod247", imgui.ImVec2(0, 180), true)
+                    imgui.BeginChild("Prod247", imgui.ImVec2(0, 160), true)
                         imgui.Columns(2, "prodCols", false)
                         imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("ELECTRONICE / DIVERSE:") or "ELECTRONICS / MISC:")
                         imgui.Text("- " .. (isRO and u8("Telefon: $1.500") or "Phone: $1.500"))
@@ -10488,9 +10531,9 @@ end, function(player)
                     
                     imgui.Spacing()
                     imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRO and u8("LOCATII PE ORASE:") or "LOCATIONS BY CITY:")
-                    
+
                     -- Los Santos
-                    imgui.BeginChild("LS247", imgui.ImVec2(0, 105), true)
+                    imgui.BeginChild("LS247", imgui.ImVec2(0, 130), true)
                         imgui.SetWindowFontScale(1.5)
                         local city1 = "Los Santos"
                         imgui.SetCursorPosX((w - imgui.CalcTextSize(city1).x) / 2)
@@ -10498,16 +10541,16 @@ end, function(player)
                         imgui.SetWindowFontScale(1.0)
                         imgui.Separator()
                         imgui.Columns(2, "lsCols", false)
-                        imgui.BulletText("Idlewood - ID 16")
-                        imgui.BulletText("Commerce - ID 15")
+                        imgui.BulletText("24/7 Vinewood LS 1 - 13")
+                        imgui.BulletText("24/7 Vinewood LS 2 - 14")
+                        imgui.BulletText("24/7 Commerce LS - 15")
+                        imgui.BulletText("24/7 Idlewood LS - 16")
                         imgui.NextColumn()
-                        imgui.BulletText("Vinewood 1 - ID 13")
-                        imgui.BulletText("Vinewood 2 - ID 14")
                         imgui.Columns(1)
                     imgui.EndChild()
-                    
+
                     -- Las Venturas
-                    imgui.BeginChild("LV247", imgui.ImVec2(0, 140), true)
+                    imgui.BeginChild("LV247", imgui.ImVec2(0, 130), true)
                         imgui.SetWindowFontScale(1.5)
                         local city2 = "Las Venturas"
                         imgui.SetCursorPosX((w - imgui.CalcTextSize(city2).x) / 2)
@@ -10515,19 +10558,19 @@ end, function(player)
                         imgui.SetWindowFontScale(1.0)
                         imgui.Separator()
                         imgui.Columns(2, "lvCols", false)
-                        imgui.BulletText("Starfish 1 - ID 19")
-                        imgui.BulletText("Starfish 2 - ID 22")
-                        imgui.BulletText("Emerald Isle - ID 18")
-                        imgui.BulletText("Redsands E. - ID 17")
+                        imgui.BulletText("24/7 Redsands East LV - 17")
+                        imgui.BulletText("24/7 Emerald Isle LV - 18")
+                        imgui.BulletText("24/7 Starfish Casino LV 1 - 19")
+                        imgui.BulletText("24/7 Roca Escalante LV - 20")
                         imgui.NextColumn()
-                        imgui.BulletText("Roca Esc. - ID 20")
-                        imgui.BulletText("Old Strip - ID 21")
-                        imgui.BulletText("Creek - ID 23")
+                        imgui.BulletText("24/7 Old Venturas Strip LV - 21")
+                        imgui.BulletText("24/7 Starfish Casino LV 2 - 22")
+                        imgui.BulletText("24/7 Creek LV - 23")
                         imgui.Columns(1)
                     imgui.EndChild()
-                    
+
                     -- San Fierro
-                    imgui.BeginChild("SF247", imgui.ImVec2(0, 115), true)
+                    imgui.BeginChild("SF247", imgui.ImVec2(0, 120), true)
                         imgui.SetWindowFontScale(1.5)
                         local city3 = "San Fierro"
                         imgui.SetCursorPosX((w - imgui.CalcTextSize(city3).x) / 2)
@@ -10535,16 +10578,16 @@ end, function(player)
                         imgui.SetWindowFontScale(1.0)
                         imgui.Separator()
                         imgui.Columns(2, "sfCols", false)
-                        imgui.BulletText("Garcia 1 - ID 125")
-                        imgui.BulletText("Garcia 2 - ID 126")
-                        imgui.BulletText("Hashbury - ID 127")
+                        imgui.BulletText("24/7 Juniper Hill SF - 124")
+                        imgui.BulletText("24/7 Garcia SF 1 - 125")
+                        imgui.BulletText("24/7 Garcia SF 2 - 126")
                         imgui.NextColumn()
-                        imgui.BulletText("Juniper Hill - ID 124")
-                        imgui.BulletText("Chinatown - ID 128")
+                        imgui.BulletText("24/7 Hashbury SF - 127")
+                        imgui.BulletText("24/7 Chinatown SF - 128")
                         imgui.Columns(1)
                     imgui.EndChild()
                     
-                    imgui.SetCursorPosY(645)
+                    imgui.SetCursorPosY(700)
                     imgui.Separator()
                     imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), isRO and u8("Marcaj: Magazinele sunt reprezentate pe harta cu litera 'S' rosie.") or "Marker: Stores are represented on the map with a red 'S' letter.")
 
@@ -10572,36 +10615,71 @@ end, function(player)
                     imgui.EndChild()
                     
                     imgui.Spacing()
-                    imgui.BeginChild("FF_LongList", imgui.ImVec2(0, 600), true)
-                        -- LOS SANTOS
-                        imgui.TextColored(imgui.ImVec4(1.0, 0.0, 0.0, 1.0), isRO and u8(">> Fast Fooduri din Los Santos") or ">> Fast Foods in Los Santos")
-                        imgui.Separator()
-                        local ls_ids = {"Pizza Idlewood LS - ID 59", "Pizza Red County LS - ID 60", "Pizza Montgomery LS - ID 61", "Cluckin' Bell Market LS - ID 50", "Cluckin' Bell Willowfield LS - ID 51", "Cluckin' Bell East LS - ID 52", "Burger Shot Vinewood LS - ID 44", "Burger Shot Marina LS - ID 43"}
-                        for _, text in ipairs(ls_ids) do
-                            imgui.TextColored(imgui.ImVec4(0.26, 0.65, 0.39, 1), ">> ") imgui.SameLine()
-                            imgui.Text(text)
-                        end   
-                        
-                        imgui.Spacing(); imgui.Spacing()
-                        -- LAS VENTURAS
-                        imgui.TextColored(imgui.ImVec4(1.0, 0.0, 0.0, 1.0), isRO and u8(">> Fast Fooduri din Las Venturas") or ">> Fast Foods in Las Venturas")
-                        imgui.Separator()
-                        local lv_ids = {"Pizza Emerald Isle LV - ID 63", "Pizza Starfish Casino LV - ID 64", "Pizza Creek LV - ID 65", "Pizza Roca Escalante LV - ID 66", "Cluckin' Bell Emerald Isle LV - ID 53", "Cluckin' Bell Old Venturas LV - ID 54", "Cluckin' Bell Pilgrim LV - ID 55", "Cluckin' Bell Creek LV - ID 56", "Cluckin' Bell Bone County LV - ID 57", "Burger Shot Whitewood Estates LV - ID 45", "Burger Shot Redsands East LV - ID 46", "Burger Shot Old Venturas LV 1 - ID 47", "Burger Shot Old Venturas LV 2 - ID 48", "Burger Shot Spinybed LV - ID 49"}
-                        for _, text in ipairs(lv_ids) do
-                            imgui.TextColored(imgui.ImVec4(0.26, 0.65, 0.39, 1), ">> ") imgui.SameLine()
-                            imgui.Text(text)
-                        end
-                        
-                        imgui.Spacing(); imgui.Spacing()
-                        -- SAN FIERRO
-                        imgui.TextColored(imgui.ImVec4(1.0, 0.0, 0.0, 1.0), isRO and u8(">> Fast Fooduri din San Fierro") or ">> Fast Foods in San Fierro")
-                        imgui.Separator()
-                        local sf_ids = {"Pizza Esplanade North SF - ID 37", "Pizza Financial SF - ID 38", "Burger Shot Garcia SF - ID 27", "Burger Shot Downtown SF - ID 28", "Burger Shot Juniper Hollow SF - ID 33", "Cluckin' Bell Tierra Robada SF - ID 58", "Cluckin' Bell Ocean Flats SF - ID 118", "Cluckin' Bell Downtown SF - ID 117"}
-                        for _, text in ipairs(sf_ids) do
+                    imgui.BeginChild("FF_LongList", imgui.ImVec2(0, 750), true)
+                    local city_order = {"Los Santos", "Las Venturas", "San Fierro"}
+
+                    local data_mapping = {
+                        ["Los Santos"] = "LS",
+                        ["Las Venturas"] = "LV",
+                        ["San Fierro"] = "SF"
+                    }
+
+                    -- PIZZA
+                    imgui.TextColored(imgui.ImVec4(1.0, 0.0, 0.0, 1.0), ">> Pizza")
+                    imgui.Separator()
+                    local pizza_data = {
+                        LS = {"Pizza Idlewood LS - 59", "Pizza Red County LS - 60", "Pizza Montgomery LS - 61", "Pizza Palomino Creek LS - 62"},
+                        LV = {"Pizza Emerald Isle LV - 63", "Pizza Starfish Casino LV - 64", "Pizza Creek LV - 65", "Pizza Escalante LV - 66"},
+                        SF = {"Pizza Financial SF - 38", "Pizza Esplanade North SF - 37"}
+                    }
+                    for _, city_name in ipairs(city_order) do
+                        imgui.TextColored(imgui.ImVec4(1.0, 1.0, 0.0, 1.0), ">> " .. city_name)
+                        local short = data_mapping[city_name]
+                        for _, text in ipairs(pizza_data[short]) do
                             imgui.TextColored(imgui.ImVec4(0.26, 0.65, 0.39, 1), ">> ") imgui.SameLine()
                             imgui.Text(text)
                         end
-                    imgui.EndChild()    
+                    end
+
+                    imgui.Spacing(); imgui.Spacing()
+
+                    -- CLUCKIN' BELL
+                    imgui.TextColored(imgui.ImVec4(1.0, 0.0, 0.0, 1.0), ">> Cluckin' Bell")
+                    imgui.Separator()
+                    local cb_data = {
+                        LS = {"Cluckin Bell Market LS - 50", "Cluckin Bell Willowfield LS - 51", "Cluckin Bell East Los Santos LS - 52"},
+                        LV = {"Cluckin Bell Emerald Isle LV - 53", "Cluckin Bell Old Venturas - 54", "Cluckin Bell Pilgrim LV - 55", "Cluckin Bell Creek LV - 56", "Cluckin Bell Bone County LV - 57"},
+                        SF = {"Cluckin Bell Tierra Robada SF - 58", "Cluckin Bell Downtown SF - 117", "Cluckin Bell Ocean Flats SF - 118"}
+                    }
+                    for _, city_name in ipairs(city_order) do
+                        imgui.TextColored(imgui.ImVec4(1.0, 1.0, 0.0, 1.0), ">> " .. city_name)
+                        local short = data_mapping[city_name]
+                        for _, text in ipairs(cb_data[short]) do
+                            imgui.TextColored(imgui.ImVec4(0.26, 0.65, 0.39, 1), ">> ") imgui.SameLine()
+                            imgui.Text(text)
+                        end
+                    end
+
+                    imgui.Spacing(); imgui.Spacing()
+
+                    -- BURGER SHOT
+                    imgui.TextColored(imgui.ImVec4(1.0, 0.0, 0.0, 1.0), ">> Burger Shot")
+                    imgui.Separator()
+                    local bs_data = {
+                        LS = {"Burger Shot Marina LS - 43", "Burger Shot Vinewood LS - 44"},
+                        LV = {"Burger Shot Old Venturas LV 1 - 47", "Burger Shot Old Venturas LV 2 - 48", "Burger Shot Whitewood LV - 45", "Burger Shot Redsands LV - 46", "Burger Shot Spinybed LV - 49"},
+                        SF = {"Burger Shot Garcia SF - 27", "Burger Shot Downtown SF - 28", "Burger Shot Hollow SF - 33"}
+                    }
+                    for _, city_name in ipairs(city_order) do
+                        imgui.TextColored(imgui.ImVec4(1.0, 1.0, 0.0, 1.0), ">> " .. city_name)
+                        local short = data_mapping[city_name]
+                        for _, text in ipairs(bs_data[short]) do
+                            imgui.TextColored(imgui.ImVec4(0.26, 0.65, 0.39, 1), ">> ") imgui.SameLine()
+                            imgui.Text(text)
+                        end
+                    end
+
+                    imgui.EndChild() 
                     
                     imgui.Separator()
                     imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.4), isRO and u8("Folositi scroll pentru a vedea toate locatiile.") or "Use scroll to see all locations.")
@@ -10639,58 +10717,52 @@ end, function(player)
                     imgui.Spacing()
                     imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRO and u8("LOCATII PE ORASE:") or "LOCATIONS BY CITY:")
                     
-                    -- LS
-                    imgui.BeginChild("Cloth_LS", imgui.ImVec2(0, 120), true)
-                        imgui.SetWindowFontScale(1.5)
-                        local city1 = "Los Santos"
-                        imgui.SetCursorPosX((510 - imgui.CalcTextSize(city1).x) / 2)
+                    -- Los Santos
+                    imgui.BeginChild("Cloth_LS_Search", imgui.ImVec2(0, 140), true)
+                        imgui.SetWindowFontScale(1.5); local city1 = "Los Santos"
+                        imgui.SetCursorPosX((w - imgui.CalcTextSize(city1).x) / 2)
                         imgui.TextColored(imgui.ImVec4(0.3, 0.7, 1, 1), city1)
-                        imgui.SetWindowFontScale(1.0)
-                        imgui.Separator()
-                        imgui.Columns(2, "lsClothCols", false)
-                        imgui.BulletText("Binco Ganton: 101")
-                        imgui.BulletText("Suburban Jefferson: 109")
-                        imgui.BulletText("Zip Downtown: 104")
+                        imgui.SetWindowFontScale(1.0); imgui.Separator()
+                        imgui.Columns(2, "lsClothCols_Search", false)
+                        imgui.BulletText("Clothes Store Ganton LS - 101")
+                        imgui.BulletText("Clothes Store Downtown LS - 104")
+                        imgui.BulletText("Clothes Store Rodeo LS 1 - 107")
                         imgui.NextColumn()
-                        imgui.BulletText("Prolaps Rodeo: 107")
-                        imgui.BulletText("DidierSachs Rodeo: 111")
-                        imgui.BulletText("Victim Rodeo: 123")
+                        imgui.BulletText("Clothes Store Jefferson LS - 109")
+                        imgui.BulletText("Clothes Store Rodeo LS 2 - 111")
+                        imgui.BulletText("Clothes Store Rodeo LS - 123")
                         imgui.Columns(1)
                     imgui.EndChild()
-                    
-                    -- LV
-                    imgui.BeginChild("Cloth_LV", imgui.ImVec2(0, 120), true)
-                        imgui.SetWindowFontScale(1.5)
-                        local city2 = "Las Venturas"
-                        imgui.SetCursorPosX((510 - imgui.CalcTextSize(city2).x) / 2)
+
+                    -- Las Venturas
+                    imgui.BeginChild("Cloth_LV_Search", imgui.ImVec2(0, 155), true)
+                        imgui.SetWindowFontScale(1.5); local city2 = "Las Venturas"
+                        imgui.SetCursorPosX((w - imgui.CalcTextSize(city2).x) / 2)
                         imgui.TextColored(imgui.ImVec4(1, 0.8, 0.2, 1), city2)
-                        imgui.SetWindowFontScale(1.0)
-                        imgui.Separator()
-                        imgui.Columns(2, "lvClothCols", false)
-                        imgui.BulletText("Binco Airport: 101")
-                        imgui.BulletText("Binco Emerald Isle: 103")
-                        imgui.BulletText("Zip Emerald Isle: 105")
+                        imgui.SetWindowFontScale(1.0); imgui.Separator()
+                        imgui.Columns(2, "lvClothCols_Search", false)
+                        imgui.BulletText("Clothes Store LV Airport - 102")
+                        imgui.BulletText("Clothes Store Emerald Isle LV 1 - 103")
+                        imgui.BulletText("Clothes Store Emerald Isle LV 2 - 105")
+                        imgui.BulletText("Clothes Store Starfish Casino LV - 106")
                         imgui.NextColumn()
-                        imgui.BulletText("Zip Starfish: 106")
-                        imgui.BulletText("Prolaps Creek: 108")
-                        imgui.BulletText("Suburban Creek: 110")
+                        imgui.BulletText("Clothes Store Creek LV 1 - 108")
+                        imgui.BulletText("Clothes Store Creek LV 2 - 110")
                         imgui.Columns(1)
                     imgui.EndChild()
-                    
-                    -- SF
-                    imgui.BeginChild("Cloth_SF", imgui.ImVec2(0, 95), true)
-                        imgui.SetWindowFontScale(1.5)
-                        local city3 = "San Fierro"
-                        imgui.SetCursorPosX((510 - imgui.CalcTextSize(city3).x) / 2)
+
+                    -- San Fierro
+                    imgui.BeginChild("Cloth_SF_Search", imgui.ImVec2(0, 110), true)
+                        imgui.SetWindowFontScale(1.5); local city3 = "San Fierro"
+                        imgui.SetCursorPosX((w - imgui.CalcTextSize(city3).x) / 2)
                         imgui.TextColored(imgui.ImVec4(0.2, 1, 0.2, 1), city3)
-                        imgui.SetWindowFontScale(1.0)
-                        imgui.Separator()
-                        imgui.Columns(2, "sfClothCols", false)
-                        imgui.BulletText("Suburban Hashbury: 119")
-                        imgui.BulletText("Binco Juniper Hill: 120")
+                        imgui.SetWindowFontScale(1.0); imgui.Separator()
+                        imgui.Columns(2, "sfClothCols_Search", false)
+                        imgui.BulletText("Clothes Store Hashbury SF - 119")
+                        imgui.BulletText("Clothes Store Juniper Hill SF - 120")
                         imgui.NextColumn()
-                        imgui.BulletText("Zip Downtown: 121")
-                        imgui.BulletText("Victim Downtown: 122")
+                        imgui.BulletText("Clothes Store Downtown SF 1 - 121")
+                        imgui.BulletText("Clothes Store Downtown SF 2 - 122")
                         imgui.Columns(1)
                     imgui.EndChild()
                     
@@ -11222,7 +11294,7 @@ end, function(player)
                         imgui.SetWindowFontScale(1.0)
                         imgui.Separator()
                         imgui.BulletText("Rent Car LS - ID 24")
-                        imgui.BulletText("Rent Bike LS - ID 26")
+                        imgui.BulletText("Rent Bike LS - ID 36")
                     imgui.EndChild()
                     
                     -- LV
@@ -11233,9 +11305,10 @@ end, function(player)
                         imgui.TextColored(imgui.ImVec4(1, 0.8, 0.2, 1), city2)
                         imgui.SetWindowFontScale(1.0)
                         imgui.Separator()
-                        imgui.BulletText("Rent Car LV - ID 25")
-                        imgui.BulletText("Rent Plane LV - ID 42")
+                        imgui.BulletText("Rent Plane LV - ID 148")
                         imgui.BulletText("Rent Boat LV - ID 40")
+                        imgui.BulletText("Rent Car LV - ID 25")
+                        imgui.BulletText("Rent Bike LV - 67")
                     imgui.EndChild()
                     
                     -- SF
@@ -11247,7 +11320,7 @@ end, function(player)
                         imgui.SetWindowFontScale(1.0)
                         imgui.Separator()
                         imgui.BulletText("Rent Car SF - ID 129")
-                        imgui.BulletText("Rent Boat SF - ID 131")
+                        imgui.BulletText("Rent Bike SF - ID 130")
                     imgui.EndChild()
                     
                     imgui.SetCursorPosY(645)
@@ -11271,7 +11344,8 @@ end, function(player)
                     imgui.BeginChild("WhiteWeaponsInfo", imgui.ImVec2(0, 105), true)
                         imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), isRO and u8("DETALII:") or "DETAILS:")
                         imgui.BulletText(isRO and u8("Aceste arme sunt ideale pentru lupte de proximitate (Melee).") or "These weapons are ideal for close-quarters combat (Melee).")
-                        imgui.BulletText(isRO and u8("Comanda: Foloseste [/buy] in interiorul magazinului.") or "Command: Use [/buy] inside the store.")
+                        imgui.BulletText(isRO and u8("Pentru a putea cumpara o arma alba dintr-un White Weapon Store, jucatorul va trebui sa mearga") or "In order to purchase a white weapon from a White Weapon Store, the player will need to go")
+                        imgui.BulletText(isRO and u8("la indicatorul din interiorul afacerii si sa apese pe tasta Y.") or "to the indicator inside the business and press the Y key.")
                     imgui.EndChild()
                     
                     imgui.Spacing()
@@ -11289,7 +11363,7 @@ end, function(player)
                             {"Katana", "$1.000", "2.6"},
                             {"Golf Club", "$250", "4.6"},
                             {"Baseball Bat", "$250", "4.6"},
-                            {isRO and u8("Lopata") or "Shovel", "$5.000", "4.6"},
+                            {isRO and u8("Lopata") or "Shovel", "$500", "4.6"},
                             {"Brass Knuckles", "$500", "1.3"}
                         }
                         
@@ -11344,7 +11418,7 @@ end, function(player)
                     imgui.BeginChild("SexShopInfo", imgui.ImVec2(0, 100), true)
                         imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), isRO and u8("INFO:") or "INFO:")
                         imgui.BulletText(isRO and u8("Articolele pot fi folosite ca obiecte de interactiune sau cadouri.") or "Items can be used as interaction objects or gifts.")
-                        imgui.BulletText(isRO and u8("Comanda: Foloseste [/buy] odata ce ai intrat in business.") or "Command: Use [/buy] once you enter the business.")
+                        imgui.BulletText(isRO and u8("Pentru a putea cumpara un obiect dintr-un Sex Shop, jucatorul va trebui sa mearga la indicatorul din interiorul afacerii si sa apese pe tasta Y.") or "In order to purchase an item from a Sex Shop, the player will need to go to the indicator inside the business and press the Y key.")
                     imgui.EndChild()
                     
                     imgui.Spacing()
@@ -11658,7 +11732,7 @@ end, function(player)
                     imgui.BeginChild("CommBiz", imgui.ImVec2(0, 150), true)
                         imgui.TextColored(imgui.ImVec4(0.4, 0.8, 1, 1), isRO and u8("COMUNICATII SI INMATRICULARE:") or "COMMUNICATIONS & REGISTRATION:")
                         imgui.Separator()
-                        imgui.BulletText("Phone Co. (ID 26): SMS ($20), " .. (isRO and u8("Apel") or "Call") .. " ($650 / 30s).")
+                        imgui.BulletText("Phone Co. (ID 26): SMS ($2), " .. (isRO and u8("Apel") or "Call") .. " ($6 / 30s).")
                         imgui.BulletText("Car Plating (ID 146): " .. (isRO and u8("Inmatriculare vehicul") or "Vehicle registration") .. " ($500).")
                         imgui.TextColored(imgui.ImVec4(0.6, 0.6, 0.6, 1), isRO and u8("Locatie: In apropierea sediului Primariei.") or "Location: Near City Hall.")
                     imgui.EndChild()
