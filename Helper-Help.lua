@@ -8958,6 +8958,7 @@ end, function(player)
                 DrawCmdCard("/anmester / .mester", "Informatii despre mester", "Info about mester")
                 DrawCmdCard("/anspawn / .spawn", "Informatii despre spawnchange", "Info about spawnchange")
                 DrawCmdCard("/anpaint / .paint", "Informatii despre cum dai parasesti paintball", "Info about how to leave paintball")
+                DrawCmdCard("/anbicicleta / .bicileta", "Informatii despre cum faci rost de biciclete", "Info about how to get bikes")
                 imgui.Spacing()
             end
 
@@ -13352,6 +13353,28 @@ end
         local msg = isRO and "/an Salut! Pentru a parasi arena de Paintball, foloseste comanda /leavepaintball." 
                         or "/an Hi! To leave the Paintball arena, use the command /leavepaintball."
         sampSendChat(msg)
+    end)
+
+    sampRegisterChatCommand(".paint", function()
+        local isRO = (iniData.settings.lang == 0)
+        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a parasi arena de Paintball, foloseste comanda /leavepaintball." 
+                        or "{09ff00}Hi! {FFFFFF}To leave the Paintball arena, use the command /leavepaintball."
+        sampAddChatMessage(msg, -1)
+    end)
+
+           -- Comenzi Bike
+    sampRegisterChatCommand("anbicicleta", function()
+        local isRO = (iniData.settings.lang == 0)
+        local msg = isRO and "/an Salut! Poti face rost de o bicicleta de la Dealership, Spawn LS sau Skate Park." 
+                        or "/an Hi! You can get a bike from the Dealership, LS Spawn, or Skate Park."
+        sampSendChat(msg)
+    end)
+
+    sampRegisterChatCommand(".bicicleta", function()
+        local isRO = (iniData.settings.lang == 0)
+        local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti face rost de o bicicleta de la Dealership, Spawn LS sau Skate Park." 
+                        or "{09ff00}Hi! {FFFFFF}You can get a bike from the Dealership, LS Spawn, or Skate Park."
+        sampAddChatMessage(msg, -1)
     end)
 
     sampRegisterChatCommand(".paint", function()
