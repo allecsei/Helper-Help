@@ -8907,26 +8907,26 @@ end, function(player)
                 imgui.Spacing()
                 DrawCmdCard("/anredcrate / .redcrate", "Informatii despre cutie", "Crate information")
                 DrawCmdCard("/aninfernus / .infernus", "Informatii despre masina", "Car information")
-                DrawCmdCard("/anjobclash / .jobclash", "Informatii despre job clash", "Job Clash information")
-                DrawCmdCard("/anjobgoal / .jobgoal", "Informatii despre job goal", "Job Goal information")
+                -- DrawCmdCard("/anjobclash / .jobclash", "Informatii despre job clash", "Job Clash information")
+                -- DrawCmdCard("/anjobgoal / .jobgoal", "Informatii despre job goal", "Job Goal information")
                 imgui.Spacing()
             end
             imgui.Spacing()
 
             -- Header SKIN UPGRADE & REROLL
-            if imgui.CollapsingHeader((iniData.settings.lang == 0) and u8("SKIN UPGRADE & REROLL") or "SKIN UPGRADE & REROLL") then
-                imgui.Spacing()
-                DrawCmdCard("/anskinupgrade / .skinupgrade", "Info upgrade skin", "Skin upgrade info")
-                DrawCmdCard("/anskinfragments / .skinfragments", "Info fragmente skin", "Skin fragments info")
-                DrawCmdCard("/anskinticket / .skinticket", "Info tichete skin", "Skin tickets info")
-                DrawCmdCard("/anskindiamond / .skindiamond", "Pret upgrade Diamond", "Diamond upgrade price")
-                DrawCmdCard("/anskinonyx / .skinonyx", "Pret upgrade Onyx", "Onyx upgrade price")
-                DrawCmdCard("/anskinsilver / .skinsilver", "Pret upgrade Silver", "Silver upgrade price")
-                DrawCmdCard("/anskinplatinum  / .skinplatinum", "Pret upgrade Platinum", "Platinum upgrade price")
-                DrawCmdCard("/anreroll / .reroll", "Sistem reroll skin", "Skin reroll system")
-                imgui.Spacing()
-            end
-            imgui.Spacing()
+            -- if imgui.CollapsingHeader((iniData.settings.lang == 0) and u8("SKIN UPGRADE & REROLL") or "SKIN UPGRADE & REROLL") then
+            --     imgui.Spacing()
+            --     DrawCmdCard("/anskinupgrade / .skinupgrade", "Info upgrade skin", "Skin upgrade info")
+            --     DrawCmdCard("/anskinfragments / .skinfragments", "Info fragmente skin", "Skin fragments info")
+            --     DrawCmdCard("/anskinticket / .skinticket", "Info tichete skin", "Skin tickets info")
+            --     DrawCmdCard("/anskindiamond / .skindiamond", "Pret upgrade Diamond", "Diamond upgrade price")
+            --     DrawCmdCard("/anskinonyx / .skinonyx", "Pret upgrade Onyx", "Onyx upgrade price")
+            --     DrawCmdCard("/anskinsilver / .skinsilver", "Pret upgrade Silver", "Silver upgrade price")
+            --     DrawCmdCard("/anskinplatinum  / .skinplatinum", "Pret upgrade Platinum", "Platinum upgrade price")
+            --     DrawCmdCard("/anreroll / .reroll", "Sistem reroll skin", "Skin reroll system")
+            --     imgui.Spacing()
+            -- end
+            -- imgui.Spacing()
 
             -- Header APLICATII FACTIUNI
             if imgui.CollapsingHeader((iniData.settings.lang == 0) and u8("APLICATII FACTIUNI") or "FACTION APPLICATIONS") then
@@ -8946,21 +8946,21 @@ end, function(player)
                 DrawCmdCard("/anrp / .rp", "Respect Points (Payday)", "Respect Points (Payday)")
                 DrawCmdCard("/anmp / .mp", "Mission Points", "Mission Points")
                 DrawCmdCard("/angold / .gold", "Metode obtinere Gold", "Methods to get Gold")
-                DrawCmdCard("/anplate / .plate", "Schimbare numar auto", "Change license plate")
+                -- DrawCmdCard("/anplate / .plate", "Schimbare numar auto", "Change license plate")
                 DrawCmdCard("/cninfo / .info", "Salut! Nu detinem aceasta informatie", "Hello! We don't have this information")
-                DrawCmdCard("/anroata / .roata", "Cum obtii rotiri pentru Roata Norocului", "How to get spins for the Lucky Wheel")
+                -- DrawCmdCard("/anroata / .roata", "Cum obtii rotiri pentru Roata Norocului", "How to get spins for the Lucky Wheel")
             end
             imgui.Spacing()
 
              -- Header COMENZI & GENERALE
-            if imgui.CollapsingHeader((iniData.settings.lang == 0) and u8("COMENZI GENERALE") or "GENERAL COMMANDS") then
-                imgui.Spacing()
-                DrawCmdCard("/anmester / .mester", "Informatii despre mester", "Info about mester")
-                DrawCmdCard("/anspawn / .spawn", "Informatii despre spawnchange", "Info about spawnchange")
-                DrawCmdCard("/anpaint / .paint", "Informatii despre cum dai parasesti paintball", "Info about how to leave paintball")
-                DrawCmdCard("/anbicicleta / .bicileta", "Informatii despre cum faci rost de biciclete", "Info about how to get bikes")
-                imgui.Spacing()
-            end
+            -- if imgui.CollapsingHeader((iniData.settings.lang == 0) and u8("COMENZI GENERALE") or "GENERAL COMMANDS") then
+            --     imgui.Spacing()
+            --     DrawCmdCard("/anmester / .mester", "Informatii despre mester", "Info about mester")
+            --     DrawCmdCard("/anspawn / .spawn", "Informatii despre spawnchange", "Info about spawnchange")
+            --     DrawCmdCard("/anpaint / .paint", "Informatii despre cum dai parasesti paintball", "Info about how to leave paintball")
+            --     DrawCmdCard("/anbicicleta / .bicileta", "Informatii despre cum faci rost de biciclete", "Info about how to get bikes")
+            --     imgui.Spacing()
+            -- end
 
             imgui.SetWindowFontScale(1.0)
             imgui.EndChild()
@@ -13182,95 +13182,95 @@ end
         sampAddChatMessage(msg, -1)
     end)
 
-        -- Skin Upgrade
-    sampRegisterChatCommand("anskinupgrade", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Pentru a da upgrade unui skin trebuie sa mergi la /gps, Locatii Importante, Trader Shop (LV). Apesi Y, Upgrade." 
-                        or "/an Hi! To upgrade a skin you must go to /gps, Important Locations, Trader Shop (LV). Press Y, Upgrade."
-        sampSendChat(msg)
-    end)
+    --     -- Skin Upgrade
+    -- sampRegisterChatCommand("anskinupgrade", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "/an Salut! Pentru a da upgrade unui skin trebuie sa mergi la /gps, Locatii Importante, Trader Shop (LV). Apesi Y, Upgrade." 
+    --                     or "/an Hi! To upgrade a skin you must go to /gps, Important Locations, Trader Shop (LV). Press Y, Upgrade."
+    --     sampSendChat(msg)
+    -- end)
 
-    sampRegisterChatCommand(".skinupgrade", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a da upgrade unui skin trebuie sa mergi la {09ff00}/gps, Locatii Importante, Trader Shop (LV){FFFFFF}. Apesi {09ff00}Y, Upgrade." 
-                        or "{09ff00}Hi! {FFFFFF}To upgrade a skin you must go to {09ff00}/gps, Important Locations, Trader Shop (LV){FFFFFF}. Press {09ff00}Y, Upgrade."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".skinupgrade", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a da upgrade unui skin trebuie sa mergi la {09ff00}/gps, Locatii Importante, Trader Shop (LV){FFFFFF}. Apesi {09ff00}Y, Upgrade." 
+    --                     or "{09ff00}Hi! {FFFFFF}To upgrade a skin you must go to {09ff00}/gps, Important Locations, Trader Shop (LV){FFFFFF}. Press {09ff00}Y, Upgrade."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
-    -- Skin Fragments
-    sampRegisterChatCommand("anskinfragments", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Poti obtine un fragment de la Maraton, Quest, Arheolog (sansa mica la skill 8+), Evenimente Speciale, Lime Crate." 
-                        or "/an Hi! You can get a fragment from Marathon, Quest, Archaeologist (low chance at skill 8+), Special Events, Lime Crate."
-        sampSendChat(msg)
-    end)
+    -- -- Skin Fragments
+    -- sampRegisterChatCommand("anskinfragments", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "/an Salut! Poti obtine un fragment de la Maraton, Quest, Arheolog (sansa mica la skill 8+), Evenimente Speciale, Lime Crate." 
+    --                     or "/an Hi! You can get a fragment from Marathon, Quest, Archaeologist (low chance at skill 8+), Special Events, Lime Crate."
+    --     sampSendChat(msg)
+    -- end)
 
-    sampRegisterChatCommand(".skinfragments", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti obtine un fragment de la {09ff00}Maraton, Quest, Arheolog (sansa mica la skill 8+), Evenimente Speciale, Lime Crate." 
-                        or "{09ff00}Hi! {FFFFFF}You can get a fragment from {09ff00}Marathon, Quest, Archaeologist (low chance at skill 8+), Special Events, Lime Crate."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".skinfragments", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti obtine un fragment de la {09ff00}Maraton, Quest, Arheolog (sansa mica la skill 8+), Evenimente Speciale, Lime Crate." 
+    --                     or "{09ff00}Hi! {FFFFFF}You can get a fragment from {09ff00}Marathon, Quest, Archaeologist (low chance at skill 8+), Special Events, Lime Crate."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
-    -- Skin Ticket
-    sampRegisterChatCommand("anskinticket", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Poti obtine tichete din /shop, de la Maraton, Quest, Evenimente Speciale sau din 5 fragmente la Trader LV." 
-                        or "/an Hi! You can get tickets from /shop, Marathon, Quest, Special Events, or from 5 fragments at Trader LV."
-        sampSendChat(msg)
-    end)
+    -- -- Skin Ticket
+    -- sampRegisterChatCommand("anskinticket", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "/an Salut! Poti obtine tichete din /shop, de la Maraton, Quest, Evenimente Speciale sau din 5 fragmente la Trader LV." 
+    --                     or "/an Hi! You can get tickets from /shop, Marathon, Quest, Special Events, or from 5 fragments at Trader LV."
+    --     sampSendChat(msg)
+    -- end)
 
-    sampRegisterChatCommand(".skinticket", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti obtine tichete din {09ff00}/shop, {FFFFFF}de la {09ff00}Maraton, Quest, Evenimente Speciale {FFFFFF}sau din {09ff00}5 fragmente la Trader LV." 
-                        or "{09ff00}Hi! {FFFFFF}You can get tickets from {09ff00}/shop, {FFFFFF}Marathon, Quest, Special Events, or from {09ff00}5 fragments at Trader LV."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".skinticket", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti obtine tichete din {09ff00}/shop, {FFFFFF}de la {09ff00}Maraton, Quest, Evenimente Speciale {FFFFFF}sau din {09ff00}5 fragmente la Trader LV." 
+    --                     or "{09ff00}Hi! {FFFFFF}You can get tickets from {09ff00}/shop, {FFFFFF}Marathon, Quest, Special Events, or from {09ff00}5 fragments at Trader LV."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
-    -- Skin Diamond
-    sampRegisterChatCommand("anskindiamond", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Pentru a transforma un skin Platinum intr-un skin Diamond trebuie sa ai 1.000.000$, 100 MP si un Tichet Diamond." 
-                        or "/an Hi! To transform a Platinum skin into a Diamond skin you need $1,000,000, 100 MP, and a Diamond Ticket."
-        sampSendChat(msg)
-    end)
+    -- -- Skin Diamond
+    -- sampRegisterChatCommand("anskindiamond", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "/an Salut! Pentru a transforma un skin Platinum intr-un skin Diamond trebuie sa ai 1.000.000$, 100 MP si un Tichet Diamond." 
+    --                     or "/an Hi! To transform a Platinum skin into a Diamond skin you need $1,000,000, 100 MP, and a Diamond Ticket."
+    --     sampSendChat(msg)
+    -- end)
 
-    sampRegisterChatCommand(".skindiamond", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a transforma un skin Platinum intr-un skin Diamond trebuie sa ai {09ff00}1.000.000$, 100 MP si un Tichet Diamond." 
-                        or "{09ff00}Hi! {FFFFFF}To transform a Platinum skin into a Diamond skin you need {09ff00}$1,000,000, 100 MP, and a Diamond Ticket."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".skindiamond", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a transforma un skin Platinum intr-un skin Diamond trebuie sa ai {09ff00}1.000.000$, 100 MP si un Tichet Diamond." 
+    --                     or "{09ff00}Hi! {FFFFFF}To transform a Platinum skin into a Diamond skin you need {09ff00}$1,000,000, 100 MP, and a Diamond Ticket."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
-     -- Skin Silver
-    sampRegisterChatCommand("anskinsilver", function()
-    local isRO = (iniData.settings.lang == 0)
-    local msg = isRO and "/an Salut! Pentru a imbunatati un skin Bronze in Silver sau Silver in Platinum ai nevoie de 500.000$, 50 MP si 1x Tichet Upgrade." 
-                    or "/an Hi! To upgrade a Bronze skin to Silver or Silver to Platinum you need $500,000, 50 MP, and 1x Upgrade Ticket."
-    sampSendChat(msg)
-    end)
+    --  -- Skin Silver
+    -- sampRegisterChatCommand("anskinsilver", function()
+    -- local isRO = (iniData.settings.lang == 0)
+    -- local msg = isRO and "/an Salut! Pentru a imbunatati un skin Bronze in Silver sau Silver in Platinum ai nevoie de 500.000$, 50 MP si 1x Tichet Upgrade." 
+    --                 or "/an Hi! To upgrade a Bronze skin to Silver or Silver to Platinum you need $500,000, 50 MP, and 1x Upgrade Ticket."
+    -- sampSendChat(msg)
+    -- end)
 
-    sampRegisterChatCommand(".skinsilver", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a imbunatati un skin Bronze in Silver sau Silver in Platinum ai nevoie de {09ff00}500.000$, 50 MP si 1x Tichet Upgrade." 
-                        or "{09ff00}Hi! {FFFFFF}To upgrade a Bronze skin to Silver or Silver to Platinum you need {09ff00}$500,000, 50 MP, and 1x Upgrade Ticket."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".skinsilver", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a imbunatati un skin Bronze in Silver sau Silver in Platinum ai nevoie de {09ff00}500.000$, 50 MP si 1x Tichet Upgrade." 
+    --                     or "{09ff00}Hi! {FFFFFF}To upgrade a Bronze skin to Silver or Silver to Platinum you need {09ff00}$500,000, 50 MP, and 1x Upgrade Ticket."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
-      -- Skin Silver
-    sampRegisterChatCommand("anskinplatinum", function()
-    local isRO = (iniData.settings.lang == 0)
-    local msg = isRO and "/an Salut! Pentru a imbunatati un skin Bronze in Silver sau Silver in Platinum ai nevoie de 500.000$, 50 MP si 1x Tichet Upgrade." 
-                    or "/an Hi! To upgrade a Bronze skin to Silver or Silver to Platinum you need $500,000, 50 MP, and 1x Upgrade Ticket."
-    sampSendChat(msg)
-    end)
+    --   -- Skin Silver
+    -- sampRegisterChatCommand("anskinplatinum", function()
+    -- local isRO = (iniData.settings.lang == 0)
+    -- local msg = isRO and "/an Salut! Pentru a imbunatati un skin Bronze in Silver sau Silver in Platinum ai nevoie de 500.000$, 50 MP si 1x Tichet Upgrade." 
+    --                 or "/an Hi! To upgrade a Bronze skin to Silver or Silver to Platinum you need $500,000, 50 MP, and 1x Upgrade Ticket."
+    -- sampSendChat(msg)
+    -- end)
 
-    sampRegisterChatCommand(".skinplatinum", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a imbunatati un skin Bronze in Silver sau Silver in Platinum ai nevoie de {09ff00}500.000$, 50 MP si 1x Tichet Upgrade." 
-                        or "{09ff00}Hi! {FFFFFF}To upgrade a Bronze skin to Silver or Silver to Platinum you need {09ff00}$500,000, 50 MP, and 1x Upgrade Ticket."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".skinplatinum", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a imbunatati un skin Bronze in Silver sau Silver in Platinum ai nevoie de {09ff00}500.000$, 50 MP si 1x Tichet Upgrade." 
+    --                     or "{09ff00}Hi! {FFFFFF}To upgrade a Bronze skin to Silver or Silver to Platinum you need {09ff00}$500,000, 50 MP, and 1x Upgrade Ticket."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
       -- Nu detinem informatii
     sampRegisterChatCommand("cninfo", function()
@@ -13287,197 +13287,197 @@ end
         sampAddChatMessage(msg, -1)
     end)
 
-      -- Rotiri Wheel
-    sampRegisterChatCommand("anroata", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Poti face rost de rotiri pentru Roata Norocului din quest-uri, maraton sau evenimente speciale." 
-                        or "/an Hi! You can earn spins for the Wheel of Fortune through quests, marathons, or special events."
-        sampSendChat(msg)
-    end)
+    --   -- Rotiri Wheel
+    -- sampRegisterChatCommand("anroata", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "/an Salut! Poti face rost de rotiri pentru Roata Norocului din quest-uri, maraton sau evenimente speciale." 
+    --                     or "/an Hi! You can earn spins for the Wheel of Fortune through quests, marathons, or special events."
+    --     sampSendChat(msg)
+    -- end)
 
-    sampRegisterChatCommand(".roata", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti face rost de rotiri pentru Roata Norocului din quest-uri, maraton sau evenimente speciale.." 
-                        or "{09ff00}Hi! {FFFFFF}You can earn spins for the Wheel of Fortune through quests, marathons, or special events."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".roata", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti face rost de rotiri pentru Roata Norocului din quest-uri, maraton sau evenimente speciale.." 
+    --                     or "{09ff00}Hi! {FFFFFF}You can earn spins for the Wheel of Fortune through quests, marathons, or special events."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
-    -- Comenzi Job Clash
-    sampRegisterChatCommand("anjobclash", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! La Job Clash, primele 3 locuri primesc: Loc 1: $200.000, Loc 2: $100.000, Loc 3: $50.000." 
-                        or "/an Hi! At Job Clash, the top 3 players receive: 1st: $200,000, 2nd: $100,000, 3rd: $50,000."
-        sampSendChat(msg)
-    end)
+    -- -- Comenzi Job Clash
+    -- sampRegisterChatCommand("anjobclash", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "/an Salut! La Job Clash, primele 3 locuri primesc: Loc 1: $200.000, Loc 2: $100.000, Loc 3: $50.000." 
+    --                     or "/an Hi! At Job Clash, the top 3 players receive: 1st: $200,000, 2nd: $100,000, 3rd: $50,000."
+    --     sampSendChat(msg)
+    -- end)
 
-    sampRegisterChatCommand(".jobclash", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}La Job Clash, primele 3 locuri primesc: {09ff00}Loc 1: $200.000, Loc 2: $100.000, Loc 3: $50.000." 
-                        or "{09ff00}Hi! {FFFFFF}At Job Clash, the top 3 players receive: {09ff00}1st: $200,000, 2nd: $100,000, 3rd: $50,000."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".jobclash", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}La Job Clash, primele 3 locuri primesc: {09ff00}Loc 1: $200.000, Loc 2: $100.000, Loc 3: $50.000." 
+    --                     or "{09ff00}Hi! {FFFFFF}At Job Clash, the top 3 players receive: {09ff00}1st: $200,000, 2nd: $100,000, 3rd: $50,000."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
-      -- Comenzi Mester
-    sampRegisterChatCommand("anmester", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Pentru a inchiria instrumentele necesare la Mester trebuie sa mergi la bizul cu ID: 160." 
-                        or "/an Hi! To rent the necessary tools at Mester you need to go to business with ID: 160."
-        sampSendChat(msg)
-    end)
+    --   -- Comenzi Mester
+    -- sampRegisterChatCommand("anmester", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "/an Salut! Pentru a inchiria instrumentele necesare la Mester trebuie sa mergi la bizul cu ID: 160." 
+    --                     or "/an Hi! To rent the necessary tools at Mester you need to go to business with ID: 160."
+    --     sampSendChat(msg)
+    -- end)
 
-    sampRegisterChatCommand(".mester", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a inchiria instrumentele necesare la Mester trebuie sa mergi la bizul cu ID: 160." 
-                        or "{09ff00}Hi! {FFFFFF}To rent the necessary tools at Mester you need to go to business with ID: 160."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".mester", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a inchiria instrumentele necesare la Mester trebuie sa mergi la bizul cu ID: 160." 
+    --                     or "{09ff00}Hi! {FFFFFF}To rent the necessary tools at Mester you need to go to business with ID: 160."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
-        -- Comenzi Spawnchange
-    sampRegisterChatCommand("anspawn", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Pentru a schimba spawnul trebuie sa tastezi comanda /spawnchange." 
-                        or "/an Hi! To change your spawn you need to type the command /spawnchange."
-        sampSendChat(msg)
-    end)
+    --     -- Comenzi Spawnchange
+    -- sampRegisterChatCommand("anspawn", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "/an Salut! Pentru a schimba spawnul trebuie sa tastezi comanda /spawnchange." 
+    --                     or "/an Hi! To change your spawn you need to type the command /spawnchange."
+    --     sampSendChat(msg)
+    -- end)
 
-    sampRegisterChatCommand(".spawn", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a schimba spawnul trebuie sa tastezi comanda /spawnchange." 
-                        or "{09ff00}Hi! {FFFFFF}To change your spawn you need to type the command /spawnchange."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".spawn", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a schimba spawnul trebuie sa tastezi comanda /spawnchange." 
+    --                     or "{09ff00}Hi! {FFFFFF}To change your spawn you need to type the command /spawnchange."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
-         -- Comenzi Paintball
-    sampRegisterChatCommand("anpaint", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Pentru a parasi arena de Paintball, foloseste comanda /leavepaintball." 
-                        or "/an Hi! To leave the Paintball arena, use the command /leavepaintball."
-        sampSendChat(msg)
-    end)
+    --      -- Comenzi Paintball
+    -- sampRegisterChatCommand("anpaint", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "/an Salut! Pentru a parasi arena de Paintball, foloseste comanda /leavepaintball." 
+    --                     or "/an Hi! To leave the Paintball arena, use the command /leavepaintball."
+    --     sampSendChat(msg)
+    -- end)
 
-    sampRegisterChatCommand(".paint", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a parasi arena de Paintball, foloseste comanda /leavepaintball." 
-                        or "{09ff00}Hi! {FFFFFF}To leave the Paintball arena, use the command /leavepaintball."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".paint", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a parasi arena de Paintball, foloseste comanda /leavepaintball." 
+    --                     or "{09ff00}Hi! {FFFFFF}To leave the Paintball arena, use the command /leavepaintball."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
-           -- Comenzi Bike
-    sampRegisterChatCommand("anbicicleta", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Poti face rost de o bicicleta de la Dealership, Spawn LS sau Skate Park." 
-                        or "/an Hi! You can get a bike from the Dealership, LS Spawn, or Skate Park."
-        sampSendChat(msg)
-    end)
+    --        -- Comenzi Bike
+    -- sampRegisterChatCommand("anbicicleta", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "/an Salut! Poti face rost de o bicicleta de la Dealership, Spawn LS sau Skate Park." 
+    --                     or "/an Hi! You can get a bike from the Dealership, LS Spawn, or Skate Park."
+    --     sampSendChat(msg)
+    -- end)
 
-    sampRegisterChatCommand(".bicicleta", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti face rost de o bicicleta de la Dealership, Spawn LS sau Skate Park." 
-                        or "{09ff00}Hi! {FFFFFF}You can get a bike from the Dealership, LS Spawn, or Skate Park."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".bicicleta", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti face rost de o bicicleta de la Dealership, Spawn LS sau Skate Park." 
+    --                     or "{09ff00}Hi! {FFFFFF}You can get a bike from the Dealership, LS Spawn, or Skate Park."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
-    sampRegisterChatCommand(".paint", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a parasi arena de Paintball, foloseste comanda /leavepaintball." 
-                        or "{09ff00}Hi! {FFFFFF}To leave the Paintball arena, use the command /leavepaintball."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".paint", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a parasi arena de Paintball, foloseste comanda /leavepaintball." 
+    --                     or "{09ff00}Hi! {FFFFFF}To leave the Paintball arena, use the command /leavepaintball."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
-    -- Comenzi Job Goal
-    sampRegisterChatCommand("anjobgoal", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! La Job Goal, jucatorii care ating 100'/. primesc aleatoriu: 5-10 Gold, 5-10 RP si $25.000-$50.000." 
-                        or "/an Hi! At Job Goal, players who reach 100'/. randomly receive: 5-10 Gold, 5-10 RP, and $25,000-$50,000."
-        sampSendChat(msg)
-    end)
+    -- -- Comenzi Job Goal
+    -- sampRegisterChatCommand("anjobgoal", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "/an Salut! La Job Goal, jucatorii care ating 100'/. primesc aleatoriu: 5-10 Gold, 5-10 RP si $25.000-$50.000." 
+    --                     or "/an Hi! At Job Goal, players who reach 100'/. randomly receive: 5-10 Gold, 5-10 RP, and $25,000-$50,000."
+    --     sampSendChat(msg)
+    -- end)
 
-    sampRegisterChatCommand(".jobgoal", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}La Job Goal, jucatorii care ating 100'/. primesc aleatoriu: {09ff00}5-10 Gold, 5-10 RP si $25.000-$50.000." 
-                        or "{09ff00}Hi! {FFFFFF}At Job Goal, players who reach 100'/. randomly receive: {09ff00}5-10 Gold, 5-10 RP, and $25,000-$50,000."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".jobgoal", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}La Job Goal, jucatorii care ating 100'/. primesc aleatoriu: {09ff00}5-10 Gold, 5-10 RP si $25.000-$50.000." 
+    --                     or "{09ff00}Hi! {FFFFFF}At Job Goal, players who reach 100'/. randomly receive: {09ff00}5-10 Gold, 5-10 RP, and $25,000-$50,000."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
-    -- Skin Onyx
-    sampRegisterChatCommand("anskinonyx", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Pentru a transforma un skin Diamond intr-un skin Onyx trebuie sa ai 2.000.000$, 200 MP si un Tichet Onyx." 
-                        or "/an Hi! To transform a Diamond skin into an Onyx skin you need $2,000,000, 200 MP, and an Onyx Ticket."
-        sampSendChat(msg)
-    end)
+    -- -- Skin Onyx
+    -- sampRegisterChatCommand("anskinonyx", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "/an Salut! Pentru a transforma un skin Diamond intr-un skin Onyx trebuie sa ai 2.000.000$, 200 MP si un Tichet Onyx." 
+    --                     or "/an Hi! To transform a Diamond skin into an Onyx skin you need $2,000,000, 200 MP, and an Onyx Ticket."
+    --     sampSendChat(msg)
+    -- end)
 
-    sampRegisterChatCommand(".skinonyx", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a transforma un skin Diamond intr-un skin Onyx trebuie sa ai {09ff00}2.000.000$, 200 MP si un Tichet Onyx." 
-                        or "{09ff00}Hi! {FFFFFF}To transform a Diamond skin into an Onyx skin you need {09ff00}$2,000,000, 200 MP, and an Onyx Ticket."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".skinonyx", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a transforma un skin Diamond intr-un skin Onyx trebuie sa ai {09ff00}2.000.000$, 200 MP si un Tichet Onyx." 
+    --                     or "{09ff00}Hi! {FFFFFF}To transform a Diamond skin into an Onyx skin you need {09ff00}$2,000,000, 200 MP, and an Onyx Ticket."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
-    -- Plate
-    sampRegisterChatCommand("anplate", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Foloseste comanda [/v] > Masini, alege vehiculul dorit, dupa care alege optiunea 'Schimba placuta de inmatriculare'." 
-                        or "/an Hi! Use the command [/v] > Cars, choose the desired vehicle, then select the 'Change license plate' option."
-        sampSendChat(msg)
-    end)
+    -- -- Plate
+    -- sampRegisterChatCommand("anplate", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "/an Salut! Foloseste comanda [/v] > Masini, alege vehiculul dorit, dupa care alege optiunea 'Schimba placuta de inmatriculare'." 
+    --                     or "/an Hi! Use the command [/v] > Cars, choose the desired vehicle, then select the 'Change license plate' option."
+    --     sampSendChat(msg)
+    -- end)
 
-    sampRegisterChatCommand(".plate", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Foloseste comanda {09ff00}[/v] > Masini{FFFFFF}, alege vehiculul dorit, dupa care alege optiunea {09ff00}'Schimba placuta de inmatriculare'." 
-                        or "{09ff00}Hi! {FFFFFF}Use the command {09ff00}[/v] > Cars{FFFFFF}, choose the desired vehicle, then select the {09ff00}'Change license plate' {FFFFFF}option."
-        sampAddChatMessage(msg, -1)
-    end)
+    -- sampRegisterChatCommand(".plate", function()
+    --     local isRO = (iniData.settings.lang == 0)
+    --     local msg = isRO and "{09ff00}Salut! {FFFFFF}Foloseste comanda {09ff00}[/v] > Masini{FFFFFF}, alege vehiculul dorit, dupa care alege optiunea {09ff00}'Schimba placuta de inmatriculare'." 
+    --                     or "{09ff00}Hi! {FFFFFF}Use the command {09ff00}[/v] > Cars{FFFFFF}, choose the desired vehicle, then select the {09ff00}'Change license plate' {FFFFFF}option."
+    --     sampAddChatMessage(msg, -1)
+    -- end)
 
-    sampRegisterChatCommand("anreroll", function(arg)
-        local isRO = (iniData.settings.lang == 0)
+    -- sampRegisterChatCommand("anreroll", function(arg)
+    --     local isRO = (iniData.settings.lang == 0)
         
-        if #arg == 0 then
-            local msg = isRO and "{44A564}(Helper Help) {FFFFFF}Sintaxa: /anreroll <Diamond/Onyx>" 
-                            or "{44A564}(Helper Help) {FFFFFF}Usage: /anreroll <Diamond/Onyx>"
-            sampAddChatMessage(msg, -1)
-            return
-        end
+    --     if #arg == 0 then
+    --         local msg = isRO and "{44A564}(Helper Help) {FFFFFF}Sintaxa: /anreroll <Diamond/Onyx>" 
+    --                         or "{44A564}(Helper Help) {FFFFFF}Usage: /anreroll <Diamond/Onyx>"
+    --         sampAddChatMessage(msg, -1)
+    --         return
+    --     end
 
-        if arg:lower() == "diamond" then
-            local msg = isRO and "/an Salut! Pentru a da reroll la un skin Diamond ai nevoie de: $1,000,000, 100MP si 1 Ticket Diamond." 
-                            or "/an Hi! To reroll a Diamond skin you need: $1,000,000, 100MP and 1 Diamond Ticket."
-            sampSendChat(msg)
-        elseif arg:lower() == "onyx" then
-            local msg = isRO and "/an Salut! Pentru a da reroll la un skin Onyx ai nevoie de: $2,000,000, 200MP si 1 Ticket Onyx." 
-                            or "/an Hi! To reroll an Onyx skin you need: $2,000,000, 200MP and 1 Onyx Ticket."
-            sampSendChat(msg)
-        else
-            local msg = isRO and "{44A564}(Helper Help) {FF0000}Eroare: {FFFFFF}Parametru invalid! Alege 'Diamond' sau 'Onyx'." 
-                            or "{44A564}(Helper Help) {FF0000}Error: {FFFFFF}Invalid parameter! Choose 'Diamond' or 'Onyx'."
-            sampAddChatMessage(msg, -1)
-        end
-    end)
+    --     if arg:lower() == "diamond" then
+    --         local msg = isRO and "/an Salut! Pentru a da reroll la un skin Diamond ai nevoie de: $1,000,000, 100MP si 1 Ticket Diamond." 
+    --                         or "/an Hi! To reroll a Diamond skin you need: $1,000,000, 100MP and 1 Diamond Ticket."
+    --         sampSendChat(msg)
+    --     elseif arg:lower() == "onyx" then
+    --         local msg = isRO and "/an Salut! Pentru a da reroll la un skin Onyx ai nevoie de: $2,000,000, 200MP si 1 Ticket Onyx." 
+    --                         or "/an Hi! To reroll an Onyx skin you need: $2,000,000, 200MP and 1 Onyx Ticket."
+    --         sampSendChat(msg)
+    --     else
+    --         local msg = isRO and "{44A564}(Helper Help) {FF0000}Eroare: {FFFFFF}Parametru invalid! Alege 'Diamond' sau 'Onyx'." 
+    --                         or "{44A564}(Helper Help) {FF0000}Error: {FFFFFF}Invalid parameter! Choose 'Diamond' or 'Onyx'."
+    --         sampAddChatMessage(msg, -1)
+    --     end
+    -- end)
 
-    sampRegisterChatCommand(".reroll", function(arg)
-        local isRO = (iniData.settings.lang == 0)
+    -- sampRegisterChatCommand(".reroll", function(arg)
+    --     local isRO = (iniData.settings.lang == 0)
         
-        if #arg == 0 then
-            local msg = isRO and "{44A564}(Helper Help) {FFFFFF}Sintaxa: /.reroll <Diamond/Onyx>" 
-                            or "{44A564}(Helper Help) {FFFFFF}Usage: /.reroll <Diamond/Onyx>"
-            sampAddChatMessage(msg, -1)
-            return
-        end
+    --     if #arg == 0 then
+    --         local msg = isRO and "{44A564}(Helper Help) {FFFFFF}Sintaxa: /.reroll <Diamond/Onyx>" 
+    --                         or "{44A564}(Helper Help) {FFFFFF}Usage: /.reroll <Diamond/Onyx>"
+    --         sampAddChatMessage(msg, -1)
+    --         return
+    --     end
 
-        if arg:lower() == "diamond" then
-            local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a da reroll la un skin {09ff00}Diamond {FFFFFF}ai nevoie de: {09ff00}$1,000,000, 100MP si 1 Ticket Diamond." 
-                            or "{09ff00}Hi! {FFFFFF}To reroll a {09ff00}Diamond {FFFFFF}skin you need: {09ff00}$1,000,000, 100MP and 1 Diamond Ticket."
-            sampAddChatMessage(msg, -1)
-        elseif arg:lower() == "onyx" then
-            local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a da reroll la un skin {09ff00}Onyx {FFFFFF}ai nevoie de: {09ff00}$2,000,000, 200MP si 1 Ticket Onyx." 
-                            or "{09ff00}Hi! {FFFFFF}To reroll an {09ff00}Onyx {FFFFFF}skin you need: {09ff00}$2,000,000, 200MP and 1 Onyx Ticket."
-            sampAddChatMessage(msg, -1)
-        else
-            local msg = isRO and "{44A564} {FF0000}Eroare: {FFFFFF}Parametru invalid!" 
-                            or "{44A564} {FF0000}Error: {FFFFFF}Invalid parameter!"
-            sampAddChatMessage(msg, -1)
-        end
-    end)
+    --     if arg:lower() == "diamond" then
+    --         local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a da reroll la un skin {09ff00}Diamond {FFFFFF}ai nevoie de: {09ff00}$1,000,000, 100MP si 1 Ticket Diamond." 
+    --                         or "{09ff00}Hi! {FFFFFF}To reroll a {09ff00}Diamond {FFFFFF}skin you need: {09ff00}$1,000,000, 100MP and 1 Diamond Ticket."
+    --         sampAddChatMessage(msg, -1)
+    --     elseif arg:lower() == "onyx" then
+    --         local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a da reroll la un skin {09ff00}Onyx {FFFFFF}ai nevoie de: {09ff00}$2,000,000, 200MP si 1 Ticket Onyx." 
+    --                         or "{09ff00}Hi! {FFFFFF}To reroll an {09ff00}Onyx {FFFFFF}skin you need: {09ff00}$2,000,000, 200MP and 1 Onyx Ticket."
+    --         sampAddChatMessage(msg, -1)
+    --     else
+    --         local msg = isRO and "{44A564} {FF0000}Eroare: {FFFFFF}Parametru invalid!" 
+    --                         or "{44A564} {FF0000}Error: {FFFFFF}Invalid parameter!"
+    --         sampAddChatMessage(msg, -1)
+    --     end
+    -- end)
 
     -- [ INREGISTRARE COMENZI ADMINISTRATIVE HELPER 2 ] --
     -- Stopevent
