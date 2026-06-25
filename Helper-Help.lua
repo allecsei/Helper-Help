@@ -12927,7 +12927,8 @@ end, function(player)
                     {"/fz <id>", isRO and u8("Ingheata un jucator anume") or "Freeze a specific player"},
                     {"/unfz <id>", isRO and u8("Dezgheata un jucator anume") or "Unfreeze a specific player"},
                     {"/wagon", isRO and u8("Spawneaza un vagon (ID 570)") or "Spawn a wagon (ID 570)"},
-                    {"/es", isRO and u8("Te pune /eventsupport automat si da /join") or "Auto-sets /eventsupport and performs /join"}
+                    {"/es", isRO and u8("Te pune /eventsupport automat si da /join") or "Auto-sets /eventsupport and performs /join"},
+                    {"/ae <id>", isRO and u8("Accepta un event (ID 570)") or "Accept an event (ID 570)"}
                 }
 
                 for _, data in ipairs(helper_cmds) do
@@ -13523,6 +13524,14 @@ end
             sampSendChat("/freeze " .. id)
         else
             sampAddChatMessage("{00ff00}Syntax: {FFFFFF}/fz <id>", -1)
+        end
+    end)
+
+     sampRegisterChatCommand("ae", function(id)
+        if #id > 0 then
+            sampSendChat("/accept event " .. id)
+        else
+            sampAddChatMessage("{00ff00}Syntax: {FFFFFF}/ae <id>", -1)
         end
     end)
 
