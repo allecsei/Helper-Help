@@ -4223,13 +4223,13 @@ local function applyStyle(styleId)
         style.ItemSpacing.x     = 12.0 * scale
         style.ItemSpacing.y     = 8.0 * scale
     elseif styleId == 6 then
-        style.WindowRounding    = 0.0
-        style.FrameRounding     = 4.0 * scale
-        style.ChildRounding     = 0.0
-        style.ScrollbarRounding = 0.0
-        style.GrabRounding      = 4.0 * scale
-        style.ItemSpacing.x     = 14.0 * scale
-        style.ItemSpacing.y     = 10.0 * scale
+        style.WindowRounding    = 8.0 * scale
+        style.FrameRounding     = 8.0 * scale
+        style.ChildRounding     = 8.0 * scale
+        style.ScrollbarRounding = 8.0 * scale
+        style.GrabRounding      = 6.0 * scale
+        style.ItemSpacing.x     = 12.0 * scale
+        style.ItemSpacing.y     = 8.0 * scale
     elseif styleId == 7 then
         style.WindowRounding    = 7.0 * scale
         style.FrameRounding     = 4.0 * scale
