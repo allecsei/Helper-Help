@@ -3078,55 +3078,69 @@ local function renderCraftsmanDetails()
             CraftRow("Door 5", "34", "220", "72", "40", "$19.125", "$28.687", false)    
         end
         imgui.Columns(1)
+        imgui.EndChild()
+        imgui.Spacing()
+
+        imgui.BeginChild("ResurseJobs", imgui.ImVec2(0, 330), true)
+        local isRo = (iniData.settings.lang == 0)
+
+        imgui.TextColored(imgui.ImVec4(0.6, 0.4, 0.2, 1), isRo and "LEMN (Taietor de Lemne):" or "WOOD (Lumberjack):")
+        imgui.Text("Skill 5: 10 + random(9) | Skill 6: 15 + random(9)")
+        imgui.Text("Skill 7: 20 + random(9) | Skill 8: 25 + random(9)")
+        imgui.Text("Skill 9: 30 + random(9) | Skill 10: 35 + random(9)")
+        imgui.Separator()
+
+        imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), isRo and "BUMBAC (Farmer):" or "COTTON (Farmer):")
+        imgui.Text(isRo and "1 + random(9) per cactus cules." or "1 + random(9) per harvested cactus.")
+        imgui.TextWrapped(isRo and "Nota: 16 cactusi per parcela = 16 * (1 + random(9))." or "Note: 16 cacti per plot = 16 * (1 + random(9)).")
+        imgui.Separator()
+
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), isRo and "AUR (Miner):" or "GOLD (Miner):")
+        imgui.Text("Skill 5: 10 + random(9) | Skill 6: 15 + random(9)")
+        imgui.Text("Skill 7: 20 + random(9) | Skill 8: 25 + random(9)")
+        imgui.Text("Skill 9: 30 + random(9) | Skill 10: 35 + random(9)")
+        imgui.Separator()
+
+        imgui.TextColored(imgui.ImVec4(0.7, 0.7, 0.7, 1), isRo and "ARGINT (Muncitor la Cariera):" or "SILVER (Quarry):")
+        imgui.Text("Skill 5: 10 + random(9) | Skill 6: 15 + random(9)")
+        imgui.Text("Skill 7: 20 + random(9) | Skill 8: 25 + random(9)")
+        imgui.Text("Skill 9: 30 + random(9) | Skill 10: 35 + random(9)")
+        
     imgui.EndChild()
-    imgui.Spacing()
     
-    imgui.BeginChild("MesterProgFinal", imgui.ImVec2(0, 220), true)  
-        imgui.Columns(2, "finalProgCols", false)
-        if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "VEHICULE:")
-            imgui.Text("Pony - Skillul necesar: 1, 2, 3, 4")
-            imgui.Text("Vehicul Personal - Skillul necesar: 5, 6, 7, 8, 9, 10")
+    imgui.BeginChild("MesterProgFinal", imgui.ImVec2(0, 345), true)
+        local isRo = (iniData.settings.lang == 0)
 
-            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Aeronavele permise pentru transport sunt:")
-            imgui.Text("Elicoptere: Leviathan, Sparrow, Maverick, Cargobob, Raindance.")
-            imgui.Text("Avioane: Skimmer, Beagle, Cropduster, Stuntplane, Shamal, Nevada, Dodo.")
-            imgui.NextColumn()
-            
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "PRAGURI PUNCTE SKILL:")
-            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 1 la skill 2, trebuie 30 de puncte.")
-            imgui.TextColored(imgui.ImVec4(1, 0.75, 0, 1), "Skill 2 la skill 3, trebuie 60 de puncte(90 in total)")
-            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Skill 3 la skill 4, trebuie 120 de puncte(210 in total)")
-            imgui.TextColored(imgui.ImVec4(0.4, 1, 0.4, 1), "Skill 4 la skill 5, trebuie 240 de puncte(450 in total)")
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.6, 1), "Skill 5 la skill 6, trebuie 200 de puncte(650 in total)")
-            imgui.TextColored(imgui.ImVec4(0, 0.8, 1, 1), "Skill 6 la skill 7, trebuie 250 de puncte(900 in total)")
-            imgui.TextColored(imgui.ImVec4(0.5, 0.5, 1, 1), "Skill 7 la skill 8, trebuie 300 de puncte(1200 in total)")
-            imgui.TextColored(imgui.ImVec4(0.8, 0.4, 1, 1), "Skill 8 la skill 9, trebuie 350 de puncte(1550 in total)")
-            imgui.TextColored(imgui.ImVec4(1, 0.4, 0.6, 1), "Skill 9 la skill 10, trebuie 350 de puncte(1900 in total)")  
-        else
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "VEHICLES:")
-            imgui.Text("Pony - Required Skill: 1, 2, 3, 4")
-            imgui.Text("Personal Vehicle - Required Skill: 5, 6, 7, 8, 9, 10")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRo and "VEHICULE:" or "VEHICLES:")
+        imgui.Text(isRo and "Pony - Skillul necesar: 1, 2, 3, 4" or "Pony - Required Skill: 1, 2, 3, 4")
+        imgui.Text(isRo and "Vehicul Personal - Skillul necesar: 5, 6, 7, 8, 9, 10" or "Personal Vehicle - Required Skill: 5, 6, 7, 8, 9, 10")
+        imgui.Separator()
 
-            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Allowed aircrafts for transport are:")
-            imgui.Text("Helicopters: Leviathan, Sparrow, Maverick, Cargobob, Raindance.")
-            imgui.Text("Planes: Skimmer, Beagle, Cropduster, Stuntplane, Shamal, Nevada, Dodo.")
-            imgui.NextColumn()
-            
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SKILL POINT THRESHOLDS:")
-            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 1 to skill 2, you need 30 points.")
-            imgui.TextColored(imgui.ImVec4(1, 0.75, 0, 1), "Skill 2 to skill 3, you need 60 points (90 total)")
-            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Skill 3 to skill 4, you need 120 points (210 total)")
-            imgui.TextColored(imgui.ImVec4(0.4, 1, 0.4, 1), "Skill 4 to skill 5, you need 240 points (450 total)")
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.6, 1), "Skill 5 to skill 6, you need 200 points (650 total)")
-            imgui.TextColored(imgui.ImVec4(0, 0.8, 1, 1), "Skill 6 to skill 7, you need 250 points (900 total)")
-            imgui.TextColored(imgui.ImVec4(0.5, 0.5, 1, 1), "Skill 7 to skill 8, you need 300 points (1200 total)")
-            imgui.TextColored(imgui.ImVec4(0.8, 0.4, 1, 1), "Skill 8 to skill 9, you need 350 points (1550 total)")
-            imgui.TextColored(imgui.ImVec4(1, 0.4, 0.6, 1), "Skill 9 to skill 10, you need 350 points (1900 total)")  
+        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), isRo and "Aeronavele permise pentru transport sunt:" or "Allowed aircrafts for transport are:")
+        imgui.Text(isRo and "Elicoptere: Leviathan, Sparrow, Maverick, Cargobob, Raindance." or "Helicopters: Leviathan, Sparrow, Maverick, Cargobob, Raindance.")
+        imgui.Text(isRo and "Avioane: Skimmer, Beagle, Cropduster, Stuntplane, Shamal, Nevada, Dodo." or "Planes: Skimmer, Beagle, Cropduster, Stuntplane, Shamal, Nevada, Dodo.")
+        imgui.Separator()
+
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRo and "PRAGURI PUNCTE SKILL:" or "SKILL POINT THRESHOLDS:")
+        
+        local thresholds = {
+            {color = imgui.ImVec4(1, 1, 0, 1), ro = "Skill 1 la 2, trebuie 30 de puncte.", en = "Skill 1 to 2, you need 30 points."},
+            {color = imgui.ImVec4(1, 0.75, 0, 1), ro = "Skill 2 la 3, trebuie 60 puncte (90 total)", en = "Skill 2 to 3, you need 60 points (90 total)"},
+            {color = imgui.ImVec4(1, 0.5, 0, 1), ro = "Skill 3 la 4, trebuie 120 puncte (210 total)", en = "Skill 3 to 4, you need 120 points (210 total)"},
+            {color = imgui.ImVec4(0.4, 1, 0.4, 1), ro = "Skill 4 la 5, trebuie 240 puncte (450 total)", en = "Skill 4 to 5, you need 240 points (450 total)"},
+            {color = imgui.ImVec4(0, 1, 0.6, 1), ro = "Skill 5 la 6, trebuie 200 puncte (650 total)", en = "Skill 5 to 6, you need 200 points (650 total)"},
+            {color = imgui.ImVec4(0, 0.8, 1, 1), ro = "Skill 6 la 7, trebuie 250 puncte (900 total)", en = "Skill 6 to 7, you need 250 points (900 total)"},
+            {color = imgui.ImVec4(0.5, 0.5, 1, 1), ro = "Skill 7 la 8, trebuie 300 puncte (1200 total)", en = "Skill 7 to 8, you need 300 points (1200 total)"},
+            {color = imgui.ImVec4(0.8, 0.4, 1, 1), ro = "Skill 8 la 9, trebuie 350 puncte (1550 total)", en = "Skill 8 to 9, you need 350 points (1550 total)"},
+            {color = imgui.ImVec4(1, 0.4, 0.6, 1), ro = "Skill 9 la 10, trebuie 350 puncte (1900 total)", en = "Skill 9 to 10, you need 350 points (1900 total)"}
+        }
+
+        for _, v in ipairs(thresholds) do
+            imgui.TextColored(v.color, isRo and v.ro or v.en)
         end
-        imgui.Columns(1)
+        
     imgui.EndChild()
-end
+    end
 
 local function renderFirefighterDetails()
     if iniData.settings.lang == 0 then
@@ -7454,8 +7468,7 @@ end, function(player)
                             imgui.Separator()
                             imgui.Spacing()
 
-                            -- DETALII BIZ
-                            imgui.BeginChild("CarColorInfo_Search", imgui.ImVec2(0, 120), true)
+                            imgui.BeginChild("CarColorInfo_Search", imgui.ImVec2(0, 100), true)
                                 imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), iniData.settings.lang == 0 and u8("DETALII BIZ:") or "BUSINESS DETAILS:")
                                 imgui.Separator()
                                 if iniData.settings.lang == 0 then
@@ -7467,13 +7480,11 @@ end, function(player)
                                     imgui.BulletText("Identification: Pink 'C' marker on the map.")
                                     imgui.BulletText("Usage: Allows changing primary and secondary colors.")
                                 end
-                            imgui.EndChild()
-                            
+                            imgui.EndChild()                   
                             imgui.Spacing()
                             imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), iniData.settings.lang == 0 and u8("CATEGORII CULORI SI COSTURI:") or "COLOR CATEGORIES AND COSTS:")
-                            
-                            -- CULORI
-                            imgui.BeginChild("ColorCategories_Search", imgui.ImVec2(0, 185), true)
+
+                            imgui.BeginChild("ColorCategories_Search", imgui.ImVec2(0, 170), true)
                                 if iniData.settings.lang == 0 then
                                     imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), u8("CULORI NORMALE (STANDARD):"))
                                     imgui.BulletText(u8("Interval ID-uri: 0 - 127"))
@@ -7496,8 +7507,7 @@ end, function(player)
                             imgui.EndChild()
                             
                             imgui.Spacing()
-                            -- CUM SCHIMBI CULOAREA
-                            imgui.BeginChild("ColorInstructions_Search", imgui.ImVec2(0, 130), true)
+                            imgui.BeginChild("ColorInstructions_Search", imgui.ImVec2(0, 420), true)
                                 imgui.TextColored(imgui.ImVec4(0.4, 1, 0.4, 1), iniData.settings.lang == 0 and u8("CUM SCHIMBI CULOAREA:") or "HOW TO CHANGE COLOR:")
                                 imgui.Separator()
                                 if iniData.settings.lang == 0 then
@@ -7509,8 +7519,75 @@ end, function(player)
                                     imgui.TextWrapped("2. Use [/carcolor (ID 1) (ID 2)] to paint your vehicle.")
                                     imgui.TextWrapped("3. The first ID is the primary color, the second is the secondary one.")
                                 end
-                            imgui.EndChild()
-                            
+
+                                imgui.Spacing()
+                                imgui.Columns(2, "ColorColumns_Search", false)
+                                imgui.SetColumnWidth(0, imgui.GetWindowWidth() / 2 - 10)
+                                imgui.SetColumnWidth(1, imgui.GetWindowWidth() / 2 - 10)
+
+                                imgui.BeginChild("ColorNonHiddenColumn", imgui.ImVec2(0, 320), true)
+                                    imgui.TextColored(imgui.ImVec4(1, 0.9, 0.2, 1), iniData.settings.lang == 0 and u8("Culorile Non Hidden") or "Non Hidden Colors")
+                                    imgui.Separator()
+                                    local nonHiddenColors = {
+                                        {0, "#000000", iniData.settings.lang == 0 and "Negru" or "Black"}, {1, "#FFFFFF", iniData.settings.lang == 0 and "Alb" or "White"}, {2, "#42878E", "Teal"}, {3, "#A31D28", "Red"}, {4, "#3F4C43", "Greenish Gray"}, {5, "#9B5F6D", "Rose"}, {6, "#F9A024", "Orange"}, {7, "#6487A3", "Blue Gray"}, {8, "#DBCEAF", "Beige"}, {9, "#74816D", "Olive Gray"},
+                                        {10, "#5C6D74", "Steel Blue"}, {11, "#827D75", "Gray"}, {12, "#718F83", "Mint"}, {13, "#77725f", "Khaki"}, {14, "#E0D6B2", "Pale Beige"}, {15, "#BCB598", "Sand"}, {16, "#447547", "Forest Green"}, {17, "#8C2832", "Burgundy"}, {18, "#8B293C", "Dark Red"}, {19, "#BBAA89", "Taupe"},
+                                        {20, "#506570", "Blue Gray"}, {21, "#8C4A41", "Brown"}, {22, "#853445", "Deep Rose"}, {23, "#ADA386", "Desert"}, {24, "#6C6761", "Dark Gray"}, {25, "#4F4F4A", "Charcoal"}, {26, "#BDB99C", "Pale Gold"}, {27, "#7C7162", "Warm Gray"}, {28, "#4F5F60", "Dark Teal"}, {29, "#A8A788", "Sage"},
+                                        {30, "#5D3232", "Dark Brown"}, {31, "#763A3C", "Wine"}, {32, "#9CA29A", "Silver Gray"}, {33, "#858E78", "Moss"}, {34, "#7D7865", "Stone"}, {35, "#706959", "Brown Gray"}, {36, "#3F3C34", "Dark Olive"}, {37, "#3C5142", "Muted Green"}, {38, "#ACB48D", "Lime Green"}, {39, "#7E8A7A", "Cool Gray"},
+                                        {40, "#373324", "Dark Brown"}, {41, "#8F7E5F", "Camel"}, {42, "#933939", "Crimson"}, {43, "#71282C", "Deep Red"}, {44, "#304F37", "Dark Green"}, {45, "#75342E", "Rust"}, {46, "#BCA76E", "Gold"}, {47, "#9C9065", "Mustard"}, {48, "#AAA17A", "Pale Sand"}, {49, "#CFC8AB", "Cream"},
+                                        {50, "#9B9A85", "Drab"}, {51, "#47674D", "Green"}, {52, "#5F7668", "Sea Green"}, {53, "#223039", "Midnight Blue"}, {54, "#3D4255", "Blue Slate"}, {55, "#9B775C", "Tan"}, {56, "#BAB19B", "Light Taupe"}, {57, "#BA9C6A", "Honey"}, {58, "#7F2D33", "Maroon"}, {59, "#64807B", "Aqua Gray"},
+                                        {60, "#B5A68D", "Sandy"}, {61, "#AA8140", "Golden Brown"}, {62, "#783534", "Dark Maroon"}, {63, "#ACA589", "Dusty Olive"}, {64, "#BCB598", "Pale Olive"}, {65, "#A59C52", "Olive"}, {66, "#4D342D", "Dark Walnut"}, {67, "#808E81", "Gray Green"}, {68, "#C0BC7D", "Pale Olive"}, {69, "#C2A878", "Warm Beige"},
+                                        {70, "#9D3738", "Red Brown"}, {71, "#858F89", "Cool Gray"}, {72, "#6D6D5D", "Dark Gray"}, {73, "#B1B283", "Pale Green"}, {74, "#7B3432", "Brick Red"}, {75, "#31363C", "Gunmetal"}, {76, "#BFAF8F", "Sandstone"}, {77, "#C6AA7A", "Golden Sand"}, {78, "#933838", "Deep Red"}, {79, "#244571", "Navy"},
+                                        {80, "#903E48", "Rose Brown"}, {81, "#87795A", "Dusty Gold"}, {82, "#8C3423", "Terracotta"}, {83, "#334A49", "Deep Teal"}, {84, "#664735", "Mocha"}, {85, "#A3324B", "Magenta"}, {86, "#436B32", "Dark Moss"}, {87, "#506D7B", "Slate Blue"}, {88, "#893C40", "Claret"}, {89, "#C1AC7A", "Pale Gold"},
+                                        {90, "#CBBB99", "Ivory"}, {91, "#4B5861", "Steel Gray"}, {92, "#817967", "Taupe Gray"}, {93, "#1D847D", "Turquoise"}, {94, "#366364", "Deep Teal"}, {95, "#3E505C", "Blue Gray"}, {96, "#AFAE90", "Pale Olive"}, {97, "#839688", "Muted Green"}, {98, "#629287", "Seafoam"}, {99, "#C9A979", "Sandy Gold"},
+                                        {100, "#578283", "Mint Blue"}, {101, "#233034", "Dark Blue"}, {102, "#BEA675", "Pale Gold"}, {103, "#265464", "Deep Blue"}, {104, "#A18656", "Dusty Gold"}, {105, "#7E6556", "Brown Gray"}, {106, "#1E6076", "Cyan Blue"}, {107, "#C0B08F", "Honey Beige"}, {108, "#516B8A", "Slate Blue"}, {109, "#676860", "Gray"},
+                                        {110, "#9A8260", "Bronze"}, {111, "#9DA18A", "Moss Gray"}, {112, "#6B7B7D", "Blue Gray"}, {113, "#614A42", "Dark Brown"}, {114, "#627052", "Green Gray"}, {115, "#882B38", "Cherry Red"}, {116, "#324451", "Dark Slate"}, {117, "#76272F", "Dark Wine"}, {118, "#BFBDB0", "Pale Gray"}, {119, "#7E6754", "Brown"},
+                                        {120, "#AF9A76", "Golden Tan"}, {121, "#802330", "Dark Rose"}, {122, "#6E6F5F", "Muted Gray"}, {123, "#79522E", "Copper"}, {124, "#912B39", "Ruby"}, {125, "#314465", "Deep Blue"}, {126, "#F37494", "Pink"}, {127, "#000000", iniData.settings.lang == 0 and "Negru" or "Black"}
+                                    }
+                                    for _, color in ipairs(nonHiddenColors) do
+                                        local r = tonumber(color[2]:sub(2, 3), 16) / 255
+                                        local g = tonumber(color[2]:sub(4, 5), 16) / 255
+                                        local b = tonumber(color[2]:sub(6, 7), 16) / 255
+                                        imgui.BeginChild("ColorCard_NH_" .. color[1], imgui.ImVec2(0, 35), true)
+                                            imgui.ColorButton("##color_box_" .. color[1], imgui.ImVec4(r, g, b, 1.0), 0, imgui.ImVec2(18, 18))
+                                            imgui.SameLine()
+                                            imgui.SetCursorPosY(imgui.GetCursorPosY() + 1)
+                                            imgui.TextColored(imgui.ImVec4(r, g, b, 1.0), "ID " .. color[1] .. " - " .. (color[3] or color[2]))
+                                        imgui.EndChild()
+                                    end
+                                imgui.EndChild()
+                                imgui.NextColumn()
+                                imgui.BeginChild("ColorHiddenColumn", imgui.ImVec2(0, 320), true)
+                                    imgui.TextColored(imgui.ImVec4(1, 0.7, 0.2, 1), iniData.settings.lang == 0 and u8("Culorile Hidden") or "Hidden Colors")
+                                    imgui.Separator()
+                                    local hiddenColors = {
+                                        {128, "#166011", iniData.settings.lang == 0 and "Verde Închis" or "Deep Green"}, {129, "#381F21", iniData.settings.lang == 0 and "Maro Închis" or "Dark Maroon"}, {130, "#25646E", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {131, "#554019", iniData.settings.lang == 0 and "Maro Galben" or "Brown Gold"}, {132, "#65322F", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {133, "#19211F", iniData.settings.lang == 0 and "Negru" or "Black"}, {134, "#3B3855", iniData.settings.lang == 0 and "Violet Închis" or "Dark Purple"}, {135, "#3A8E8E", iniData.settings.lang == 0 and "Turcoaz" or "Turquoise"}, {136, "#935C9B", iniData.settings.lang == 0 and "Mov" or "Purple"}, {137, "#429C3D", iniData.settings.lang == 0 and "Verde" or "Green"},
+                                        {138, "#BDBA9B", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {139, "#586376", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {140, "#928980", iniData.settings.lang == 0 and "Gri" or "Gray"}, {141, "#917E5F", iniData.settings.lang == 0 and "Maro Bej" or "Brown Beige"}, {142, "#917F31", iniData.settings.lang == 0 and "Galben Înnorat" or "Muted Yellow"}, {143, "#745D61", iniData.settings.lang == 0 and "Violet Gri" or "Gray Purple"}, {144, "#6D4E62", iniData.settings.lang == 0 and "Roz Închis" or "Dark Pink"}, {145, "#9AAE77", iniData.settings.lang == 0 and "Verde Pădure" or "Olive Green"}, {146, "#926166", iniData.settings.lang == 0 and "Roz Cenușiu" or "Dusty Pink"}, {147, "#905D6C", iniData.settings.lang == 0 and "Roșu Roz" or "Rose Red"},
+                                        {148, "#383126", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {149, "#3A2F1D", iniData.settings.lang == 0 and "Maro Negru" or "Dark Brown"}, {150, "#323827", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {151, "#3F5539", iniData.settings.lang == 0 and "Verde Pădure" or "Forest Green"}, {152, "#305682", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {153, "#43684D", iniData.settings.lang == 0 and "Verde Gri" or "Green Gray"}, {154, "#299547", iniData.settings.lang == 0 and "Verde Luminos" or "Bright Green"}, {155, "#2B8C78", iniData.settings.lang == 0 and "Turcoaz" or "Teal"}, {156, "#AE9B6D", iniData.settings.lang == 0 and "Bej Galben" or "Yellow Beige"}, {157, "#838C88", iniData.settings.lang == 0 and "Gri Verzui" or "Green Gray"},
+                                        {158, "#A53E2D", iniData.settings.lang == 0 and "Roșu Cărămiziu" or "Brick Red"}, {159, "#3B2E1B", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {160, "#2C3A20", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {161, "#AA5050", iniData.settings.lang == 0 and "Roșu" or "Red"}, {162, "#2C5F84", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {163, "#238D71", iniData.settings.lang == 0 and "Verde Turcoaz" or "Teal Green"}, {164, "#353935", iniData.settings.lang == 0 and "Gri Închis" or "Dark Gray"}, {165, "#356565", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {166, "#724876", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {167, "#5E3029", iniData.settings.lang == 0 and "Maro Roșcat" or "Rust Brown"},
+                                        {168, "#827881", iniData.settings.lang == 0 and "Gri Violet" or "Gray Purple"}, {169, "#7F727B", iniData.settings.lang == 0 and "Gri Roz" or "Pink Gray"}, {170, "#827680", iniData.settings.lang == 0 and "Gri Mov" or "Purple Gray"}, {171, "#674C77", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {172, "#373A1F", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {173, "#3F2C1E", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {174, "#563A25", iniData.settings.lang == 0 and "Maro" or "Brown"}, {175, "#AA3930", iniData.settings.lang == 0 and "Roșu Aprins" or "Bright Red"}, {176, "#A75A80", iniData.settings.lang == 0 and "Roz Violet" or "Pink Purple"}, {177, "#8F6C77", iniData.settings.lang == 0 and "Roz Gri" or "Pink Gray"},
+                                        {178, "#8B4D70", iniData.settings.lang == 0 and "Roz Închis" or "Dark Pink"}, {179, "#4E2B44", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {180, "#874725", iniData.settings.lang == 0 and "Maro Portocaliu" or "Orange Brown"}, {181, "#872D33", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {182, "#914823", iniData.settings.lang == 0 and "Portocaliu Închis" or "Dark Orange"}, {183, "#9D4026", iniData.settings.lang == 0 and "Portocaliu Roșcat" or "Rust Orange"}, {184, "#894D50", iniData.settings.lang == 0 and "Roșu Gri" or "Gray Red"}, {185, "#87736E", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {186, "#1A231A", iniData.settings.lang == 0 and "Verde Închis" or "Deep Green"}, {187, "#19371C", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"},
+                                        {188, "#253F23", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Green"}, {189, "#273D25", iniData.settings.lang == 0 and "Verde Închis" or "Deep Green"}, {190, "#743D4D", iniData.settings.lang == 0 and "Roz Închis" or "Dark Pink"}, {191, "#4D894F", iniData.settings.lang == 0 and "Verde" or "Green"}, {192, "#A99981", iniData.settings.lang == 0 and "Bej Deschis" or "Light Beige"}, {193, "#8E8F81", iniData.settings.lang == 0 and "Gri" or "Gray"}, {194, "#A39E29", iniData.settings.lang == 0 and "Galben Verzuie" or "Yellow Green"}, {195, "#91A148", iniData.settings.lang == 0 and "Verde Galben" or "Yellow Green"}, {196, "#8E957F", iniData.settings.lang == 0 and "Gri Verzuie" or "Green Gray"}, {197, "#868738", iniData.settings.lang == 0 and "Verde Galben" or "Olive"},
+                                        {198, "#3E4B82", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {199, "#4B4B1D", iniData.settings.lang == 0 and "Galben Închis" or "Dark Yellow"}, {200, "#99844F", iniData.settings.lang == 0 and "Galben Cenușiu" or "Gray Yellow"}, {201, "#233256", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {202, "#27422C", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {203, "#233642", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {204, "#4E6367", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {205, "#1A2327", iniData.settings.lang == 0 and "Negru Albastru" or "Dark Blue"}, {206, "#335051", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {207, "#335051", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"},
+                                        {208, "#436179", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {209, "#285566", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {210, "#284554", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {211, "#3A2D60", iniData.settings.lang == 0 and "Violet Închis" or "Dark Purple"}, {212, "#7B3730", iniData.settings.lang == 0 and "Roșu Cărămiziu" or "Brick Red"}, {213, "#969381", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {214, "#606623", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Olive"}, {215, "#1F261B", iniData.settings.lang == 0 and "Negru Verzuie" or "Dark Green"}, {216, "#9B6240", iniData.settings.lang == 0 and "Portocaliu" or "Orange"}, {217, "#659075", iniData.settings.lang == 0 and "Verde Cenușiu" or "Gray Green"},
+                                        {218, "#A76F57", iniData.settings.lang == 0 and "Maro Portocaliu" or "Orange Brown"}, {219, "#A3622B", iniData.settings.lang == 0 and "Portocaliu Închis" or "Dark Orange"}, {220, "#AC4E58", iniData.settings.lang == 0 and "Roșu Roz" or "Pink Red"}, {221, "#AC9246", iniData.settings.lang == 0 and "Galben Închis" or "Golden Yellow"}, {222, "#A94531", iniData.settings.lang == 0 and "Roșu Portocaliu" or "Orange Red"}, {223, "#263149", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {224, "#62362B", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {225, "#54622D", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Olive"}, {226, "#5A9B36", iniData.settings.lang == 0 and "Verde" or "Green"}, {227, "#4E2B30", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"},
+                                        {228, "#9E892D", iniData.settings.lang == 0 and "Galben Închis" or "Golden Yellow"}, {229, "#34832E", iniData.settings.lang == 0 and "Verde" or "Green"}, {230, "#502A29", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {231, "#815F21", iniData.settings.lang == 0 and "Galben Cărămiziu" or "Bronze"}, {232, "#954D78", iniData.settings.lang == 0 and "Mov Roz" or "Purple Pink"}, {233, "#8D3166", iniData.settings.lang == 0 and "Roz Violet" or "Pink Purple"}, {234, "#264625", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {235, "#3A5224", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Olive"}, {236, "#1C3430", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {237, "#895368", iniData.settings.lang == 0 and "Mov Roz" or "Purple Pink"},
+                                        {238, "#976E44", iniData.settings.lang == 0 and "Maro Galben" or "Brown Gold"}, {239, "#6D392B", iniData.settings.lang == 0 and "Maro Cărămiziu" or "Rust Brown"}, {240, "#46947C", iniData.settings.lang == 0 and "Verde Turcoaz" or "Teal Green"}, {241, "#628F37", iniData.settings.lang == 0 and "Verde" or "Green"}, {242, "#672A41", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {243, "#2D8B37", iniData.settings.lang == 0 and "Verde" or "Green"}, {244, "#472B1F", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {245, "#17301B", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {246, "#48656E", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {247, "#3C4D56", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"},
+                                        {248, "#683136", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {249, "#5F2835", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {250, "#7F7663", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {251, "#4E4F49", iniData.settings.lang == 0 and "Gri Închis" or "Dark Gray"}, {252, "#41403C", iniData.settings.lang == 0 and "Gri Închis" or "Dark Gray"}, {253, "#8B8670", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {254, "#5C5449", iniData.settings.lang == 0 and "Gri Cenușiu" or "Gray Brown"}, {255, "#3D4750", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}
+                                    }
+                                    for _, color in ipairs(hiddenColors) do
+                                        local r = tonumber(color[2]:sub(2, 3), 16) / 255
+                                        local g = tonumber(color[2]:sub(4, 5), 16) / 255
+                                        local b = tonumber(color[2]:sub(6, 7), 16) / 255
+                                        imgui.BeginChild("ColorCard_H_" .. color[1], imgui.ImVec2(0, 35), true)
+                                            imgui.ColorButton("##color_box_" .. color[1], imgui.ImVec4(r, g, b, 1.0), 0, imgui.ImVec2(18, 18))
+                                            imgui.SameLine()
+                                            imgui.SetCursorPosY(imgui.GetCursorPosY() + 1)
+                                            imgui.TextColored(imgui.ImVec4(r, g, b, 1.0), "ID " .. color[1] .. " - " .. (color[3] or color[2]))
+                                        imgui.EndChild()
+                                    end
+                                imgui.EndChild()
+                                imgui.Columns(1)
+                            imgui.EndChild()                           
                             imgui.Spacing()
                             imgui.Separator()
                             if iniData.settings.lang == 0 then
@@ -11663,58 +11740,140 @@ end, function(player)
                     imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), isRO and u8("Parasire: /leavepubg (doar in lobby).") or "Leave: /leavepubg (lobby only).")
 
                     elseif selected_biz == 19 then -- CAR COLOR
-                    local isRO = (iniData.settings.lang == 0)
-                    local w = 510
-                    
-                    imgui.SetWindowFontScale(1.5)
-                    local title = " C A R - C O L O R "
-                    imgui.SetCursorPosX((w - imgui.CalcTextSize(title).x) / 2)
-                    imgui.TextColored(imgui.ImVec4(1, 0.4, 0.7, 1), title)
-                    imgui.SetWindowFontScale(1.0)
-                    
-                    imgui.Separator()
-                    imgui.Spacing()
-                    
-                    -- DETALII BIZ
-                    imgui.BeginChild("CarColorInfo", imgui.ImVec2(0, 120), true)
-                        imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), isRO and u8("DETALII BIZ:") or "BUSINESS DETAILS:")
-                        imgui.Separator()
-                        imgui.BulletText(isRO and u8("Locatie: Car Color LS - ID 29") or "Location: Car Color LS - ID 29")
-                        imgui.BulletText(isRO and u8("Identificare: Marcaj cu litera 'C' de culoare roz pe harta.") or "Identification: Pink 'C' marker on map.")
-                        imgui.BulletText(isRO and u8("Utilizare: Permite schimbarea culorii primare si secundare.") or "Usage: Change primary and secondary colors.")
-                    imgui.EndChild()
-                    
-                    imgui.Spacing()
-                    
-                    -- CATEGORII CULORI
-                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRO and u8("CATEGORII CULORI SI COSTURI:") or "COLOR CATEGORIES & COSTS:")
-                    imgui.BeginChild("ColorCategories", imgui.ImVec2(0, 185), true)
-                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), isRO and u8("CULORI NORMALE (STANDARD):") or "STANDARD COLORS:")
-                        imgui.BulletText(isRO and u8("Interval ID-uri: 0 - 127") or "ID Range: 0 - 127")
-                        imgui.BulletText(isRO and u8("Cost: $500 (Bani in joc)") or "Cost: $500 (In-game cash)")
-                        imgui.Spacing()
-                        imgui.Separator()
-                        imgui.Spacing()
-                        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), isRO and u8("CULORI HIDDEN (PREMIUM):") or "HIDDEN COLORS (PREMIUM):")
-                        imgui.BulletText(isRO and u8("Interval ID-uri: 128 - 255") or "ID Range: 128 - 255")
-                        imgui.BulletText(isRO and u8("Cost: 600 Gold (Puncte Premium)") or "Cost: 600 Gold (Premium Points)")
-                        imgui.BulletText(isRO and u8("Nota: Culori unice, nu se pierd la respawn.") or "Note: Unique colors, saved on respawn.")
-                    imgui.EndChild()
-                    
-                    imgui.Spacing()
-                    
-                    -- INSTRUCTIUNI
-                    imgui.BeginChild("ColorInstructions", imgui.ImVec2(0, 130), true)
-                        imgui.TextColored(imgui.ImVec4(0.4, 1, 0.4, 1), isRO and u8("CUM SCHIMBI CULOAREA:") or "HOW TO CHANGE COLOR:")
-                        imgui.Separator()
-                        imgui.TextWrapped(isRO and u8("1. Intra in business-ul Car Color (ID 29).") or "1. Enter the Car Color business (ID 29).")
-                        imgui.TextWrapped(isRO and u8("2. Foloseste [/carcolor (ID 1) (ID 2)] pentru a vopsi masina.") or "2. Use [/carcolor (ID 1) (ID 2)] to paint the car.")
-                        imgui.TextWrapped(isRO and u8("3. Primul ID este culoarea principala, al doilea este cea secundara.") or "3. First ID is primary, second is secondary color.")
-                    imgui.EndChild()
-                    
-                    imgui.SetCursorPosY(645)
-                    imgui.Separator()
-                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), isRO and u8("Sfat: Poti testa culorile inainte de a le cumpara definitiv.") or "Tip: You can test colors before purchasing them.")
+                         local w = imgui.GetWindowWidth() - 40
+                            imgui.SetWindowFontScale(1.5)
+                            local title = " C A R - C O L O R "
+                            imgui.SetCursorPosX((w - imgui.CalcTextSize(title).x) / 2)
+                            imgui.TextColored(imgui.ImVec4(1, 0.4, 0.7, 1), title)
+                            imgui.SetWindowFontScale(1.0)
+                            imgui.Separator()
+                            imgui.Spacing()
+
+                            imgui.BeginChild("CarColorInfo_Search", imgui.ImVec2(0, 100), true)
+                                imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), iniData.settings.lang == 0 and u8("DETALII BIZ:") or "BUSINESS DETAILS:")
+                                imgui.Separator()
+                                if iniData.settings.lang == 0 then
+                                    imgui.BulletText(u8("Locatie: Car Color LS - ID 29"))
+                                    imgui.BulletText(u8("Identificare: Marcaj cu litera 'C' de culoare roz pe harta."))
+                                    imgui.BulletText(u8("Utilizare: Permite schimbarea culorii primare si secundare."))
+                                else
+                                    imgui.BulletText("Location: Car Color LS - ID 29")
+                                    imgui.BulletText("Identification: Pink 'C' marker on the map.")
+                                    imgui.BulletText("Usage: Allows changing primary and secondary colors.")
+                                end
+                            imgui.EndChild()                           
+                            imgui.Spacing()
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), iniData.settings.lang == 0 and u8("CATEGORII CULORI SI COSTURI:") or "COLOR CATEGORIES AND COSTS:")                           
+                            imgui.BeginChild("ColorCategories_Search", imgui.ImVec2(0, 170), true)
+                                if iniData.settings.lang == 0 then
+                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), u8("CULORI NORMALE (STANDARD):"))
+                                    imgui.BulletText(u8("Interval ID-uri: 0 - 127"))
+                                    imgui.BulletText(u8("Cost: $500 (Bani in joc)"))
+                                    imgui.Spacing(); imgui.Separator(); imgui.Spacing()
+                                    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("CULORI HIDDEN (PREMIUM):"))
+                                    imgui.BulletText(u8("Interval ID-uri: 128 - 255"))
+                                    imgui.BulletText(u8("Cost: 600 Gold (Puncte Premium)"))
+                                    imgui.BulletText(u8("Nota: Aceste culori sunt unice si nu se pierd la respawn."))
+                                else
+                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), "NORMAL COLORS (STANDARD):")
+                                    imgui.BulletText("ID Range: 0 - 127")
+                                    imgui.BulletText("Cost: $500 (In-game cash)")
+                                    imgui.Spacing(); imgui.Separator(); imgui.Spacing()
+                                    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "HIDDEN COLORS (PREMIUM):")
+                                    imgui.BulletText("ID Range: 128 - 255")
+                                    imgui.BulletText("Cost: 600 Gold (Premium Points)")
+                                    imgui.BulletText("Note: These colors are unique and do not disappear on respawn.")
+                                end
+                            imgui.EndChild()                       
+                            imgui.Spacing()
+                            imgui.BeginChild("ColorInstructions_Search", imgui.ImVec2(0, 420), true)
+                                imgui.TextColored(imgui.ImVec4(0.4, 1, 0.4, 1), iniData.settings.lang == 0 and u8("CUM SCHIMBI CULOAREA:") or "HOW TO CHANGE COLOR:")
+                                imgui.Separator()
+                                if iniData.settings.lang == 0 then
+                                    imgui.TextWrapped(u8("1. Intra in business-ul Car Color (ID 29)."))
+                                    imgui.TextWrapped(u8("2. Foloseste [/carcolor (ID 1) (ID 2)] pentru a vopsi masina."))
+                                    imgui.TextWrapped(u8("3. Primul ID este culoarea principala, al doilea este cea secundara."))
+                                else
+                                    imgui.TextWrapped("1. Enter the Car Color business (ID 29).")
+                                    imgui.TextWrapped("2. Use [/carcolor (ID 1) (ID 2)] to paint your vehicle.")
+                                    imgui.TextWrapped("3. The first ID is the primary color, the second is the secondary one.")
+                                end
+
+                                imgui.Spacing()
+                                imgui.Columns(2, "ColorColumns_Search", false)
+                                imgui.SetColumnWidth(0, imgui.GetWindowWidth() / 2 - 10)
+                                imgui.SetColumnWidth(1, imgui.GetWindowWidth() / 2 - 10)
+
+                                imgui.BeginChild("ColorNonHiddenColumn", imgui.ImVec2(0, 320), true)
+                                    imgui.TextColored(imgui.ImVec4(1, 0.9, 0.2, 1), iniData.settings.lang == 0 and u8("Culorile Non Hidden") or "Non Hidden Colors")
+                                    imgui.Separator()
+                                    local nonHiddenColors = {
+                                        {0, "#000000", iniData.settings.lang == 0 and "Negru" or "Black"}, {1, "#FFFFFF", iniData.settings.lang == 0 and "Alb" or "White"}, {2, "#42878E", "Teal"}, {3, "#A31D28", "Red"}, {4, "#3F4C43", "Greenish Gray"}, {5, "#9B5F6D", "Rose"}, {6, "#F9A024", "Orange"}, {7, "#6487A3", "Blue Gray"}, {8, "#DBCEAF", "Beige"}, {9, "#74816D", "Olive Gray"},
+                                        {10, "#5C6D74", "Steel Blue"}, {11, "#827D75", "Gray"}, {12, "#718F83", "Mint"}, {13, "#77725f", "Khaki"}, {14, "#E0D6B2", "Pale Beige"}, {15, "#BCB598", "Sand"}, {16, "#447547", "Forest Green"}, {17, "#8C2832", "Burgundy"}, {18, "#8B293C", "Dark Red"}, {19, "#BBAA89", "Taupe"},
+                                        {20, "#506570", "Blue Gray"}, {21, "#8C4A41", "Brown"}, {22, "#853445", "Deep Rose"}, {23, "#ADA386", "Desert"}, {24, "#6C6761", "Dark Gray"}, {25, "#4F4F4A", "Charcoal"}, {26, "#BDB99C", "Pale Gold"}, {27, "#7C7162", "Warm Gray"}, {28, "#4F5F60", "Dark Teal"}, {29, "#A8A788", "Sage"},
+                                        {30, "#5D3232", "Dark Brown"}, {31, "#763A3C", "Wine"}, {32, "#9CA29A", "Silver Gray"}, {33, "#858E78", "Moss"}, {34, "#7D7865", "Stone"}, {35, "#706959", "Brown Gray"}, {36, "#3F3C34", "Dark Olive"}, {37, "#3C5142", "Muted Green"}, {38, "#ACB48D", "Lime Green"}, {39, "#7E8A7A", "Cool Gray"},
+                                        {40, "#373324", "Dark Brown"}, {41, "#8F7E5F", "Camel"}, {42, "#933939", "Crimson"}, {43, "#71282C", "Deep Red"}, {44, "#304F37", "Dark Green"}, {45, "#75342E", "Rust"}, {46, "#BCA76E", "Gold"}, {47, "#9C9065", "Mustard"}, {48, "#AAA17A", "Pale Sand"}, {49, "#CFC8AB", "Cream"},
+                                        {50, "#9B9A85", "Drab"}, {51, "#47674D", "Green"}, {52, "#5F7668", "Sea Green"}, {53, "#223039", "Midnight Blue"}, {54, "#3D4255", "Blue Slate"}, {55, "#9B775C", "Tan"}, {56, "#BAB19B", "Light Taupe"}, {57, "#BA9C6A", "Honey"}, {58, "#7F2D33", "Maroon"}, {59, "#64807B", "Aqua Gray"},
+                                        {60, "#B5A68D", "Sandy"}, {61, "#AA8140", "Golden Brown"}, {62, "#783534", "Dark Maroon"}, {63, "#ACA589", "Dusty Olive"}, {64, "#BCB598", "Pale Olive"}, {65, "#A59C52", "Olive"}, {66, "#4D342D", "Dark Walnut"}, {67, "#808E81", "Gray Green"}, {68, "#C0BC7D", "Pale Olive"}, {69, "#C2A878", "Warm Beige"},
+                                        {70, "#9D3738", "Red Brown"}, {71, "#858F89", "Cool Gray"}, {72, "#6D6D5D", "Dark Gray"}, {73, "#B1B283", "Pale Green"}, {74, "#7B3432", "Brick Red"}, {75, "#31363C", "Gunmetal"}, {76, "#BFAF8F", "Sandstone"}, {77, "#C6AA7A", "Golden Sand"}, {78, "#933838", "Deep Red"}, {79, "#244571", "Navy"},
+                                        {80, "#903E48", "Rose Brown"}, {81, "#87795A", "Dusty Gold"}, {82, "#8C3423", "Terracotta"}, {83, "#334A49", "Deep Teal"}, {84, "#664735", "Mocha"}, {85, "#A3324B", "Magenta"}, {86, "#436B32", "Dark Moss"}, {87, "#506D7B", "Slate Blue"}, {88, "#893C40", "Claret"}, {89, "#C1AC7A", "Pale Gold"},
+                                        {90, "#CBBB99", "Ivory"}, {91, "#4B5861", "Steel Gray"}, {92, "#817967", "Taupe Gray"}, {93, "#1D847D", "Turquoise"}, {94, "#366364", "Deep Teal"}, {95, "#3E505C", "Blue Gray"}, {96, "#AFAE90", "Pale Olive"}, {97, "#839688", "Muted Green"}, {98, "#629287", "Seafoam"}, {99, "#C9A979", "Sandy Gold"},
+                                        {100, "#578283", "Mint Blue"}, {101, "#233034", "Dark Blue"}, {102, "#BEA675", "Pale Gold"}, {103, "#265464", "Deep Blue"}, {104, "#A18656", "Dusty Gold"}, {105, "#7E6556", "Brown Gray"}, {106, "#1E6076", "Cyan Blue"}, {107, "#C0B08F", "Honey Beige"}, {108, "#516B8A", "Slate Blue"}, {109, "#676860", "Gray"},
+                                        {110, "#9A8260", "Bronze"}, {111, "#9DA18A", "Moss Gray"}, {112, "#6B7B7D", "Blue Gray"}, {113, "#614A42", "Dark Brown"}, {114, "#627052", "Green Gray"}, {115, "#882B38", "Cherry Red"}, {116, "#324451", "Dark Slate"}, {117, "#76272F", "Dark Wine"}, {118, "#BFBDB0", "Pale Gray"}, {119, "#7E6754", "Brown"},
+                                        {120, "#AF9A76", "Golden Tan"}, {121, "#802330", "Dark Rose"}, {122, "#6E6F5F", "Muted Gray"}, {123, "#79522E", "Copper"}, {124, "#912B39", "Ruby"}, {125, "#314465", "Deep Blue"}, {126, "#F37494", "Pink"}, {127, "#000000", iniData.settings.lang == 0 and "Negru" or "Black"}
+                                    }
+                                    for _, color in ipairs(nonHiddenColors) do
+                                        local r = tonumber(color[2]:sub(2, 3), 16) / 255
+                                        local g = tonumber(color[2]:sub(4, 5), 16) / 255
+                                        local b = tonumber(color[2]:sub(6, 7), 16) / 255
+                                        imgui.BeginChild("ColorCard_NH_" .. color[1], imgui.ImVec2(0, 35), true)
+                                            imgui.ColorButton("##color_box_" .. color[1], imgui.ImVec4(r, g, b, 1.0), 0, imgui.ImVec2(18, 18))
+                                            imgui.SameLine()
+                                            imgui.SetCursorPosY(imgui.GetCursorPosY() + 1)
+                                            imgui.TextColored(imgui.ImVec4(r, g, b, 1.0), "ID " .. color[1] .. " - " .. (color[3] or color[2]))
+                                        imgui.EndChild()
+                                    end
+                                imgui.EndChild()
+                                imgui.NextColumn()
+                                imgui.BeginChild("ColorHiddenColumn", imgui.ImVec2(0, 320), true)
+                                    imgui.TextColored(imgui.ImVec4(1, 0.7, 0.2, 1), iniData.settings.lang == 0 and u8("Culorile Hidden") or "Hidden Colors")
+                                    imgui.Separator()
+                                    local hiddenColors = {
+                                        {128, "#166011", iniData.settings.lang == 0 and "Verde Închis" or "Deep Green"}, {129, "#381F21", iniData.settings.lang == 0 and "Maro Închis" or "Dark Maroon"}, {130, "#25646E", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {131, "#554019", iniData.settings.lang == 0 and "Maro Galben" or "Brown Gold"}, {132, "#65322F", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {133, "#19211F", iniData.settings.lang == 0 and "Negru" or "Black"}, {134, "#3B3855", iniData.settings.lang == 0 and "Violet Închis" or "Dark Purple"}, {135, "#3A8E8E", iniData.settings.lang == 0 and "Turcoaz" or "Turquoise"}, {136, "#935C9B", iniData.settings.lang == 0 and "Mov" or "Purple"}, {137, "#429C3D", iniData.settings.lang == 0 and "Verde" or "Green"},
+                                        {138, "#BDBA9B", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {139, "#586376", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {140, "#928980", iniData.settings.lang == 0 and "Gri" or "Gray"}, {141, "#917E5F", iniData.settings.lang == 0 and "Maro Bej" or "Brown Beige"}, {142, "#917F31", iniData.settings.lang == 0 and "Galben Înnorat" or "Muted Yellow"}, {143, "#745D61", iniData.settings.lang == 0 and "Violet Gri" or "Gray Purple"}, {144, "#6D4E62", iniData.settings.lang == 0 and "Roz Închis" or "Dark Pink"}, {145, "#9AAE77", iniData.settings.lang == 0 and "Verde Pădure" or "Olive Green"}, {146, "#926166", iniData.settings.lang == 0 and "Roz Cenușiu" or "Dusty Pink"}, {147, "#905D6C", iniData.settings.lang == 0 and "Roșu Roz" or "Rose Red"},
+                                        {148, "#383126", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {149, "#3A2F1D", iniData.settings.lang == 0 and "Maro Negru" or "Dark Brown"}, {150, "#323827", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {151, "#3F5539", iniData.settings.lang == 0 and "Verde Pădure" or "Forest Green"}, {152, "#305682", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {153, "#43684D", iniData.settings.lang == 0 and "Verde Gri" or "Green Gray"}, {154, "#299547", iniData.settings.lang == 0 and "Verde Luminos" or "Bright Green"}, {155, "#2B8C78", iniData.settings.lang == 0 and "Turcoaz" or "Teal"}, {156, "#AE9B6D", iniData.settings.lang == 0 and "Bej Galben" or "Yellow Beige"}, {157, "#838C88", iniData.settings.lang == 0 and "Gri Verzui" or "Green Gray"},
+                                        {158, "#A53E2D", iniData.settings.lang == 0 and "Roșu Cărămiziu" or "Brick Red"}, {159, "#3B2E1B", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {160, "#2C3A20", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {161, "#AA5050", iniData.settings.lang == 0 and "Roșu" or "Red"}, {162, "#2C5F84", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {163, "#238D71", iniData.settings.lang == 0 and "Verde Turcoaz" or "Teal Green"}, {164, "#353935", iniData.settings.lang == 0 and "Gri Închis" or "Dark Gray"}, {165, "#356565", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {166, "#724876", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {167, "#5E3029", iniData.settings.lang == 0 and "Maro Roșcat" or "Rust Brown"},
+                                        {168, "#827881", iniData.settings.lang == 0 and "Gri Violet" or "Gray Purple"}, {169, "#7F727B", iniData.settings.lang == 0 and "Gri Roz" or "Pink Gray"}, {170, "#827680", iniData.settings.lang == 0 and "Gri Mov" or "Purple Gray"}, {171, "#674C77", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {172, "#373A1F", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {173, "#3F2C1E", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {174, "#563A25", iniData.settings.lang == 0 and "Maro" or "Brown"}, {175, "#AA3930", iniData.settings.lang == 0 and "Roșu Aprins" or "Bright Red"}, {176, "#A75A80", iniData.settings.lang == 0 and "Roz Violet" or "Pink Purple"}, {177, "#8F6C77", iniData.settings.lang == 0 and "Roz Gri" or "Pink Gray"},
+                                        {178, "#8B4D70", iniData.settings.lang == 0 and "Roz Închis" or "Dark Pink"}, {179, "#4E2B44", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {180, "#874725", iniData.settings.lang == 0 and "Maro Portocaliu" or "Orange Brown"}, {181, "#872D33", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {182, "#914823", iniData.settings.lang == 0 and "Portocaliu Închis" or "Dark Orange"}, {183, "#9D4026", iniData.settings.lang == 0 and "Portocaliu Roșcat" or "Rust Orange"}, {184, "#894D50", iniData.settings.lang == 0 and "Roșu Gri" or "Gray Red"}, {185, "#87736E", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {186, "#1A231A", iniData.settings.lang == 0 and "Verde Închis" or "Deep Green"}, {187, "#19371C", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"},
+                                        {188, "#253F23", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Green"}, {189, "#273D25", iniData.settings.lang == 0 and "Verde Închis" or "Deep Green"}, {190, "#743D4D", iniData.settings.lang == 0 and "Roz Închis" or "Dark Pink"}, {191, "#4D894F", iniData.settings.lang == 0 and "Verde" or "Green"}, {192, "#A99981", iniData.settings.lang == 0 and "Bej Deschis" or "Light Beige"}, {193, "#8E8F81", iniData.settings.lang == 0 and "Gri" or "Gray"}, {194, "#A39E29", iniData.settings.lang == 0 and "Galben Verzuie" or "Yellow Green"}, {195, "#91A148", iniData.settings.lang == 0 and "Verde Galben" or "Yellow Green"}, {196, "#8E957F", iniData.settings.lang == 0 and "Gri Verzuie" or "Green Gray"}, {197, "#868738", iniData.settings.lang == 0 and "Verde Galben" or "Olive"},
+                                        {198, "#3E4B82", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {199, "#4B4B1D", iniData.settings.lang == 0 and "Galben Închis" or "Dark Yellow"}, {200, "#99844F", iniData.settings.lang == 0 and "Galben Cenușiu" or "Gray Yellow"}, {201, "#233256", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {202, "#27422C", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {203, "#233642", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {204, "#4E6367", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {205, "#1A2327", iniData.settings.lang == 0 and "Negru Albastru" or "Dark Blue"}, {206, "#335051", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {207, "#335051", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"},
+                                        {208, "#436179", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {209, "#285566", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {210, "#284554", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {211, "#3A2D60", iniData.settings.lang == 0 and "Violet Închis" or "Dark Purple"}, {212, "#7B3730", iniData.settings.lang == 0 and "Roșu Cărămiziu" or "Brick Red"}, {213, "#969381", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {214, "#606623", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Olive"}, {215, "#1F261B", iniData.settings.lang == 0 and "Negru Verzuie" or "Dark Green"}, {216, "#9B6240", iniData.settings.lang == 0 and "Portocaliu" or "Orange"}, {217, "#659075", iniData.settings.lang == 0 and "Verde Cenușiu" or "Gray Green"},
+                                        {218, "#A76F57", iniData.settings.lang == 0 and "Maro Portocaliu" or "Orange Brown"}, {219, "#A3622B", iniData.settings.lang == 0 and "Portocaliu Închis" or "Dark Orange"}, {220, "#AC4E58", iniData.settings.lang == 0 and "Roșu Roz" or "Pink Red"}, {221, "#AC9246", iniData.settings.lang == 0 and "Galben Închis" or "Golden Yellow"}, {222, "#A94531", iniData.settings.lang == 0 and "Roșu Portocaliu" or "Orange Red"}, {223, "#263149", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {224, "#62362B", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {225, "#54622D", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Olive"}, {226, "#5A9B36", iniData.settings.lang == 0 and "Verde" or "Green"}, {227, "#4E2B30", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"},
+                                        {228, "#9E892D", iniData.settings.lang == 0 and "Galben Închis" or "Golden Yellow"}, {229, "#34832E", iniData.settings.lang == 0 and "Verde" or "Green"}, {230, "#502A29", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {231, "#815F21", iniData.settings.lang == 0 and "Galben Cărămiziu" or "Bronze"}, {232, "#954D78", iniData.settings.lang == 0 and "Mov Roz" or "Purple Pink"}, {233, "#8D3166", iniData.settings.lang == 0 and "Roz Violet" or "Pink Purple"}, {234, "#264625", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {235, "#3A5224", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Olive"}, {236, "#1C3430", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {237, "#895368", iniData.settings.lang == 0 and "Mov Roz" or "Purple Pink"},
+                                        {238, "#976E44", iniData.settings.lang == 0 and "Maro Galben" or "Brown Gold"}, {239, "#6D392B", iniData.settings.lang == 0 and "Maro Cărămiziu" or "Rust Brown"}, {240, "#46947C", iniData.settings.lang == 0 and "Verde Turcoaz" or "Teal Green"}, {241, "#628F37", iniData.settings.lang == 0 and "Verde" or "Green"}, {242, "#672A41", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {243, "#2D8B37", iniData.settings.lang == 0 and "Verde" or "Green"}, {244, "#472B1F", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {245, "#17301B", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {246, "#48656E", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {247, "#3C4D56", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"},
+                                        {248, "#683136", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {249, "#5F2835", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {250, "#7F7663", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {251, "#4E4F49", iniData.settings.lang == 0 and "Gri Închis" or "Dark Gray"}, {252, "#41403C", iniData.settings.lang == 0 and "Gri Închis" or "Dark Gray"}, {253, "#8B8670", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {254, "#5C5449", iniData.settings.lang == 0 and "Gri Cenușiu" or "Gray Brown"}, {255, "#3D4750", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}
+                                    }
+                                    for _, color in ipairs(hiddenColors) do
+                                        local r = tonumber(color[2]:sub(2, 3), 16) / 255
+                                        local g = tonumber(color[2]:sub(4, 5), 16) / 255
+                                        local b = tonumber(color[2]:sub(6, 7), 16) / 255
+                                        imgui.BeginChild("ColorCard_H_" .. color[1], imgui.ImVec2(0, 35), true)
+                                            imgui.ColorButton("##color_box_" .. color[1], imgui.ImVec4(r, g, b, 1.0), 0, imgui.ImVec2(18, 18))
+                                            imgui.SameLine()
+                                            imgui.SetCursorPosY(imgui.GetCursorPosY() + 1)
+                                            imgui.TextColored(imgui.ImVec4(r, g, b, 1.0), "ID " .. color[1] .. " - " .. (color[3] or color[2]))
+                                        imgui.EndChild()
+                                    end
+                                imgui.EndChild()
+                                imgui.Columns(1)
+                            imgui.EndChild()                           
+                            imgui.Spacing()
+                            imgui.Separator()
+                            if iniData.settings.lang == 0 then
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Sfat: Poti testa culorile inainte de a le cumpara definitiv."))
+                            else
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), "Tip: You can test colors before buying them permanently.")
+                            end
                     
                     elseif selected_biz == 20 then -- ALTE BIZURI
                     local isRO = (iniData.settings.lang == 0)
