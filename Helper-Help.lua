@@ -983,7 +983,7 @@ local function renderFishermanDetails()
         imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "EARNINGS BY FISH TYPE")
     end
 
-    imgui.BeginChild("FishEarningsBox", imgui.ImVec2(0, 200), true)  
+    imgui.BeginChild("FishEarningsBox", imgui.ImVec2(0, 120), true)  
         imgui.Columns(2, "fishCols", false)     
         local fishPrices = {}
         if iniData.settings.lang == 0 then
@@ -1020,7 +1020,7 @@ local function renderFishermanDetails()
         imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "RULES AND REQUIREMENTS")
     end
 
-    imgui.BeginChild("FishInfoBox", imgui.ImVec2(0, 100), true)  
+    imgui.BeginChild("FishInfoBox", imgui.ImVec2(0, 80), true)  
         imgui.Columns(2, "fishInfoCols", false)
         if iniData.settings.lang == 0 then
             imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "ECHIPAMENT")
@@ -1048,8 +1048,9 @@ local function renderFishermanDetails()
     else
         imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SKILL PROGRESS (FISH CAUGHT)")
     end
+    imgui.Columns(2, "FishInfoColumns", true)
 
-    imgui.BeginChild("FishProgressBox", imgui.ImVec2(0, 250), true)  
+    imgui.BeginChild("FishProgressBox", imgui.ImVec2(0, 250), true)
         local progress = {}
         if iniData.settings.lang == 0 then
             progress = {
@@ -1073,14 +1074,27 @@ local function renderFishermanDetails()
             imgui.TextColored(imgui.ImVec4(0.7, 0.4, 1.0, 1), "• " .. txt) 
         end
     imgui.EndChild()
+
+    imgui.NextColumn()
+
+    imgui.BeginChild("FactorXPBox", imgui.ImVec2(0, 250), true)
+        imgui.TextWrapped("Factorul de XP pe tier:")
+        imgui.Separator()
+        local factors = {
+            "Tier 1: 0.1", "Tier 2: 0.2", "Tier 3: 0.2", "Tier 4: 0.3",
+            "Tier 5: 0.3", "Tier 6: 0.4", "Tier 7: 0.5", "Tier 8: 0.6"
+        }
+        for _, f in ipairs(factors) do
+            imgui.Text(f)
+        end
+        imgui.Dummy(imgui.ImVec2(0, 5))
+        imgui.TextWrapped("Exemplu: 5 pesti Tier 5 -> 5 x 0.5 = 2.5 => 3 puncte.")
+        imgui.TextWrapped("Daca rezulta 0, primesti minim 1 punct.")
+    imgui.EndChild()
+
+    imgui.Columns(1)
     imgui.Separator()
-    
-    if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), "Nota: Pestii se vand automat cand intri intr-un magazin 24/7.")
-    else
-        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), "Note: Fish are sold automatically when you enter a 24/7 store.")
-    end
-end
+  end
 
 local function renderTruckerDetails()
     imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "T R U C K E R") 
@@ -4860,54 +4874,191 @@ end, function(player)
                                     imgui.EndChild()
                                 end
 
-                            elseif sm.id == 6 then -- CLAN XP
-                                if iniData.settings.lang == 0 then
-                                    imgui.TextColored(imgui.ImVec4(0.0, 1.0, 1.0, 1.0), "--- SISTEM GENERARE CLAN XP ---")
-                                    imgui.Separator()
-                                    imgui.TextColored(imgui.ImVec4(1.0, 0.2, 0.2, 1.0), "ACTIVITATI ILEGALE:")
-                                    imgui.BeginChild("XPIlegalBox", imgui.ImVec2(0, 115), true)
-                                        imgui.BulletText("Rob Echipa: 1 XP per punct jaf (10 XP tot) | Solo Rob: 5 XP")
-                                        imgui.BulletText("ATM Heist: 3 XP per jaf reusit")
-                                        imgui.BulletText("Escape: 1 XP per punct (20 XP total) | Pocket Thief: 5 XP")
-                                    imgui.EndChild()
-                                    imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(1.0, 1.0, 0.0, 1.0), "ACTIVITATI SI JOBURI:")
-                                    imgui.BeginChild("XPJobsBox", imgui.ImVec2(0, 135), true)
-                                        imgui.Columns(2, "xpLocalJobs", false)
-                                        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Fixe:")
-                                        imgui.BulletText("Mester: 20 XP\nMisiuni: 10 XP\nCarJacker: 10 XP\nGunoier/Chimist: 6 XP"); imgui.NextColumn()
-                                        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Progresive:")
-                                        imgui.BulletText("Trucker: 5 XP\nArms Dealer: 4 XP\nMiner/Curier: 3 XP\nPescar: 2 XP | Arheolog: 1 XP"); imgui.Columns(1)
-                                    imgui.EndChild()
-                                    imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.5, 1.0), "ALTE METODE:")
-                                    imgui.BeginChild("XPMiscBox", imgui.ImVec2(0, 85), true)
-                                        imgui.BulletText("Achizitii /shop: 30 XP | Taskuri Zilnice: 3 XP | Tag-uri (/spray): 1 XP (Max 30/zi)")
-                                    imgui.EndChild()
-                                else
-                                    imgui.TextColored(imgui.ImVec4(0.0, 1.0, 1.0, 1.0), "--- CLAN XP GENERATION SYSTEM ---")
-                                    imgui.Separator()
-                                    imgui.TextColored(imgui.ImVec4(1.0, 0.2, 0.2, 1.0), "ILLEGAL ACTIVITIES:")
-                                    imgui.BeginChild("XPIlegalBox", imgui.ImVec2(0, 115), true)
-                                        imgui.BulletText("Team Rob: 1 XP per rob point (10 XP total) | Solo Rob: 5 XP")
-                                        imgui.BulletText("ATM Heist: 3 XP per successful heist")
-                                        imgui.BulletText("Escape: 1 XP per point (20 XP total) | Pocket Thief: 5 XP")
-                                    imgui.EndChild()
-                                    imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(1.0, 1.0, 0.0, 1.0), "ACTIVITIES AND JOBS:")
-                                    imgui.BeginChild("XPJobsBox", imgui.ImVec2(0, 135), true)
-                                        imgui.Columns(2, "xpLocalJobs", false)
-                                        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Fixed:")
-                                        imgui.BulletText("Craftsman: 20 XP\nMissions: 10 XP\nCarJacker: 10 XP\nGarbage/Chemist: 6 XP"); imgui.NextColumn()
-                                        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Progressive:")
-                                        imgui.BulletText("Trucker: 5 XP\nArms Dealer: 4 XP\nMiner/Courier: 3 XP\nFisherman: 2 XP | Archeologist: 1 XP"); imgui.Columns(1)
-                                    imgui.EndChild()
-                                    imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.5, 1.0), "OTHER METHODS:")
-                                    imgui.BeginChild("XPMiscBox", imgui.ImVec2(0, 85), true)
-                                        imgui.BulletText("/shop Purchases: 30 XP | Daily Tasks: 3 XP | Sprays (/spray): 1 XP (Max 30/day)")
-                                    imgui.EndChild()
+                            elseif sm.id == 6 then
+                            local lang = iniData.settings.lang
+                            if lang == 0 then
+                                imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), ">>> AVANSAT: SISTEM BENEFICII CLAN (LVL 1-30) <<<")
+                                imgui.Separator()
+
+                                if imgui.BeginTabBar("ClanTabs") then
+                                    if imgui.BeginTabItem("Activitati XP") then
+                                        imgui.BeginChild("XPActivitiesList", imgui.ImVec2(0, 320), true)
+                                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Activitati XP")
+                                            imgui.Separator()
+                                            imgui.BulletText("/spray - ofera 1 XP, jucatorul putand acumula cel mult 30 XP pe zi din aceasta actiune.")
+                                            imgui.BulletText("Rob - 1 XP pentru fiecare punct de jaf folosit de jucator (10 XP la un rob finalizat).")
+                                            imgui.BulletText("Solo Rob - 5 XP pentru finalizarea unui astfel de rob.")
+                                            imgui.BulletText("Escape - 1 XP pentru fiecare punct de evadare folosit de jucator (20 XP la o evadare finalizata).")
+                                            imgui.BulletText("Taskuri Zilnice - 3 XP pentru fiecare task finalizat.")
+                                            imgui.BulletText("Misiuni - 10 XP pentru fiecare misiune finalizata.")
+                                            imgui.BulletText("Shop - 30 XP pentru fiecare achizitie de pe /shop.")
+                                            imgui.BulletText("Transporter - 3 XP pentru o cursa finalizata.")
+                                            imgui.BulletText("Distribuitor de Droguri/Arme - 4 XP pentru o cursa finalizata.")
+                                            imgui.BulletText("Hot de Masini - 10 XP pentru fiecare masina livrata.")
+                                            imgui.BulletText("Trucker - 5 XP pentru o cursa finalizata.")
+                                            imgui.BulletText("Muncitor la Cariera - 3 XP pentru o cursa finalizata.")
+                                            imgui.BulletText("Gunoier / Chemist - 6 XP pentru o cursa finalizata.")
+                                            imgui.BulletText("Taietor de Lemne / Miner - 3 XP pentru o cursa finalizata.")
+                                            imgui.EndChild()
+
+                                            imgui.BeginChild("XPmecanic", imgui.ImVec2(0, 100), true)
+                                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Mecanic:")
+                                            imgui.Separator()
+                                            imgui.BulletText("Skill 1 - 4: 3 XP pentru fiecare minigame completat.")
+                                            imgui.BulletText("Skill 5 - 6: 2 XP pentru fiecare minigame completat.")
+                                            imgui.BulletText("Skill 7 - 10: 4 XP pentru fiecare minigame completat.")
+                                            imgui.EndChild()
+
+                                            imgui.BeginChild("XPelectrician", imgui.ImVec2(0, 100), true)
+                                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Electrician:")
+                                            imgui.Separator()
+                                            imgui.BulletText("Skill 1 - 4: 1 XP pentru fiecare minigame completat.")
+                                            imgui.BulletText("Skill 5 - 6: 2 XP pentru fiecare minigame completat.")
+                                            imgui.BulletText("Skill 7 - 10: 3 XP pentru fiecare minigame completat.")
+                                            imgui.EndChild()
+                                        imgui.EndTabItem()
+                                    end
+
+                                    if imgui.BeginTabItem("Beneficii Niveluri") then
+                                        imgui.BeginChild("ClanLevelsList", imgui.ImVec2(0, 700), true)
+
+                                        local data = {
+                                            {1, 50, "1.0x", "Nivel de start"},
+                                            {2, 60, "1.1x", "Standard"},
+                                            {3, 70, "1.2x", "Standard"},
+                                            {4, 80, "1.3x", "Bonus: 1,000$ in seiful clanului la payday"},
+                                            {5, 90, "1.4x", "HQ Claim (Off Track Betting) | 5 '/. castig din joburi in seif"},
+                                            {6, 100, "1.5x", "2 Sloturi vehicule clan | 10,000 capacitate materiale in laborator"},
+                                            {7, 110, "1.6x", "10g Droguri in laborator | Slot nou pentru interior HQ (Meat Factory/Motel)"},
+                                            {8, 120, "1.7x", "2 Sloturi vehicule suplimentare | 2,000$ in seif | 10 '/. castig joburi"},
+                                            {9, 130, "1.8x", "Setare rang minim vehicule clan (/cvs) | Interior HQ: LS Atrium"},
+                                            {10, 140, "1.9x", "20,000 capacitate laborator | 2 Sloturi vehicule suplimentare | War 5 vs 5"},
+                                            {11, 150, "2.0x", "15 '/. castig din joburi in seiful clanului"},
+                                            {12, 160, "2.1x", "3,000$ in seiful clanului la fiecare payday"},
+                                            {13, 170, "2.2x", "20g Droguri in laborator | Interior HQ: Madd Dogg"},
+                                            {14, 180, "2.3x", "20 '/. castig din joburi in seif | 30,000 capacitate laborator"},
+                                            {15, 190, "2.4x", "2 Sloturi vehicule suplimentare (Max 10,000,000$ per vehicul)"},
+                                            {16, 200, "2.5x", "4,000$ in seiful clanului | Interior HQ: LV Police HQ"},
+                                            {17, 210, "2.6x", "25 '/. castig din joburi in seiful clanului"},
+                                            {18, 220, "2.7x", "40,000 capacitate materiale in laborator"},
+                                            {19, 230, "2.8x", "30g Droguri in laborator | Interior HQ: Pleasure Domes"},
+                                            {20, 240, "2.9x", "War 10 vs 10 | Custom Clan Crest"},
+                                            {21, 250, "3.0x", "Standard"},
+                                            {22, 260, "3.1x", "50,000 capacitate materiale in laborator"},
+                                            {23, 270, "3.2x", "27 '/. castig din joburi in seiful clanului"},
+                                            {24, 280, "3.3x", "6,000$ in seiful clanului la fiecare payday"},
+                                            {25, 290, "3.4x", "40g Droguri in laborator"},
+                                            {26, 300, "3.5x", "60,000 capacitate materiale | 28 '/. castig din joburi"},
+                                            {27, 310, "3.6x", "Clan Order 1: Deagle (650 mat)"},
+                                            {28, 320, "3.7x", "7,000$ in seif | Clan Order 2: AK-47 (3,840 mat)"},
+                                            {29, 330, "3.8x", "29 '/. castig din joburi | Clan Order 3: M4 (6,600 mat)"},
+                                            {30, 350, "3.9x", "70,000 mat | 30 '/. castig joburi | Clan Order 4: Rifle | Raid intre clanuri"}
+                                        }
+
+                                        for _, l in ipairs(data) do
+                                            if imgui.CollapsingHeader("Nivel " .. l[1] .. " - " .. l[2] .. " XP Maxim") then
+                                                imgui.TextColored(imgui.ImVec4(0.5, 0.8, 1, 1), "Factor XP: " .. l[3])
+                                                imgui.TextWrapped("Beneficii: " .. l[4])
+                                                imgui.Spacing()
+                                            end
+                                        end
+                                        imgui.EndChild()
+                                        imgui.EndTabItem()
+                                    end
+                                    imgui.EndTabBar()
                                 end
+                            else
+                                imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), ">>> ADVANCED: CLAN BENEFITS SYSTEM (LVL 1-30) <<<")
+                                imgui.Separator()
+
+                                if imgui.BeginTabBar("ClanTabs") then
+                                    if imgui.BeginTabItem("XP Activities") then
+                                        imgui.BeginChild("XPActivitiesList", imgui.ImVec2(0, 320), true)
+                                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "XP Activities")
+                                            imgui.Separator()
+                                            imgui.BulletText("/spray - offers 1 XP, players can accumulate up to 30 XP per day from this action.")
+                                            imgui.BulletText("Rob - 1 XP for each robbery point used by the player (10 XP for a completed rob).")
+                                            imgui.BulletText("Solo Rob - 5 XP for completing such a robbery.")
+                                            imgui.BulletText("Escape - 1 XP for each escape point used by the player (20 XP for a completed escape).")
+                                            imgui.BulletText("Daily Tasks - 3 XP for each completed task.")
+                                            imgui.BulletText("Missions - 10 XP for each completed mission.")
+                                            imgui.BulletText("Shop - 30 XP for each purchase from /shop.")
+                                            imgui.BulletText("Transporter - 3 XP for a completed trip.")
+                                            imgui.BulletText("Drug/Weapon Dealer - 4 XP for a completed trip.")
+                                            imgui.BulletText("Car Thief - 10 XP for each delivered vehicle.")
+                                            imgui.BulletText("Trucker - 5 XP for a completed trip.")
+                                            imgui.BulletText("Quarry Worker - 3 XP for a completed trip.")
+                                            imgui.BulletText("Garbage Collector / Chemist - 6 XP for a completed trip.")
+                                            imgui.BulletText("Lumberjack / Miner - 3 XP for a completed trip.")
+                                            imgui.EndChild()
+
+                                            imgui.BeginChild("XPmechanic", imgui.ImVec2(0, 100), true)
+                                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Mechanic:")
+                                            imgui.Separator()
+                                            imgui.BulletText("Skill 1 - 4: 3 XP for each completed minigame.")
+                                            imgui.BulletText("Skill 5 - 6: 2 XP for each completed minigame.")
+                                            imgui.BulletText("Skill 7 - 10: 4 XP for each completed minigame.")
+                                            imgui.EndChild()
+
+                                            imgui.BeginChild("XPelectrician", imgui.ImVec2(0, 100), true)
+                                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Electrician:")
+                                            imgui.Separator()
+                                            imgui.BulletText("Skill 1 - 4: 1 XP for each completed minigame.")
+                                            imgui.BulletText("Skill 5 - 6: 2 XP for each completed minigame.")
+                                            imgui.BulletText("Skill 7 - 10: 3 XP for each completed minigame.")
+                                            imgui.EndChild()
+                                        imgui.EndTabItem()
+                                    end
+
+                                    if imgui.BeginTabItem("Level Benefits") then
+                                        imgui.BeginChild("ClanLevelsList", imgui.ImVec2(0, 700), true)
+
+                                        local data_en = {
+                                            {1, 50, "1.0x", "Starting level"},
+                                            {2, 60, "1.1x", "Standard"},
+                                            {3, 70, "1.2x", "Standard"},
+                                            {4, 80, "1.3x", "Bonus: $1,000 to clan safe at payday"},
+                                            {5, 90, "1.4x", "HQ Claim (Off Track Betting) | 5 '/. job earnings to clan safe"},
+                                            {6, 100, "1.5x", "2 clan vehicle slots | 10,000 lab material capacity"},
+                                            {7, 110, "1.6x", "10g Drugs in lab | New interior slot for HQ (Meat Factory/Motel)"},
+                                            {8, 120, "1.7x", "+2 vehicle slots | $2,000 in safe | 10 '/. job earnings"},
+                                            {9, 130, "1.8x", "Set minimum vehicle rank (/cvs) | HQ interior: LS Atrium"},
+                                            {10, 140, "1.9x", "20,000 lab capacity | +2 vehicle slots | War 5 vs 5"},
+                                            {11, 150, "2.0x", "15 '/. job earnings into clan safe"},
+                                            {12, 160, "2.1x", "$3,000 to clan safe each payday"},
+                                            {13, 170, "2.2x", "20g Drugs in lab | HQ interior: Madd Dogg"},
+                                            {14, 180, "2.3x", "20 '/. job earnings into safe | 30,000 lab capacity"},
+                                            {15, 190, "2.4x", "+2 vehicle slots (Max $10,000,000 per vehicle)"},
+                                            {16, 200, "2.5x", "$4,000 in clan safe | HQ interior: LV Police HQ"},
+                                            {17, 210, "2.6x", "25 '/. job earnings into clan safe"},
+                                            {18, 220, "2.7x", "40,000 lab material capacity"},
+                                            {19, 230, "2.8x", "30g Drugs in lab | HQ interior: Pleasure Domes"},
+                                            {20, 240, "2.9x", "War 10 vs 10 | Custom Clan Crest"},
+                                            {21, 250, "3.0x", "Standard"},
+                                            {22, 260, "3.1x", "50,000 lab material capacity"},
+                                            {23, 270, "3.2x", "27 '/. job earnings into clan safe"},
+                                            {24, 280, "3.3x", "$6,000 to clan safe each payday"},
+                                            {25, 290, "3.4x", "40g Drugs in lab"},
+                                            {26, 300, "3.5x", "60,000 lab capacity | 28 '/. job earnings"},
+                                            {27, 310, "3.6x", "Clan Order 1: Deagle (650 mat)"},
+                                            {28, 320, "3.7x", "$7,000 in safe | Clan Order 2: AK-47 (3,840 mat)"},
+                                            {29, 330, "3.8x", "29 '/. job earnings | Clan Order 3: M4 (6,600 mat)"},
+                                            {30, 350, "3.9x", "70,000 mat | 30 '/. job earnings | Clan Order 4: Rifle | Clan raids"}
+                                        }
+
+                                        for _, l in ipairs(data_en) do
+                                            if imgui.CollapsingHeader("Level " .. l[1] .. " - " .. l[2] .. " Max XP") then
+                                                imgui.TextColored(imgui.ImVec4(0.5, 0.8, 1, 1), "XP Factor: " .. l[3])
+                                                imgui.TextWrapped("Benefits: " .. l[4])
+                                                imgui.Spacing()
+                                            end
+                                        end
+                                        imgui.EndChild()
+                                        imgui.EndTabItem()
+                                    end
+                                    imgui.EndTabBar()
+                                end
+                            end
 
                             elseif sm.id == 7 then -- ROB ATM
                                 if iniData.settings.lang == 0 then
@@ -9446,40 +9597,190 @@ end, function(player)
                     imgui.EndChild()
 
                     elseif selected_system == 6 then -- CLAN XP
-                    local isRO = (iniData.settings.lang == 0)
-                    
-                    imgui.TextColored(imgui.ImVec4(0.0, 1.0, 1.0, 1.0), isRO and u8("--- SISTEM GENERARE CLAN XP ---") or "--- CLAN XP GENERATION SYSTEM ---")
-                    imgui.Separator()
-                    
-                    imgui.TextColored(imgui.ImVec4(1.0, 0.2, 0.2, 1.0), isRO and u8("ACTIVITATI ILEGALE:") or "ILLEGAL ACTIVITIES:")
-                    imgui.BeginChild("XPIlegalBox", imgui.ImVec2(0, 115), true)
-                        if isRO then
-                            imgui.BulletText(u8("Rob Echipa: 1 XP per punct jaf (10 XP tot) | Solo Rob: 5 XP"))
-                            imgui.BulletText(u8("ATM Heist: 3 XP per jaf reusit"))
-                            imgui.BulletText(u8("Escape: 1 XP per punct (20 XP total) | Pocket Thief: 5 XP"))
-                        else
-                            imgui.BulletText("Team Rob: 1 XP per robbery point (10 XP total) | Solo Rob: 5 XP")
-                            imgui.BulletText("ATM Heist: 3 XP per successful heist")
-                            imgui.BulletText("Escape: 1 XP per point (20 XP total) | Pocket Thief: 5 XP")
-                        end
-                    imgui.EndChild()
-                    
-                    imgui.Spacing()
-                    imgui.TextColored(imgui.ImVec4(1.0, 1.0, 0.0, 1.0), isRO and u8("ACTIVITATI SI JOBURI:") or "ACTIVITIES AND JOBS:")
-                    imgui.BeginChild("XPJobsBox", imgui.ImVec2(0, 135), true)
-                        imgui.Columns(2, "xpLocalJobs", false)
-                        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), isRO and u8("Fixe:") or "Fixed:")
-                        imgui.BulletText(isRO and u8("Mester: 20 XP\nMisiuni: 10 XP\nCarJacker: 10 XP\nGunoier/Chimist: 6 XP") or "Craftsman: 20 XP\nMissions: 10 XP\nCarJacker: 10 XP\nGarbage/Chemist: 6 XP"); imgui.NextColumn()
-                        
-                        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), isRO and u8("Progresive:") or "Progressive:")
-                        imgui.BulletText(isRO and u8("Trucker: 5 XP\nArms Dealer: 4 XP\nMiner/Curier: 3 XP\nPescar: 2 XP | Arheolog: 1 XP") or "Trucker: 5 XP\nArms Dealer: 4 XP\nMiner/Courier: 3 XP\nFisherman: 2 XP | Archeologist: 1 XP"); imgui.Columns(1)
-                    imgui.EndChild()
-                    
-                    imgui.Spacing()
-                    imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.5, 1.0), isRO and u8("ALTE METODE:") or "OTHER METHODS:")
-                    imgui.BeginChild("XPMiscBox", imgui.ImVec2(0, 85), true)
-                        imgui.BulletText(isRO and u8("Achizitii /shop: 30 XP | Taskuri Zilnice: 3 XP | Tag-uri (/spray): 1 XP (Max 30/zi)") or "/shop purchases: 30 XP | Daily Tasks: 3 XP | Tags (/spray): 1 XP (Max 30/day)")
-                    imgui.EndChild()
+                    local lang = iniData.settings.lang
+                            if lang == 0 then
+                                imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), ">>> AVANSAT: SISTEM BENEFICII CLAN (LVL 1-30) <<<")
+                                imgui.Separator()
+
+                                if imgui.BeginTabBar("ClanTabs") then
+                                    if imgui.BeginTabItem("Activitati XP") then
+                                        imgui.BeginChild("XPActivitiesList", imgui.ImVec2(0, 320), true)
+                                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Activitati XP")
+                                            imgui.Separator()
+                                            imgui.BulletText("/spray - ofera 1 XP, jucatorul putand acumula cel mult 30 XP pe zi din aceasta actiune.")
+                                            imgui.BulletText("Rob - 1 XP pentru fiecare punct de jaf folosit de jucator (10 XP la un rob finalizat).")
+                                            imgui.BulletText("Solo Rob - 5 XP pentru finalizarea unui astfel de rob.")
+                                            imgui.BulletText("Escape - 1 XP pentru fiecare punct de evadare folosit de jucator (20 XP la o evadare finalizata).")
+                                            imgui.BulletText("Taskuri Zilnice - 3 XP pentru fiecare task finalizat.")
+                                            imgui.BulletText("Misiuni - 10 XP pentru fiecare misiune finalizata.")
+                                            imgui.BulletText("Shop - 30 XP pentru fiecare achizitie de pe /shop.")
+                                            imgui.BulletText("Transporter - 3 XP pentru o cursa finalizata.")
+                                            imgui.BulletText("Distribuitor de Droguri/Arme - 4 XP pentru o cursa finalizata.")
+                                            imgui.BulletText("Hot de Masini - 10 XP pentru fiecare masina livrata.")
+                                            imgui.BulletText("Trucker - 5 XP pentru o cursa finalizata.")
+                                            imgui.BulletText("Muncitor la Cariera - 3 XP pentru o cursa finalizata.")
+                                            imgui.BulletText("Gunoier / Chemist - 6 XP pentru o cursa finalizata.")
+                                            imgui.BulletText("Taietor de Lemne / Miner - 3 XP pentru o cursa finalizata.")
+                                            imgui.EndChild()
+
+                                            imgui.BeginChild("XPmecanic", imgui.ImVec2(0, 100), true)
+                                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Mecanic:")
+                                            imgui.Separator()
+                                            imgui.BulletText("Skill 1 - 4: 3 XP pentru fiecare minigame completat.")
+                                            imgui.BulletText("Skill 5 - 6: 2 XP pentru fiecare minigame completat.")
+                                            imgui.BulletText("Skill 7 - 10: 4 XP pentru fiecare minigame completat.")
+                                            imgui.EndChild()
+
+                                            imgui.BeginChild("XPelectrician", imgui.ImVec2(0, 100), true)
+                                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Electrician:")
+                                            imgui.Separator()
+                                            imgui.BulletText("Skill 1 - 4: 1 XP pentru fiecare minigame completat.")
+                                            imgui.BulletText("Skill 5 - 6: 2 XP pentru fiecare minigame completat.")
+                                            imgui.BulletText("Skill 7 - 10: 3 XP pentru fiecare minigame completat.")
+                                            imgui.EndChild()
+                                        imgui.EndTabItem()
+                                    end
+
+                                    if imgui.BeginTabItem("Beneficii Niveluri") then
+                                        imgui.BeginChild("ClanLevelsList", imgui.ImVec2(0, 650), true)
+
+                                        local data = {
+                                            {1, 50, "1.0x", "Nivel de start"},
+                                            {2, 60, "1.1x", "Standard"},
+                                            {3, 70, "1.2x", "Standard"},
+                                            {4, 80, "1.3x", "Bonus: 1,000$ in seiful clanului la payday"},
+                                            {5, 90, "1.4x", "HQ Claim (Off Track Betting) | 5 '/. castig din joburi in seif"},
+                                            {6, 100, "1.5x", "2 Sloturi vehicule clan | 10,000 capacitate materiale in laborator"},
+                                            {7, 110, "1.6x", "10g Droguri in laborator | Slot nou pentru interior HQ (Meat Factory/Motel)"},
+                                            {8, 120, "1.7x", "2 Sloturi vehicule suplimentare | 2,000$ in seif | 10 '/. castig joburi"},
+                                            {9, 130, "1.8x", "Setare rang minim vehicule clan (/cvs) | Interior HQ: LS Atrium"},
+                                            {10, 140, "1.9x", "20,000 capacitate laborator | 2 Sloturi vehicule suplimentare | War 5 vs 5"},
+                                            {11, 150, "2.0x", "15 '/. castig din joburi in seiful clanului"},
+                                            {12, 160, "2.1x", "3,000$ in seiful clanului la fiecare payday"},
+                                            {13, 170, "2.2x", "20g Droguri in laborator | Interior HQ: Madd Dogg"},
+                                            {14, 180, "2.3x", "20 '/. castig din joburi in seif | 30,000 capacitate laborator"},
+                                            {15, 190, "2.4x", "2 Sloturi vehicule suplimentare (Max 10,000,000$ per vehicul)"},
+                                            {16, 200, "2.5x", "4,000$ in seiful clanului | Interior HQ: LV Police HQ"},
+                                            {17, 210, "2.6x", "25 '/. castig din joburi in seiful clanului"},
+                                            {18, 220, "2.7x", "40,000 capacitate materiale in laborator"},
+                                            {19, 230, "2.8x", "30g Droguri in laborator | Interior HQ: Pleasure Domes"},
+                                            {20, 240, "2.9x", "War 10 vs 10 | Custom Clan Crest"},
+                                            {21, 250, "3.0x", "Standard"},
+                                            {22, 260, "3.1x", "50,000 capacitate materiale in laborator"},
+                                            {23, 270, "3.2x", "27 '/. castig din joburi in seiful clanului"},
+                                            {24, 280, "3.3x", "6,000$ in seiful clanului la fiecare payday"},
+                                            {25, 290, "3.4x", "40g Droguri in laborator"},
+                                            {26, 300, "3.5x", "60,000 capacitate materiale | 28 '/. castig din joburi"},
+                                            {27, 310, "3.6x", "Clan Order 1: Deagle (650 mat)"},
+                                            {28, 320, "3.7x", "7,000$ in seif | Clan Order 2: AK-47 (3,840 mat)"},
+                                            {29, 330, "3.8x", "29 '/. castig din joburi | Clan Order 3: M4 (6,600 mat)"},
+                                            {30, 350, "3.9x", "70,000 mat | 30 '/. castig joburi | Clan Order 4: Rifle | Raid intre clanuri"}
+                                        }
+
+                                        for _, l in ipairs(data) do
+                                            if imgui.CollapsingHeader("Nivel " .. l[1] .. " - " .. l[2] .. " XP Maxim") then
+                                                imgui.TextColored(imgui.ImVec4(0.5, 0.8, 1, 1), "Factor XP: " .. l[3])
+                                                imgui.TextWrapped("Beneficii: " .. l[4])
+                                                imgui.Spacing()
+                                            end
+                                        end
+                                        imgui.EndChild()
+                                        imgui.EndTabItem()
+                                    end
+                                    imgui.EndTabBar()
+                                end
+                            else
+                                imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), ">>> ADVANCED: CLAN BENEFITS SYSTEM (LVL 1-30) <<<")
+                                imgui.Separator()
+
+                                if imgui.BeginTabBar("ClanTabs") then
+                                    if imgui.BeginTabItem("XP Activities") then
+                                        imgui.BeginChild("XPActivitiesList", imgui.ImVec2(0, 320), true)
+                                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "XP Activities")
+                                            imgui.Separator()
+                                            imgui.BulletText("/spray - offers 1 XP, players can accumulate up to 30 XP per day from this action.")
+                                            imgui.BulletText("Rob - 1 XP for each robbery point used by the player (10 XP for a completed rob).")
+                                            imgui.BulletText("Solo Rob - 5 XP for completing such a robbery.")
+                                            imgui.BulletText("Escape - 1 XP for each escape point used by the player (20 XP for a completed escape).")
+                                            imgui.BulletText("Daily Tasks - 3 XP for each completed task.")
+                                            imgui.BulletText("Missions - 10 XP for each completed mission.")
+                                            imgui.BulletText("Shop - 30 XP for each purchase from /shop.")
+                                            imgui.BulletText("Transporter - 3 XP for a completed trip.")
+                                            imgui.BulletText("Drug/Weapon Dealer - 4 XP for a completed trip.")
+                                            imgui.BulletText("Car Thief - 10 XP for each delivered vehicle.")
+                                            imgui.BulletText("Trucker - 5 XP for a completed trip.")
+                                            imgui.BulletText("Quarry Worker - 3 XP for a completed trip.")
+                                            imgui.BulletText("Garbage Collector / Chemist - 6 XP for a completed trip.")
+                                            imgui.BulletText("Lumberjack / Miner - 3 XP for a completed trip.")
+                                            imgui.EndChild()
+
+                                            imgui.BeginChild("XPmechanic", imgui.ImVec2(0, 100), true)
+                                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Mechanic:")
+                                            imgui.Separator()
+                                            imgui.BulletText("Skill 1 - 4: 3 XP for each completed minigame.")
+                                            imgui.BulletText("Skill 5 - 6: 2 XP for each completed minigame.")
+                                            imgui.BulletText("Skill 7 - 10: 4 XP for each completed minigame.")
+                                            imgui.EndChild()
+
+                                            imgui.BeginChild("XPelectrician", imgui.ImVec2(0, 100), true)
+                                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Electrician:")
+                                            imgui.Separator()
+                                            imgui.BulletText("Skill 1 - 4: 1 XP for each completed minigame.")
+                                            imgui.BulletText("Skill 5 - 6: 2 XP for each completed minigame.")
+                                            imgui.BulletText("Skill 7 - 10: 3 XP for each completed minigame.")
+                                            imgui.EndChild()
+                                        imgui.EndTabItem()
+                                    end
+
+                                    if imgui.BeginTabItem("Level Benefits") then
+                                        imgui.BeginChild("ClanLevelsList", imgui.ImVec2(0, 620), true)
+
+                                        local data_en = {
+                                            {1, 50, "1.0x", "Starting level"},
+                                            {2, 60, "1.1x", "Standard"},
+                                            {3, 70, "1.2x", "Standard"},
+                                            {4, 80, "1.3x", "Bonus: $1,000 to clan safe at payday"},
+                                            {5, 90, "1.4x", "HQ Claim (Off Track Betting) | 5 '/. job earnings to clan safe"},
+                                            {6, 100, "1.5x", "2 clan vehicle slots | 10,000 lab material capacity"},
+                                            {7, 110, "1.6x", "10g Drugs in lab | New interior slot for HQ (Meat Factory/Motel)"},
+                                            {8, 120, "1.7x", "+2 vehicle slots | $2,000 in safe | 10 '/. job earnings"},
+                                            {9, 130, "1.8x", "Set minimum vehicle rank (/cvs) | HQ interior: LS Atrium"},
+                                            {10, 140, "1.9x", "20,000 lab capacity | +2 vehicle slots | War 5 vs 5"},
+                                            {11, 150, "2.0x", "15 '/. job earnings into clan safe"},
+                                            {12, 160, "2.1x", "$3,000 to clan safe each payday"},
+                                            {13, 170, "2.2x", "20g Drugs in lab | HQ interior: Madd Dogg"},
+                                            {14, 180, "2.3x", "20 '/. job earnings into safe | 30,000 lab capacity"},
+                                            {15, 190, "2.4x", "+2 vehicle slots (Max $10,000,000 per vehicle)"},
+                                            {16, 200, "2.5x", "$4,000 in clan safe | HQ interior: LV Police HQ"},
+                                            {17, 210, "2.6x", "25 '/. job earnings into clan safe"},
+                                            {18, 220, "2.7x", "40,000 lab material capacity"},
+                                            {19, 230, "2.8x", "30g Drugs in lab | HQ interior: Pleasure Domes"},
+                                            {20, 240, "2.9x", "War 10 vs 10 | Custom Clan Crest"},
+                                            {21, 250, "3.0x", "Standard"},
+                                            {22, 260, "3.1x", "50,000 lab material capacity"},
+                                            {23, 270, "3.2x", "27 '/. job earnings into clan safe"},
+                                            {24, 280, "3.3x", "$6,000 to clan safe each payday"},
+                                            {25, 290, "3.4x", "40g Drugs in lab"},
+                                            {26, 300, "3.5x", "60,000 lab capacity | 28 '/. job earnings"},
+                                            {27, 310, "3.6x", "Clan Order 1: Deagle (650 mat)"},
+                                            {28, 320, "3.7x", "$7,000 in safe | Clan Order 2: AK-47 (3,840 mat)"},
+                                            {29, 330, "3.8x", "29 '/. job earnings | Clan Order 3: M4 (6,600 mat)"},
+                                            {30, 350, "3.9x", "70,000 mat | 30 '/. job earnings | Clan Order 4: Rifle | Clan raids"}
+                                        }
+
+                                        for _, l in ipairs(data_en) do
+                                            if imgui.CollapsingHeader("Level " .. l[1] .. " - " .. l[2] .. " Max XP") then
+                                                imgui.TextColored(imgui.ImVec4(0.5, 0.8, 1, 1), "XP Factor: " .. l[3])
+                                                imgui.TextWrapped("Benefits: " .. l[4])
+                                                imgui.Spacing()
+                                            end
+                                        end
+                                        imgui.EndChild()
+                                        imgui.EndTabItem()
+                                    end
+                                    imgui.EndTabBar()
+                                end
+                            end
 
                     elseif selected_system == 7 then -- ROB ATM
                     local isRO = (iniData.settings.lang == 0)
