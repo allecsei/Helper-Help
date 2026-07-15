@@ -9187,6 +9187,7 @@ end, function(player)
                 DrawCmdCard("/anspawn / .spawn", "Informatii despre spawnchange", "Info about spawnchange")
                 DrawCmdCard("/anpaint / .paint", "Informatii despre cum dai parasesti paintball", "Info about how to leave paintball")
                 DrawCmdCard("/anbicicleta / .bicileta", "Informatii despre cum faci rost de biciclete", "Info about how to get bikes")
+                DrawCmdCard("/naiurea / .naiurea", "N aiurea /n doar pentru intrebari!", "Don't ask random questions!, /n for help!")
                 imgui.Spacing()
             end
 
@@ -13838,14 +13839,22 @@ end
         sampAddChatMessage(msg, -1)
     end)
 
-    sampRegisterChatCommand(".paint", function()
+           -- Comenzi Bike
+    sampRegisterChatCommand("naiurea", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a parasi arena de Paintball, foloseste comanda /leavepaintball." 
-                        or "{09ff00}Hi! {FFFFFF}To leave the Paintball arena, use the command /leavepaintball."
+        local msg = isRO and "/an /n aiurea, foloseste /n pentru intrebari." 
+                        or "/an /n random, use /n only for questions."
+        sampSendChat(msg)
+    end)
+
+    sampRegisterChatCommand(".naiurea", function()
+        local isRO = (iniData.settings.lang == 0)
+        local msg = isRO and "{09ff00}Salut! {FFFFFF}Foloseste /n doar pentru intrebari, fara /n aiurea." 
+                        or "{09ff00}Hi! {FFFFFF}Use /n only for questions, not /n random."
         sampAddChatMessage(msg, -1)
     end)
 
-    -- Comenzi Job Goal
+       -- Comenzi Job Goal
     sampRegisterChatCommand("anjobgoal", function()
         local isRO = (iniData.settings.lang == 0)
         local msg = isRO and "/an Salut! La Job Goal, jucatorii care ating 100'/. primesc aleatoriu: 5-10 Gold, 5-10 RP si $25.000-$50.000." 
