@@ -13842,8 +13842,8 @@ end
            -- Comenzi Bike
     sampRegisterChatCommand("naiurea", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an /n aiurea, foloseste /n pentru intrebari." 
-                        or "/an /n random, use /n only for questions."
+        local msg = isRO and "/cn /n aiurea, foloseste /n pentru intrebari." 
+                        or "/cn /n random, use /n only for questions."
         sampSendChat(msg)
     end)
 
