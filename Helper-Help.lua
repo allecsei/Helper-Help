@@ -1471,32 +1471,68 @@ local function renderChemistDetails()
         
         if iniData.settings.lang == 0 then
             imgui.Text("Skill") imgui.NextColumn()
-            imgui.Text("Plata (Fara premium vs Premium)") imgui.NextColumn()
-            imgui.Text("Drop (M/D)") imgui.NextColumn()
+            imgui.Text("Plata") imgui.NextColumn()
+            imgui.Text("Sanse Drop") imgui.NextColumn()
         else
             imgui.Text("Skill") imgui.NextColumn()
-            imgui.Text("Payout (Without premium vs Premium)") imgui.NextColumn()
-            imgui.Text("Drop (M/A)") imgui.NextColumn() -- Med/Addiction
+            imgui.Text("Payout") imgui.NextColumn()
+            imgui.Text("Drop Chances") imgui.NextColumn()
         end
         imgui.Separator()
         
-        local fullChemData = {
-            {"Skill 1",  "1872 - 1972$",  "2808 - 2958$",        "30 '/. | 10 '/.",      {1, 1, 1, 1}},
-            {"Skill 2",  "1934 - 2034$",  "2901 - 3051$",        "35 '/. | 15 '/.",      {1, 1, 1, 1}},
-            {"Skill 3",  "1997 - 2097$",  "2995 - 3145$",        "40 '/. | 20 '/.",      {0.4, 0.8, 1, 1}},
-            {"Skill 4",  "2059 - 2159$",  "3088 - 3238$",        "45 '/. | 25 '/.",      {0.4, 0.8, 1, 1}},
-            {"Skill 5",  "2122 - 2222$",  "3183 - 3333$",        "50 '/. | 30 '/.",      {0.4, 1, 0.4, 1}},  
-            {"Skill 6",  "2236 - 2336$",  "3354 - 3504$",        "50 '/. | 30 '/.",      {0.4, 1, 0.4, 1}},  
-            {"Skill 7",  "2337 - 2437$",  "3505 - 3655$",        "50 '/. | 30 '/.",      {0.4, 1, 0.4, 1}},  
-            {"Skill 8",  "2405 - 2505$",  "3607 - 3757$",        "50 '/. | 30 '/.",      {0.4, 1, 0.4, 1}},  
-            {"Skill 9",  "2464 - 2564$",  "3696 - 3846$",        "50 '/. | 30 '/.",      {0.4, 1, 0.4, 1}},  
-            {"Skill 10", "2509 - 2609$",  "3763 - 3913$",        "50 '/. | 30 '/.",      {1, 0.8, 0, 1}}
-        }
+        local fullChemData
+        if iniData.settings.lang == 0 then
+            fullChemData = {
+                {"Skill 1",  "1872 - 1972$",  30, 10, {0.2039, 0.9216, 0.6824, 1}},
+                {"Skill 2",  "1934 - 2034$",  35, 15, {0.2039, 0.9216, 0.6824, 1}},
+                {"Skill 3",  "1997 - 2097$",  40, 20, {0.2039, 0.9216, 0.6824, 1}},
+                {"Skill 4",  "2059 - 2159$",  45, 25, {0.2039, 0.9216, 0.6824, 1}},
+                {"Skill 5",  "2122 - 2222$",  50, 30, {0.2039, 0.9216, 0.6824, 1}},  
+                {"Skill 6",  "2236 - 2336$",  50, 30, {0.2039, 0.9216, 0.6824, 1}},  
+                {"Skill 7",  "2337 - 2437$",  50, 30, {0.2039, 0.9216, 0.6824, 1}},  
+                {"Skill 8",  "2405 - 2505$",  50, 30, {0.2039, 0.9216, 0.6824, 1}},  
+                {"Skill 9",  "2464 - 2564$",  50, 30, {0.2039, 0.9216, 0.6824, 1}},  
+                {"Skill 10", "2509 - 2609$",  50, 30, {0.2039, 0.9216, 0.6824, 1}}
+            }
+        else
+            fullChemData = {
+                {"Skill 1",  "1872 - 1972$",  30, 10, {0.2039, 0.9216, 0.6824, 1}},
+                {"Skill 2",  "1934 - 2034$",  35, 15, {0.2039, 0.9216, 0.6824, 1}},
+                {"Skill 3",  "1997 - 2097$",  40, 20, {0.2039, 0.9216, 0.6824, 1}},
+                {"Skill 4",  "2059 - 2159$",  45, 25, {0.2039, 0.9216, 0.6824, 1}},
+                {"Skill 5",  "2122 - 2222$",  50, 30, {0.2039, 0.9216, 0.6824, 1}},  
+                {"Skill 6",  "2236 - 2336$",  50, 30, {0.2039, 0.9216, 0.6824, 1}},  
+                {"Skill 7",  "2337 - 2437$",  50, 30, {0.2039, 0.9216, 0.6824, 1}},  
+                {"Skill 8",  "2405 - 2505$",  50, 30, {0.2039, 0.9216, 0.6824, 1}},  
+                {"Skill 9",  "2464 - 2564$",  50, 30, {0.2039, 0.9216, 0.6824, 1}},  
+                {"Skill 10", "2509 - 2609$",  50, 30, {0.2039, 0.9216, 0.6824, 1}}
+            }
+        end
         for _, d in ipairs(fullChemData) do
             imgui.TextColored(imgui.ImVec4(d[5][1], d[5][2], d[5][3], d[5][4]), d[1]) imgui.NextColumn()           
-            imgui.Text(d[2]) imgui.SameLine() 
-            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " | " .. d[3]) imgui.NextColumn()         
-            imgui.Text(d[4]) imgui.NextColumn()
+            imgui.TextColored(imgui.ImVec4(0.7059, 0.2039, 0.9216, 1), d[2]) imgui.NextColumn()         
+            if iniData.settings.lang == 0 then
+                imgui.TextColored(imgui.ImVec4(0.5608, 0.9216, 0.2039, 1), tostring(d[3]) .. "'/. sanse ")
+                imgui.SameLine()
+                imgui.TextColored(imgui.ImVec4(0.2039, 0.7059, 0.9216, 1), "Kit Medical")
+                imgui.SameLine()
+                imgui.Text(", ")
+                imgui.SameLine()
+                imgui.TextColored(imgui.ImVec4(0.5608, 0.9216, 0.2039, 1), tostring(d[4]) .. "'/. sanse ")
+                imgui.SameLine()
+                imgui.TextColored(imgui.ImVec4(0.2039, 0.7059, 0.9216, 1), "Kit de Dependenta")
+            else
+                imgui.TextColored(imgui.ImVec4(0.5608, 0.9216, 0.2039, 1), tostring(d[3]) .. "'/. chance ")
+                imgui.SameLine()
+                imgui.TextColored(imgui.ImVec4(0.2039, 0.7059, 0.9216, 1), "Medical Kit")
+                imgui.SameLine()
+                imgui.Text(", ")
+                imgui.SameLine()
+                imgui.TextColored(imgui.ImVec4(0.5608, 0.9216, 0.2039, 1), tostring(d[4]) .. "'/. chance ")
+                imgui.SameLine()
+                imgui.TextColored(imgui.ImVec4(0.2039, 0.7059, 0.9216, 1), "Addiction Kit")
+            end
+            imgui.NextColumn()
         end     
         imgui.Columns(1)
         imgui.Separator()
@@ -1511,6 +1547,46 @@ local function renderChemistDetails()
     
     imgui.Columns(2, "chemFooter", false)    
     if iniData.settings.lang == 0 then
+        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "PROGRESIE (PRAGURI):")
+        imgui.BeginChild("ProgInfo", imgui.ImVec2(0, 200), true)
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 1") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 2") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 30 de curse. (30 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 2") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 3") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 60 de curse. (90 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 3") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 4") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 120 de curse. (210 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 4") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 5") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 240 de curse. (450 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 5") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 6") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 200 de curse. (650 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 6") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 7") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 250 de curse. (900 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 7") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 8") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 300 de curse. (1200 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 8") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 9") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 350 de curse. (1550 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 9") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 10") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 350 de curse. (1900 total)")
+        imgui.EndChild()    
+        imgui.NextColumn()    
         imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "SISTEM KIT-URI:")
         imgui.BeginChild("KitInfo", imgui.ImVec2(0, 200), true)
             imgui.BulletText("Kit Medical: 100 HP")
@@ -1518,20 +1594,47 @@ local function renderChemistDetails()
             imgui.BulletText("Capacitate: Skill-ul tau")
             imgui.TextDisabled("Ex: Skill 5 = 5 kit-uri total.")
         imgui.EndChild()   
-        imgui.NextColumn()    
-        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "PROGRESIE (PRAGURI):")
-        imgui.BeginChild("ProgInfo", imgui.ImVec2(0, 200), true)
-            imgui.Text("Skill 1 >> Skill 2: 30 de curse. (30 total)")
-            imgui.Text("Skill 2 >> Skill 3: 60 de curse. (90 total)")
-            imgui.Text("Skill 3 >> Skill 4: 120 de curse. (210 total)")
-            imgui.Text("Skill 4 >> Skill 5: 240 de curse. (450 total)")
-            imgui.Text("Skill 5 >> Skill 6: 200 de curse. (650 total)")
-            imgui.Text("Skill 6 >> Skill 7: 250 de curse. (900 total)")
-            imgui.Text("Skill 7 >> Skill 8: 300 de curse. (1200 total)")
-            imgui.Text("Skill 8 >> Skill 9: 350 de curse. (1550 total)")
-            imgui.Text("Skill 9 >> Skill 10: 350 de curse. (1900 total)")
-        imgui.EndChild()    
     else
+        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "PROGRESSION (THRESHOLDS):")
+        imgui.BeginChild("ProgInfo", imgui.ImVec2(0, 200), true)
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 1") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 2") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 30 runs. (30 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 2") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 3") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 60 runs. (90 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 3") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 4") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 120 runs. (210 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 4") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 5") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 240 runs. (450 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 5") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 6") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 200 runs. (650 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 6") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 7") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 250 runs. (900 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 7") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 8") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 300 runs. (1200 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 8") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 9") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 350 runs. (1550 total)")
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 9") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 10") imgui.SameLine()
+            imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 350 runs. (1900 total)")
+        imgui.EndChild()    
+        imgui.NextColumn()    
         imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "KIT SYSTEM:")
         imgui.BeginChild("KitInfo", imgui.ImVec2(0, 200), true)
             imgui.BulletText("Medical Kit: 100 HP")
@@ -1539,19 +1642,6 @@ local function renderChemistDetails()
             imgui.BulletText("Capacity: Your skill level")
             imgui.TextDisabled("Ex: Skill 5 = 5 kits total.")
         imgui.EndChild()   
-        imgui.NextColumn()    
-        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "PROGRESSION (THRESHOLDS):")
-        imgui.BeginChild("ProgInfo", imgui.ImVec2(0, 200), true)
-            imgui.Text("Skill 1 >> Skill 2: 30 runs. (30 total)")
-            imgui.Text("Skill 2 >> Skill 3: 60 runs. (90 total)")
-            imgui.Text("Skill 3 >> Skill 4: 120 runs. (210 total)")
-            imgui.Text("Skill 4 >> Skill 5: 240 runs. (450 total)")
-            imgui.Text("Skill 5 >> Skill 6: 200 runs. (650 total)")
-            imgui.Text("Skill 6 >> Skill 7: 250 runs. (900 total)")
-            imgui.Text("Skill 7 >> Skill 8: 300 runs. (1200 total)")
-            imgui.Text("Skill 8 >> Skill 9: 350 runs. (1550 total)")
-            imgui.Text("Skill 9 >> Skill 10: 350 runs. (1900 total)")
-        imgui.EndChild()    
     end
     imgui.Columns(1)
 end
