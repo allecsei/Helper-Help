@@ -9499,68 +9499,105 @@ end, function(player)
                     imgui.TextDisabled((iniData.settings.lang == 0) and u8("Nota: Misiunile NEA MIREL si CATALIN sunt specifice evenimentelor.") or "Note: NEA MIREL and CATALIN missions are event-specific.")
 
                     elseif selected_system == 2 then -- BUNKER
-                    local isRO = (iniData.settings.lang == 0)
-                    
-                    imgui.TextColored(imgui.ImVec4(1.0, 0.8, 0.0, 1.0), isRO and u8("--- SISTEMUL DE BUNKER ---") or "--- BUNKER SYSTEM ---")
+                    if iniData.settings.lang == 0 then
+                    imgui.TextColored(imgui.ImVec4(1.0, 0.8, 0.0, 1.0), "--- SISTEMUL DE BUNKER ---")
                     imgui.Separator()
-                    
-                    imgui.TextColored(imgui.ImVec4(0.0, 1.0, 1.0, 1.0), isRO and u8("LOCATII SI PRETURI CUMPARARE:") or "LOCATIONS AND PURCHASE PRICES:")
+                    imgui.TextColored(imgui.ImVec4(0.0, 1.0, 1.0, 1.0), "LOCATII SI PRETURI CUMPARARE:")
                     imgui.BeginChild("BunkerLocsBox", imgui.ImVec2(0, 65), true)
-                        imgui.Columns(3, "bunkLocsCols", false)
-                        imgui.TextColored(imgui.ImVec4(0.3, 0.7, 1, 1), "Basin (SF)"); imgui.Text("$1.000.000"); imgui.NextColumn()
-                        imgui.TextColored(imgui.ImVec4(1, 0.8, 0.2, 1), "Diablo (LV)"); imgui.Text("$2.500.000"); imgui.NextColumn()
-                        imgui.TextColored(imgui.ImVec4(0.2, 1, 0.2, 1), "Blueberry (LS)"); imgui.Text("$3.500.000"); imgui.Columns(1)
-                    imgui.EndChild()
+                    imgui.Columns(3, "bunkLocsCols", false)
+                    imgui.TextColored(imgui.ImVec4(0.3, 0.7, 1, 1), "Basin (SF)"); imgui.Text("$1.000.000"); imgui.NextColumn()
+                    imgui.TextColored(imgui.ImVec4(1, 0.8, 0.2, 1), "Diablo (LV)"); imgui.Text("$2.500.000"); imgui.NextColumn()
+                    imgui.TextColored(imgui.ImVec4(0.2, 1, 0.2, 1), "Blueberry (LS)"); imgui.Text("$3.500.000"); imgui.Columns(1)
+                            imgui.EndChild()
 
-                    imgui.Spacing()
-                    imgui.TextColored(imgui.ImVec4(1.0, 0.5, 0.0, 1.0), isRO and u8("COSTURI UPGRADES PE LOCATII:") or "UPGRADE COSTS BY LOCATION:")
-                    imgui.BeginChild("BunkerUpgBox", imgui.ImVec2(0, 210), true)
+                        imgui.Spacing()
+                        imgui.TextColored(imgui.ImVec4(1.0, 0.5, 0.0, 1.0), "COSTURI UPGRADES PE LOCATII:")
+                        imgui.BeginChild("BunkerUpgBox", imgui.ImVec2(0, 210), true)
                         imgui.Columns(4, "bunkUpgCols", false)
-                        imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), isRO and u8("Upgrade") or "Upgrade") imgui.NextColumn()
+                        imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), "Upgrade") imgui.NextColumn()
                         imgui.TextColored(imgui.ImVec4(0.0, 0.7, 1.0, 1.0), "San Fierro") imgui.NextColumn()
                         imgui.TextColored(imgui.ImVec4(1.0, 0.5, 0.0, 1.0), "Las Venturas") imgui.NextColumn()
                         imgui.TextColored(imgui.ImVec4(0.68, 0.26, 0.73, 1.0), "Los Santos") imgui.NextColumn()
                         imgui.Separator()
-                        
-                        local upgNames = isRO and {u8("Echipament"), u8("Staff"), u8("Securitate"), u8("Supraveghere"), u8("Confort")} 
-                                                or {"Equipment", "Staff", "Security", "Surveillance", "Comfort"}
-                        
-                        for i, name in ipairs(upgNames) do
-                            imgui.Text(name); imgui.NextColumn()
-                            imgui.Text("$400.000"); imgui.NextColumn(); imgui.Text("$600.000"); imgui.NextColumn(); imgui.Text("$800.000"); imgui.NextColumn()
-                        end
-                        
-                        imgui.Separator() 
-                        imgui.TextColored(imgui.ImVec4(1.0, 0.3, 0.3, 1.0), isRO and u8("Total Upgrades") or "Total Upgrades"); imgui.NextColumn(); imgui.Text("$4.400.000"); imgui.NextColumn(); imgui.Text("$6.200.000"); imgui.NextColumn(); imgui.Text("$8.000.000"); imgui.NextColumn()
-                        imgui.TextColored(imgui.ImVec4(0.2, 0.6, 1.0, 1.0), isRO and u8("PRET (BUNKER + UPGRADES)") or "PRICE (BUNKER + UPGRADES)"); imgui.NextColumn(); imgui.Text("$5.400.000"); imgui.NextColumn(); imgui.Text("$8.700.000"); imgui.NextColumn(); imgui.Text("$11.500.000"); imgui.Columns(1)
-                    imgui.EndChild()
-
-                    imgui.Spacing()
-                    imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), isRO and u8("PRODUCTIE SI VANZARE:") or "PRODUCTION AND SALE:")
-                    imgui.BeginChild("BunkerProdBox", imgui.ImVec2(0, 115), true)
-                        if isRO then
-                            imgui.BulletText(u8("Viteza Max (Staff+Echip): 1 unitate / 10 min"))
-                            imgui.BulletText(u8("Consum Provizii (Maxim): 1 unitate / 300 sec"))
-                            imgui.BulletText(u8("Pret Vanzare (Departe): $2.000 / unitate | (Aproape): $1.000 / unitate"))
-                            imgui.BulletText(u8("Bonus Ajutoare: 10'/. din plata finala"))
+                                                            
+                        imgui.Text("Echipament"); imgui.NextColumn(); imgui.Text("$400.000"); imgui.NextColumn(); imgui.Text("$600.000"); imgui.NextColumn(); imgui.Text("$800.000"); imgui.NextColumn()
+                        imgui.Text("Staff"); imgui.NextColumn(); imgui.Text("$400.000"); imgui.NextColumn(); imgui.Text("$600.000"); imgui.NextColumn(); imgui.Text("$800.000"); imgui.NextColumn()
+                        imgui.Text("Securitate"); imgui.NextColumn(); imgui.Text("$200.000"); imgui.NextColumn(); imgui.Text("$300.000"); imgui.NextColumn(); imgui.Text("$400.000"); imgui.NextColumn()
+                        imgui.Text("Supraveghere"); imgui.NextColumn(); imgui.Text("$2.400.000"); imgui.NextColumn(); imgui.Text("$3.200.000"); imgui.NextColumn(); imgui.Text("$4.000.000"); imgui.NextColumn()
+                        imgui.Text("Confort"); imgui.NextColumn(); imgui.Text("$1.000.000"); imgui.NextColumn(); imgui.Text("$1.500.000"); imgui.NextColumn(); imgui.Text("$2.000.000"); imgui.NextColumn()
+                                                            
+                            imgui.Separator() 
+                            imgui.TextColored(imgui.ImVec4(1.0, 0.3, 0.3, 1.0), "Total Upgrades"); imgui.NextColumn(); imgui.Text("$4.400.000"); imgui.NextColumn(); imgui.Text("$6.200.000"); imgui.NextColumn(); imgui.Text("$8.000.000"); imgui.NextColumn()
+                            imgui.TextColored(imgui.ImVec4(0.2, 0.6, 1.0, 1.0), "PRET (BUNKER + UPGRADES)"); imgui.NextColumn(); imgui.Text("$5.400.000"); imgui.NextColumn(); imgui.Text("$8.700.000"); imgui.NextColumn(); imgui.Text("$11.500.000"); imgui.Columns(1)
+                        imgui.EndChild()
+                                                        
+                        imgui.Spacing()
+                            imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), "PRODUCTIE SI VANZARE:")
+                            imgui.BeginChild("BunkerProdBox", imgui.ImVec2(0, 115), true)
+                                imgui.BulletText("Viteza Max (Staff+Echip): 1 unitate / 10 min")
+                                imgui.BulletText("Consum Provizii (Maxim): 1 unitate / 300 sec")
+                                imgui.BulletText("Pret Vanzare (Departe): $2.000 / unitate | (Aproape): $1.000 / unitate")
+                                imgui.BulletText("Bonus Ajutoare: 10 '/. din plata finala")
+                            imgui.EndChild()
+                                                        
+                            imgui.Spacing()
+                            imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.95, 1.0), "CAPACITATE SI TIER PROGRES:")
+                            imgui.BeginChild("BunkerTiersBox", imgui.ImVec2(0, 65), true)
+                                imgui.Columns(2, "bunkTiersCols", false)
+                                imgui.Text("Tier 0: 100 Prov / 100 Stoc\nTier 5: 150 Prov / 100 Stoc"); imgui.NextColumn()
+                                imgui.Text("Tier 6: 150 Prov / 110 Stoc\nTier 10: 150 Prov / 150 Stoc"); imgui.Columns(1)
+                            imgui.EndChild()
+                            imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), "Nota: Comanda /buybunker (Lvl 10). Stocul se pierde la mutare!")
                         else
-                            imgui.BulletText("Max Speed (Staff+Equip): 1 unit / 10 min")
-                            imgui.BulletText("Supplies Consumption (Max): 1 unit / 300 sec")
-                            imgui.BulletText("Sale Price (Far): $2,000 / unit | (Near): $1,000 / unit")
-                            imgui.BulletText("Helpers Bonus: 10'/. of final payment")
+                            imgui.TextColored(imgui.ImVec4(1.0, 0.8, 0.0, 1.0), "--- BUNKER SYSTEM ---")
+                            imgui.Separator()
+                            imgui.TextColored(imgui.ImVec4(0.0, 1.0, 1.0, 1.0), "LOCATIONS AND PURCHASE PRICES:")
+                            imgui.BeginChild("BunkerLocsBox", imgui.ImVec2(0, 65), true)
+                                imgui.Columns(3, "bunkLocsCols", false)
+                                imgui.TextColored(imgui.ImVec4(0.3, 0.7, 1, 1), "Basin (SF)"); imgui.Text("$1.000.000"); imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0.2, 1), "Diablo (LV)"); imgui.Text("$2.500.000"); imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(0.2, 1, 0.2, 1), "Blueberry (LS)"); imgui.Text("$3.500.000"); imgui.Columns(1)
+                            imgui.EndChild()
+
+                            imgui.Spacing()
+                            imgui.TextColored(imgui.ImVec4(1.0, 0.5, 0.0, 1.0), "UPGRADE COSTS BY LOCATION:")
+                            imgui.BeginChild("BunkerUpgBox", imgui.ImVec2(0, 210), true)
+                            imgui.Columns(4, "bunkUpgCols", false)
+                                imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), "Upgrade") imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(0.0, 0.7, 1.0, 1.0), "San Fierro") imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1.0, 0.5, 0.0, 1.0), "Las Venturas") imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(0.68, 0.26, 0.73, 1.0), "Los Santos") imgui.NextColumn()
+                            imgui.Separator()
+                                                            
+                                imgui.Text("Equipment"); imgui.NextColumn(); imgui.Text("$400.000"); imgui.NextColumn(); imgui.Text("$600.000"); imgui.NextColumn(); imgui.Text("$800.000"); imgui.NextColumn()
+                                imgui.Text("Staff"); imgui.NextColumn(); imgui.Text("$400.000"); imgui.NextColumn(); imgui.Text("$600.000"); imgui.NextColumn(); imgui.Text("$800.000"); imgui.NextColumn()
+                                imgui.Text("Security"); imgui.NextColumn(); imgui.Text("$200.000"); imgui.NextColumn(); imgui.Text("$300.000"); imgui.NextColumn(); imgui.Text("$400.000"); imgui.NextColumn()
+                                imgui.Text("Monitoring"); imgui.NextColumn(); imgui.Text("$2.400.000"); imgui.NextColumn(); imgui.Text("$3.200.000"); imgui.NextColumn(); imgui.Text("$4.000.000"); imgui.NextColumn()
+                                imgui.Text("Comfort"); imgui.NextColumn(); imgui.Text("$1.000.000"); imgui.NextColumn(); imgui.Text("$1.500.000"); imgui.NextColumn(); imgui.Text("$2.000.000"); imgui.NextColumn()
+                                                            
+                            imgui.Separator() 
+                                imgui.TextColored(imgui.ImVec4(1.0, 0.3, 0.3, 1.0), "Total Upgrades"); imgui.NextColumn(); imgui.Text("$4.400.000"); imgui.NextColumn(); imgui.Text("$6.200.000"); imgui.NextColumn(); imgui.Text("$8.000.000"); imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(0.2, 0.6, 1.0, 1.0), "PRICE (BUNKER + UPGRADES)"); imgui.NextColumn(); imgui.Text("$5.400.000"); imgui.NextColumn(); imgui.Text("$8.700.000"); imgui.NextColumn(); imgui.Text("$11.500.000"); imgui.Columns(1)
+                            imgui.EndChild()
+                                                        
+                            imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), "PRODUCTION AND SELLING:")
+                                    imgui.BeginChild("BunkerProdBox", imgui.ImVec2(0, 115), true)
+                                    imgui.BulletText("Max Speed (Staff+Equip): 1 unit / 10 min")
+                                    imgui.BulletText("Supplies Consumption (Max): 1 unit / 300 sec")
+                                    imgui.BulletText("Selling Price (Far): $2.000 / unit | (Near): $1.000 / unit")
+                                    imgui.BulletText("Supporters Bonus: 10 '/. of the final payment")
+                            imgui.EndChild()
+                                                        
+                            imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.95, 1.0), "CAPACITY AND TIER PROGRESS:")
+                                imgui.BeginChild("BunkerTiersBox", imgui.ImVec2(0, 65), true)
+                                    imgui.Columns(2, "bunkTiersCols", false)
+                                    imgui.Text("Tier 0: 100 Supp / 100 Stock\nTier 5: 150 Supp / 100 Stock"); imgui.NextColumn()
+                                    imgui.Text("Tier 6: 150 Supp / 110 Stock\nTier 10: 150 Supp / 150 Stock"); imgui.Columns(1)
+                            imgui.EndChild()
+                            imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), "Note: /buybunker command (Lvl 10). Stock is lost when changing locations!")
                         end
-                    imgui.EndChild()
-                    
-                    imgui.Spacing()
-                    imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.95, 1.0), isRO and u8("CAPACITATE SI TIER PROGRES:") or "CAPACITY AND TIER PROGRESS:")
-                    imgui.BeginChild("BunkerTiersBox", imgui.ImVec2(0, 65), true)
-                        imgui.Columns(2, "bunkTiersCols", false)
-                        imgui.Text("Tier 0: 100 Supp / 100 Stock\nTier 5: 150 Supp / 100 Stock"); imgui.NextColumn()
-                        imgui.Text("Tier 6: 150 Supp / 110 Stock\nTier 10: 150 Supp / 150 Stock"); imgui.Columns(1)
-                    imgui.EndChild()
-                    
-                    imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), isRO and u8("Nota: Comanda /buybunker (Lvl 10). Stocul se pierde la mutare!") or "Note: Command /buybunker (Lvl 10). Stock is lost upon moving!")
-                  
                 elseif selected_system == 3 then -- JOB GOAL
                     local isRO = (iniData.settings.lang == 0)
                     if isRO then
