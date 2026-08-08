@@ -778,105 +778,95 @@ local function renderGarbageDetails()
     imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "G A R B A G E - M A N")
     imgui.Separator()
     imgui.Spacing()
-    
+
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "VENITURI DETALIATE")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "GUNOIER (SKILL 1 - 10)")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "DETAILED EARNINGS")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "GARBAGE-MAN (SKILL 1 - 10)")
     end
 
-    imgui.BeginChild("GarbageEarnings", imgui.ImVec2(0, 200), true)  
-        imgui.Columns(3, "earningsHeader", false)
-        imgui.SetColumnWidth(0, 100)
-        imgui.SetColumnWidth(1, 180)
-        imgui.SetColumnWidth(2, 180)        
-        
+    imgui.BeginChild("GarbageMainDetailsBox", imgui.ImVec2(0, 550), true)
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), "Checkpoints") imgui.NextColumn()
-            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), "Fara Premium") imgui.NextColumn()
-            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), "Cu Premium") imgui.NextColumn()
-        else
-            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), "Checkpoints") imgui.NextColumn()
-            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), "Without Premium") imgui.NextColumn()
-            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), "With Premium") imgui.NextColumn()
-        end
-        imgui.Separator()
-
-        local earnings = {
-            {"10 CP", "1.265$", "1.897$"}, {"12 CP", "1.518$", "2.277$"},
-            {"14 CP", "1.771$", "2.656$"}, {"16 CP", "2.024$", "3.036$"},
-            {"18 CP", "2.277$", "3.415$"}, {"20 CP", "2.530$", "3.795$"}
-        }
-        for _, v in ipairs(earnings) do
-            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), v[1]) imgui.NextColumn()
-            imgui.Text(v[2]) imgui.NextColumn()
-            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), v[3]) imgui.NextColumn()
-        end
-        imgui.Columns(1)
-    imgui.EndChild()
-    imgui.Spacing()
-    
-    if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "VEHICUL DISPONIBIL")
-    else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "AVAILABLE VEHICLE")
-    end
-
-    imgui.BeginChild("GarbageVeh", imgui.ImVec2(0, 95), true)  
-        imgui.Columns(2, "garbVehCols", false)
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "TRASHMASTER")
-        if iniData.settings.lang == 0 then
-            imgui.Text("Viteza: 100 KM/h")
-            imgui.NextColumn()
-            imgui.Text("Locuri: 2")
-            imgui.Text("Combustibil: Infinit")
-        else
-            imgui.Text("Speed: 100 KM/h")
-            imgui.NextColumn()
-            imgui.Text("Seats: 2")
-            imgui.Text("Fuel: Infinite")
-        end
-        imgui.Columns(1)
-    imgui.EndChild()
-    imgui.Spacing()  
-    
-    if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "COMENZI SI MOD DE LUCRU")
-    else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "COMMANDS AND GAMEPLAY")
-    end
-
-    imgui.BeginChild("GarbageCmds", imgui.ImVec2(0, 210), true)  
-        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "/work ") imgui.SameLine()
-        if iniData.settings.lang == 0 then
-            imgui.Text("- Primesti un Trashmaster incuiat.")         
-            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "/dumptrash ") imgui.SameLine()
-            imgui.Text("- Finalizezi cursa (minim 10 pubele).")          
+            imgui.TextColored(imgui.ImVec4(1, 0.84, 0, 1), "[1] PROGRESIA CONTRACTELOR SI VEHICULELOR")
             imgui.Separator()
-            imgui.Spacing()            
-            imgui.TextWrapped("- Colecteaza gunoi de la maxim 20 de pubele.")
-            imgui.TextWrapped("- Vehiculele sunt incuiate si NU consuma combustibil.")
-            imgui.TextWrapped("- Daca parasesti masina, ai 20 de secunde sa revii.")
-        else
-            imgui.Text("- Spawns a locked Trashmaster.")         
-            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "/dumptrash ") imgui.SameLine()
-            imgui.Text("- Finishes the run (minimum 10 trash bins required).")          
+            imgui.BulletText("Skill 1-2 | Sweeper: Curatarea strazilor (Viteza max. 35 km/h peste petele de pe asfalt).")
+            imgui.BulletText("Skill 3-4 | Walton: Colectare saci de gunoi din cartiere folosind tasta Y.")
+            imgui.BulletText("Skill 5-6 | Yosemite: Ridicare obiecte voluminoase/grele cu carlige animate.")
+            imgui.BulletText("Skill 7-8 | DFT-30: Reciclare comerciala (Sortare pe compartimente: reciclabile, metalice, generale).")
+            imgui.BulletText("Skill 9-10 | Trashmaster: Interventie municipalia (Inspectie zone, curatenie si reparatii cu unelte dedicate).")
+            
+            imgui.Spacing()
+            imgui.Spacing()
+
+            imgui.TextColored(imgui.ImVec4(0.4, 1.0, 0.4, 1), "[2] SALARII DE BAZA PE CONTRACTE")
             imgui.Separator()
-            imgui.Spacing()            
-            imgui.TextWrapped("- Collect trash from a maximum of 20 trash bins.")
-            imgui.TextWrapped("- Vehicles are locked and do NOT consume fuel.")
-            imgui.TextWrapped("- If you leave the vehicle, you have 20 seconds to return.")
+            imgui.BulletText("Skill 1 ($500) | Skill 2 ($550) - Curatarea strazilor")
+            imgui.BulletText("Skill 3 ($680) | Skill 4 ($970) - Colectare rezidentiala")
+            imgui.BulletText("Skill 5 ($1.250) | Skill 6 ($1.550) - Deseuri voluminoase")
+            imgui.BulletText("Skill 7 ($2.100) | Skill 8 ($2.700) - Reciclare comerciala")
+            imgui.BulletText("Skill 9 ($3.300) | Skill 10 ($3.900) - Interventie municipalia")
+
+            imgui.Spacing()
+            imgui.Spacing()
+
+            imgui.TextColored(imgui.ImVec4(0.0, 0.8, 1.0, 1), "[3] SISTEMUL CO-OP AVANSAT (Incepand cu Skill 3)")
+            imgui.Separator()
+            imgui.BulletText("Comanda /work: Permite lucrul individual sau invitarea unui partener eligibil.")
+            imgui.BulletText("Conditii partener: Minim Skill 3, job Gunoier selectat, fara contract activ, prezent la start.")
+            imgui.BulletText("Impartire castiguri: 50/50 la banii de baza daca partenerul efectueaza cel putin o actiune valida.")
+            imgui.BulletText("Bonusuri extra: Partenerii activi primesc 1 punct de skill, 1 punct Marathon si Clan XP.")
+
+            imgui.Spacing()
+            imgui.Spacing()
+
+            imgui.TextColored(imgui.ImVec4(1.0, 0.4, 0.4, 1), "[4] ACTIVITATEA PASIVA DE SCOTOCIRE (Skill 7+")
+            imgui.Separator()
+            imgui.BulletText("Comenzi dedicate: /rummage (la tomberon) si /rummagebins (lista cu cele mai apropiate locatii).")
+            imgui.BulletText("Recompense standard: Bani, materiale, droguri sau resurse de crafting (sanse ajustate dupa skill).")
+            imgui.BulletText("Recompense ultra-rare (1 la 100.000): Cupon Dealership Stock, Tichete Diamond / Onyx, Artefacte.")
+            imgui.BulletText("Riscuri si reguli: 45s cooldown personal, 10m cooldown per tomberon, alerta pe 15m si risc de wanted de la politie!")
+        else
+            imgui.TextColored(imgui.ImVec4(1, 0.84, 0, 1), "[1] CONTRACT AND VEHICLE PROGRESSION")
+            imgui.Separator()
+            imgui.BulletText("Skill 1-2 | Sweeper: Street cleaning (Max speed 35 km/h over road stains).")
+            imgui.BulletText("Skill 3-4 | Walton: Collect trash bags from neighborhoods using the Y key.")
+            imgui.BulletText("Skill 5-6 | Yosemite: Heavy and bulky waste pickup using animated hooks.")
+            imgui.BulletText("Skill 7-8 | DFT-30: Commercial recycling (Sorting into compartments: recyclable, metal, general).")
+            imgui.BulletText("Skill 9-10 | Trashmaster: Municipal intervention (Area inspection, cleaning, and repairs with dedicated tools).")
+            
+            imgui.Spacing()
+            imgui.Spacing()
+
+            imgui.TextColored(imgui.ImVec4(0.4, 1.0, 0.4, 1), "[2] BASE EARNINGS BY CONTRACT")
+            imgui.Separator()
+            imgui.BulletText("Skill 1 ($500) | Skill 2 ($550) - Street Cleaning")
+            imgui.BulletText("Skill 3 ($680) | Skill 4 ($970) - Residential Waste")
+            imgui.BulletText("Skill 5 ($1,250) | Skill 6 ($1,550) - Bulky Waste")
+            imgui.BulletText("Skill 7 ($2,100) | Skill 8 ($2,700) - Commercial Recycling")
+            imgui.BulletText("Skill 9 ($3,300) | Skill 10 ($3,900) - Municipal Intervention")
+
+            imgui.Spacing()
+            imgui.Spacing()
+
+            imgui.TextColored(imgui.ImVec4(0.0, 0.8, 1.0, 1), "[3] ADVANCED CO-OP SYSTEM (Starting from Skill 3)")
+            imgui.Separator()
+            imgui.BulletText("Command /work: Allows working solo or inviting an eligible partner.")
+            imgui.BulletText("Partner requirements: Min Skill 3, Garbage-man job selected, no active contract, at start location.")
+            imgui.BulletText("Earnings split: 50/50 base pay split if the partner completes at least one valid action.")
+            imgui.BulletText("Extra bonuses: Active partners receive 1 skill point, 1 Marathon point, and Clan XP.")
+
+            imgui.Spacing()
+            imgui.Spacing()
+
+            imgui.TextColored(imgui.ImVec4(1.0, 0.4, 0.4, 1), "[4] PASSIVE RUMMAGING ACTIVITY (Skill 7+)")
+            imgui.Separator()
+            imgui.BulletText("Dedicated commands: /rummage (at a bin) and /rummagebins (list of nearby bin locations).")
+            imgui.BulletText("Standard rewards: Money, materials, drugs, or crafting resources (chances scale with skill).")
+            imgui.BulletText("Ultra-rare rewards (1 in 100,000): Dealership Stock Coupon, Diamond / Onyx Tickets, Artifacts.")
+            imgui.BulletText("Risks and rules: 45s personal cooldown, 10m per-bin cooldown, 15m radius alert, and wanted risk from police!")
         end
     imgui.EndChild()
     imgui.Separator()
-    
-    if iniData.settings.lang == 0 then
-        imgui.TextWrapped("Locatii: Los Santos si Las Venturas.")
-        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Bonus: Contul Premium ofera +50 '/. la plata finala.")
-    else
-        imgui.TextWrapped("Locations: Los Santos and Las Venturas.")
-        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Bonus: Premium Account grants +50 '/. to the final payout.")
-    end
 end
 
 local function renderBusDriverDetails()
@@ -4751,7 +4741,7 @@ end, function(player)
                                     
                                     imgui.Spacing()
                                     imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), "PRODUCTIE SI VANZARE:")
-                                    imgui.BeginChild("BunkerProdBox", imgui.ImVec2(0, 115), true)
+                                    imgui.BeginChild("BunkerProdBox", imgui.ImVec2(0, 100), true)
                                         imgui.BulletText("Viteza Max (Staff+Echip): 1 unitate / 10 min")
                                         imgui.BulletText("Consum Provizii (Maxim): 1 unitate / 300 sec")
                                         imgui.BulletText("Pret Vanzare (Departe): $2.000 / unitate | (Aproape): $1.000 / unitate")
@@ -4760,10 +4750,41 @@ end, function(player)
                                     
                                     imgui.Spacing()
                                     imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.95, 1.0), "CAPACITATE SI TIER PROGRES:")
-                                    imgui.BeginChild("BunkerTiersBox", imgui.ImVec2(0, 65), true)
-                                        imgui.Columns(2, "bunkTiersCols", false)
-                                        imgui.Text("Tier 0: 100 Prov / 100 Stoc\nTier 5: 150 Prov / 100 Stoc"); imgui.NextColumn()
-                                        imgui.Text("Tier 6: 150 Prov / 110 Stoc\nTier 10: 150 Prov / 150 Stoc"); imgui.Columns(1)
+                                    imgui.BeginChild("BunkerTiersBox", imgui.ImVec2(0, 240), true)
+                                        
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 0"); imgui.SameLine();
+                                        imgui.Text("- nivelul de la care incepe orice bunker, acesta ofera o capacitate maxima de 100 provizii si 100 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 1"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $20.000.000, acesta are capacitate maxima de 110 provizii si 100 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 2"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $40.000.000, acesta are capacitate maxima de 120 provizii si 100 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 3"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $60.000.000, acesta are capacitate maxima de 130 provizii si 100 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 4"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $80.000.000, acesta are capacitate maxima de 140 provizii si 100 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 5"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $100.000.000, acesta are capacitate maxima de 150 provizii si 100 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 6"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $150.000.000, acesta are capacitate maxima de 150 provizii si 110 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 7"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $175.000.000, acesta are capacitate maxima de 150 provizii si 120 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 8"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $190.000.000, acesta are capacitate maxima de 150 provizii si 130 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 9"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $220.000.000, acesta are capacitate maxima de 150 provizii si 140 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 10"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $250.000.000, acesta are capacitate maxima de 150 provizii si 150 stocuri.");
+
                                     imgui.EndChild()
                                     imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), "Nota: Comanda /buybunker (Lvl 10). Stocul se pierde la mutare!")
                                 else
@@ -4809,12 +4830,43 @@ end, function(player)
                                     
                                     imgui.Spacing()
                                     imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.95, 1.0), "CAPACITY AND TIER PROGRESS:")
-                                    imgui.BeginChild("BunkerTiersBox", imgui.ImVec2(0, 65), true)
-                                        imgui.Columns(2, "bunkTiersCols", false)
-                                        imgui.Text("Tier 0: 100 Supp / 100 Stock\nTier 5: 150 Supp / 100 Stock"); imgui.NextColumn()
-                                        imgui.Text("Tier 6: 150 Supp / 110 Stock\nTier 10: 150 Supp / 150 Stock"); imgui.Columns(1)
+                                    imgui.BeginChild("BunkerTiersBox", imgui.ImVec2(0, 240), true)
+                                        
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 0"); imgui.SameLine();
+                                        imgui.Text("- the level at which any bunker starts, it offers a maximum capacity of 100 supplies and 100 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 1"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $20,000,000, it has a maximum capacity of 110 supplies and 100 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 2"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $40,000,000, it has a maximum capacity of 120 supplies and 100 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 3"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $60,000,000, it has a maximum capacity of 130 supplies and 100 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 4"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $80,000,000, it has a maximum capacity of 140 supplies and 100 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 5"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $100,000,000, it has a maximum capacity of 150 supplies and 100 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 6"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $150,000,000, it has a maximum capacity of 150 supplies and 110 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 7"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $175,000,000, it has a maximum capacity of 150 supplies and 120 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 8"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $190,000,000, it has a maximum capacity of 150 supplies and 130 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 9"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $220,000,000, it has a maximum capacity of 150 supplies and 140 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 10"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $250,000,000, it has a maximum capacity of 150 supplies and 150 stock.");
+
                                     imgui.EndChild()
-                                    imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), "Note: /buybunker command (Lvl 10). Stock is lost when changing locations!")
+                                    imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), "Note: Command /buybunker (Lvl 10). Stock is lost on relocation!")
                                 end
                            elseif sm.id == 3 then -- JOB GOAL
                                 if iniData.settings.lang == 0 then
@@ -7801,19 +7853,19 @@ end, function(player)
                                     imgui.TextColored(imgui.ImVec4(1, 0.7, 0.2, 1), iniData.settings.lang == 0 and u8("Culorile Hidden") or "Hidden Colors")
                                     imgui.Separator()
                                     local hiddenColors = {
-                                        {128, "#166011", iniData.settings.lang == 0 and "Verde Închis" or "Deep Green"}, {129, "#381F21", iniData.settings.lang == 0 and "Maro Închis" or "Dark Maroon"}, {130, "#25646E", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {131, "#554019", iniData.settings.lang == 0 and "Maro Galben" or "Brown Gold"}, {132, "#65322F", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {133, "#19211F", iniData.settings.lang == 0 and "Negru" or "Black"}, {134, "#3B3855", iniData.settings.lang == 0 and "Violet Închis" or "Dark Purple"}, {135, "#3A8E8E", iniData.settings.lang == 0 and "Turcoaz" or "Turquoise"}, {136, "#935C9B", iniData.settings.lang == 0 and "Mov" or "Purple"}, {137, "#429C3D", iniData.settings.lang == 0 and "Verde" or "Green"},
-                                        {138, "#BDBA9B", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {139, "#586376", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {140, "#928980", iniData.settings.lang == 0 and "Gri" or "Gray"}, {141, "#917E5F", iniData.settings.lang == 0 and "Maro Bej" or "Brown Beige"}, {142, "#917F31", iniData.settings.lang == 0 and "Galben Înnorat" or "Muted Yellow"}, {143, "#745D61", iniData.settings.lang == 0 and "Violet Gri" or "Gray Purple"}, {144, "#6D4E62", iniData.settings.lang == 0 and "Roz Închis" or "Dark Pink"}, {145, "#9AAE77", iniData.settings.lang == 0 and "Verde Pădure" or "Olive Green"}, {146, "#926166", iniData.settings.lang == 0 and "Roz Cenușiu" or "Dusty Pink"}, {147, "#905D6C", iniData.settings.lang == 0 and "Roșu Roz" or "Rose Red"},
-                                        {148, "#383126", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {149, "#3A2F1D", iniData.settings.lang == 0 and "Maro Negru" or "Dark Brown"}, {150, "#323827", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {151, "#3F5539", iniData.settings.lang == 0 and "Verde Pădure" or "Forest Green"}, {152, "#305682", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {153, "#43684D", iniData.settings.lang == 0 and "Verde Gri" or "Green Gray"}, {154, "#299547", iniData.settings.lang == 0 and "Verde Luminos" or "Bright Green"}, {155, "#2B8C78", iniData.settings.lang == 0 and "Turcoaz" or "Teal"}, {156, "#AE9B6D", iniData.settings.lang == 0 and "Bej Galben" or "Yellow Beige"}, {157, "#838C88", iniData.settings.lang == 0 and "Gri Verzui" or "Green Gray"},
-                                        {158, "#A53E2D", iniData.settings.lang == 0 and "Roșu Cărămiziu" or "Brick Red"}, {159, "#3B2E1B", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {160, "#2C3A20", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {161, "#AA5050", iniData.settings.lang == 0 and "Roșu" or "Red"}, {162, "#2C5F84", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {163, "#238D71", iniData.settings.lang == 0 and "Verde Turcoaz" or "Teal Green"}, {164, "#353935", iniData.settings.lang == 0 and "Gri Închis" or "Dark Gray"}, {165, "#356565", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {166, "#724876", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {167, "#5E3029", iniData.settings.lang == 0 and "Maro Roșcat" or "Rust Brown"},
-                                        {168, "#827881", iniData.settings.lang == 0 and "Gri Violet" or "Gray Purple"}, {169, "#7F727B", iniData.settings.lang == 0 and "Gri Roz" or "Pink Gray"}, {170, "#827680", iniData.settings.lang == 0 and "Gri Mov" or "Purple Gray"}, {171, "#674C77", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {172, "#373A1F", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {173, "#3F2C1E", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {174, "#563A25", iniData.settings.lang == 0 and "Maro" or "Brown"}, {175, "#AA3930", iniData.settings.lang == 0 and "Roșu Aprins" or "Bright Red"}, {176, "#A75A80", iniData.settings.lang == 0 and "Roz Violet" or "Pink Purple"}, {177, "#8F6C77", iniData.settings.lang == 0 and "Roz Gri" or "Pink Gray"},
-                                        {178, "#8B4D70", iniData.settings.lang == 0 and "Roz Închis" or "Dark Pink"}, {179, "#4E2B44", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {180, "#874725", iniData.settings.lang == 0 and "Maro Portocaliu" or "Orange Brown"}, {181, "#872D33", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {182, "#914823", iniData.settings.lang == 0 and "Portocaliu Închis" or "Dark Orange"}, {183, "#9D4026", iniData.settings.lang == 0 and "Portocaliu Roșcat" or "Rust Orange"}, {184, "#894D50", iniData.settings.lang == 0 and "Roșu Gri" or "Gray Red"}, {185, "#87736E", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {186, "#1A231A", iniData.settings.lang == 0 and "Verde Închis" or "Deep Green"}, {187, "#19371C", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"},
-                                        {188, "#253F23", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Green"}, {189, "#273D25", iniData.settings.lang == 0 and "Verde Închis" or "Deep Green"}, {190, "#743D4D", iniData.settings.lang == 0 and "Roz Închis" or "Dark Pink"}, {191, "#4D894F", iniData.settings.lang == 0 and "Verde" or "Green"}, {192, "#A99981", iniData.settings.lang == 0 and "Bej Deschis" or "Light Beige"}, {193, "#8E8F81", iniData.settings.lang == 0 and "Gri" or "Gray"}, {194, "#A39E29", iniData.settings.lang == 0 and "Galben Verzuie" or "Yellow Green"}, {195, "#91A148", iniData.settings.lang == 0 and "Verde Galben" or "Yellow Green"}, {196, "#8E957F", iniData.settings.lang == 0 and "Gri Verzuie" or "Green Gray"}, {197, "#868738", iniData.settings.lang == 0 and "Verde Galben" or "Olive"},
-                                        {198, "#3E4B82", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {199, "#4B4B1D", iniData.settings.lang == 0 and "Galben Închis" or "Dark Yellow"}, {200, "#99844F", iniData.settings.lang == 0 and "Galben Cenușiu" or "Gray Yellow"}, {201, "#233256", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {202, "#27422C", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {203, "#233642", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {204, "#4E6367", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {205, "#1A2327", iniData.settings.lang == 0 and "Negru Albastru" or "Dark Blue"}, {206, "#335051", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {207, "#335051", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"},
-                                        {208, "#436179", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {209, "#285566", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {210, "#284554", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {211, "#3A2D60", iniData.settings.lang == 0 and "Violet Închis" or "Dark Purple"}, {212, "#7B3730", iniData.settings.lang == 0 and "Roșu Cărămiziu" or "Brick Red"}, {213, "#969381", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {214, "#606623", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Olive"}, {215, "#1F261B", iniData.settings.lang == 0 and "Negru Verzuie" or "Dark Green"}, {216, "#9B6240", iniData.settings.lang == 0 and "Portocaliu" or "Orange"}, {217, "#659075", iniData.settings.lang == 0 and "Verde Cenușiu" or "Gray Green"},
-                                        {218, "#A76F57", iniData.settings.lang == 0 and "Maro Portocaliu" or "Orange Brown"}, {219, "#A3622B", iniData.settings.lang == 0 and "Portocaliu Închis" or "Dark Orange"}, {220, "#AC4E58", iniData.settings.lang == 0 and "Roșu Roz" or "Pink Red"}, {221, "#AC9246", iniData.settings.lang == 0 and "Galben Închis" or "Golden Yellow"}, {222, "#A94531", iniData.settings.lang == 0 and "Roșu Portocaliu" or "Orange Red"}, {223, "#263149", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {224, "#62362B", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {225, "#54622D", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Olive"}, {226, "#5A9B36", iniData.settings.lang == 0 and "Verde" or "Green"}, {227, "#4E2B30", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"},
-                                        {228, "#9E892D", iniData.settings.lang == 0 and "Galben Închis" or "Golden Yellow"}, {229, "#34832E", iniData.settings.lang == 0 and "Verde" or "Green"}, {230, "#502A29", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {231, "#815F21", iniData.settings.lang == 0 and "Galben Cărămiziu" or "Bronze"}, {232, "#954D78", iniData.settings.lang == 0 and "Mov Roz" or "Purple Pink"}, {233, "#8D3166", iniData.settings.lang == 0 and "Roz Violet" or "Pink Purple"}, {234, "#264625", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {235, "#3A5224", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Olive"}, {236, "#1C3430", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {237, "#895368", iniData.settings.lang == 0 and "Mov Roz" or "Purple Pink"},
-                                        {238, "#976E44", iniData.settings.lang == 0 and "Maro Galben" or "Brown Gold"}, {239, "#6D392B", iniData.settings.lang == 0 and "Maro Cărămiziu" or "Rust Brown"}, {240, "#46947C", iniData.settings.lang == 0 and "Verde Turcoaz" or "Teal Green"}, {241, "#628F37", iniData.settings.lang == 0 and "Verde" or "Green"}, {242, "#672A41", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {243, "#2D8B37", iniData.settings.lang == 0 and "Verde" or "Green"}, {244, "#472B1F", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {245, "#17301B", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {246, "#48656E", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {247, "#3C4D56", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"},
-                                        {248, "#683136", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {249, "#5F2835", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {250, "#7F7663", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {251, "#4E4F49", iniData.settings.lang == 0 and "Gri Închis" or "Dark Gray"}, {252, "#41403C", iniData.settings.lang == 0 and "Gri Închis" or "Dark Gray"}, {253, "#8B8670", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {254, "#5C5449", iniData.settings.lang == 0 and "Gri Cenușiu" or "Gray Brown"}, {255, "#3D4750", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}
+                                        {128, "#166011", iniData.settings.lang == 0 and "Verde inchis" or "Deep Green"}, {129, "#381F21", iniData.settings.lang == 0 and "Maro inchis" or "Dark Maroon"}, {130, "#25646E", iniData.settings.lang == 0 and "Turcoaz inchis" or "Deep Teal"}, {131, "#554019", iniData.settings.lang == 0 and "Maro Galben" or "Brown Gold"}, {132, "#65322F", iniData.settings.lang == 0 and "Rosu inchis" or "Dark Red"}, {133, "#19211F", iniData.settings.lang == 0 and "Negru" or "Black"}, {134, "#3B3855", iniData.settings.lang == 0 and "Violet inchis" or "Dark Purple"}, {135, "#3A8E8E", iniData.settings.lang == 0 and "Turcoaz" or "Turquoise"}, {136, "#935C9B", iniData.settings.lang == 0 and "Mov" or "Purple"}, {137, "#429C3D", iniData.settings.lang == 0 and "Verde" or "Green"},
+                                        {138, "#BDBA9B", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {139, "#586376", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {140, "#928980", iniData.settings.lang == 0 and "Gri" or "Gray"}, {141, "#917E5F", iniData.settings.lang == 0 and "Maro Bej" or "Brown Beige"}, {142, "#917F31", iniData.settings.lang == 0 and "Galben innorat" or "Muted Yellow"}, {143, "#745D61", iniData.settings.lang == 0 and "Violet Gri" or "Gray Purple"}, {144, "#6D4E62", iniData.settings.lang == 0 and "Roz inchis" or "Dark Pink"}, {145, "#9AAE77", iniData.settings.lang == 0 and "Verde Padure" or "Olive Green"}, {146, "#926166", iniData.settings.lang == 0 and "Roz Cenusiu" or "Dusty Pink"}, {147, "#905D6C", iniData.settings.lang == 0 and "Rosu Roz" or "Rose Red"},
+                                        {148, "#383126", iniData.settings.lang == 0 and "Maro inchis" or "Dark Brown"}, {149, "#3A2F1D", iniData.settings.lang == 0 and "Maro Negru" or "Dark Brown"}, {150, "#323827", iniData.settings.lang == 0 and "Verde inchis" or "Dark Green"}, {151, "#3F5539", iniData.settings.lang == 0 and "Verde Padure" or "Forest Green"}, {152, "#305682", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {153, "#43684D", iniData.settings.lang == 0 and "Verde Gri" or "Green Gray"}, {154, "#299547", iniData.settings.lang == 0 and "Verde Luminos" or "Bright Green"}, {155, "#2B8C78", iniData.settings.lang == 0 and "Turcoaz" or "Teal"}, {156, "#AE9B6D", iniData.settings.lang == 0 and "Bej Galben" or "Yellow Beige"}, {157, "#838C88", iniData.settings.lang == 0 and "Gri Verzui" or "Green Gray"},
+                                        {158, "#A53E2D", iniData.settings.lang == 0 and "Rosu Caramiziu" or "Brick Red"}, {159, "#3B2E1B", iniData.settings.lang == 0 and "Maro inchis" or "Dark Brown"}, {160, "#2C3A20", iniData.settings.lang == 0 and "Verde inchis" or "Dark Green"}, {161, "#AA5050", iniData.settings.lang == 0 and "Rosu" or "Red"}, {162, "#2C5F84", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {163, "#238D71", iniData.settings.lang == 0 and "Verde Turcoaz" or "Teal Green"}, {164, "#353935", iniData.settings.lang == 0 and "Gri inchis" or "Dark Gray"}, {165, "#356565", iniData.settings.lang == 0 and "Turcoaz inchis" or "Deep Teal"}, {166, "#724876", iniData.settings.lang == 0 and "Mov inchis" or "Dark Purple"}, {167, "#5E3029", iniData.settings.lang == 0 and "Maro Roscat" or "Rust Brown"},
+                                        {168, "#827881", iniData.settings.lang == 0 and "Gri Violet" or "Gray Purple"}, {169, "#7F727B", iniData.settings.lang == 0 and "Gri Roz" or "Pink Gray"}, {170, "#827680", iniData.settings.lang == 0 and "Gri Mov" or "Purple Gray"}, {171, "#674C77", iniData.settings.lang == 0 and "Mov inchis" or "Dark Purple"}, {172, "#373A1F", iniData.settings.lang == 0 and "Verde inchis" or "Dark Green"}, {173, "#3F2C1E", iniData.settings.lang == 0 and "Maro inchis" or "Dark Brown"}, {174, "#563A25", iniData.settings.lang == 0 and "Maro" or "Brown"}, {175, "#AA3930", iniData.settings.lang == 0 and "Rosu Aprins" or "Bright Red"}, {176, "#A75A80", iniData.settings.lang == 0 and "Roz Violet" or "Pink Purple"}, {177, "#8F6C77", iniData.settings.lang == 0 and "Roz Gri" or "Pink Gray"},
+                                        {178, "#8B4D70", iniData.settings.lang == 0 and "Roz inchis" or "Dark Pink"}, {179, "#4E2B44", iniData.settings.lang == 0 and "Mov inchis" or "Dark Purple"}, {180, "#874725", iniData.settings.lang == 0 and "Maro Portocaliu" or "Orange Brown"}, {181, "#872D33", iniData.settings.lang == 0 and "Rosu inchis" or "Dark Red"}, {182, "#914823", iniData.settings.lang == 0 and "Portocaliu inchis" or "Dark Orange"}, {183, "#9D4026", iniData.settings.lang == 0 and "Portocaliu Roscat" or "Rust Orange"}, {184, "#894D50", iniData.settings.lang == 0 and "Rosu Gri" or "Gray Red"}, {185, "#87736E", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {186, "#1A231A", iniData.settings.lang == 0 and "Verde inchis" or "Deep Green"}, {187, "#19371C", iniData.settings.lang == 0 and "Verde inchis" or "Dark Green"},
+                                        {188, "#253F23", iniData.settings.lang == 0 and "Verde intunecat" or "Dark Green"}, {189, "#273D25", iniData.settings.lang == 0 and "Verde inchis" or "Deep Green"}, {190, "#743D4D", iniData.settings.lang == 0 and "Roz inchis" or "Dark Pink"}, {191, "#4D894F", iniData.settings.lang == 0 and "Verde" or "Green"}, {192, "#A99981", iniData.settings.lang == 0 and "Bej Deschis" or "Light Beige"}, {193, "#8E8F81", iniData.settings.lang == 0 and "Gri" or "Gray"}, {194, "#A39E29", iniData.settings.lang == 0 and "Galben Verzuie" or "Yellow Green"}, {195, "#91A148", iniData.settings.lang == 0 and "Verde Galben" or "Yellow Green"}, {196, "#8E957F", iniData.settings.lang == 0 and "Gri Verzuie" or "Green Gray"}, {197, "#868738", iniData.settings.lang == 0 and "Verde Galben" or "Olive"},
+                                        {198, "#3E4B82", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {199, "#4B4B1D", iniData.settings.lang == 0 and "Galben inchis" or "Dark Yellow"}, {200, "#99844F", iniData.settings.lang == 0 and "Galben Cenusiu" or "Gray Yellow"}, {201, "#233256", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {202, "#27422C", iniData.settings.lang == 0 and "Verde inchis" or "Dark Green"}, {203, "#233642", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {204, "#4E6367", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {205, "#1A2327", iniData.settings.lang == 0 and "Negru Albastru" or "Dark Blue"}, {206, "#335051", iniData.settings.lang == 0 and "Turcoaz inchis" or "Deep Teal"}, {207, "#335051", iniData.settings.lang == 0 and "Turcoaz inchis" or "Deep Teal"},
+                                        {208, "#436179", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {209, "#285566", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {210, "#284554", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {211, "#3A2D60", iniData.settings.lang == 0 and "Violet inchis" or "Dark Purple"}, {212, "#7B3730", iniData.settings.lang == 0 and "Rosu Caramiziu" or "Brick Red"}, {213, "#969381", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {214, "#606623", iniData.settings.lang == 0 and "Verde intunecat" or "Dark Olive"}, {215, "#1F261B", iniData.settings.lang == 0 and "Negru Verzuie" or "Dark Green"}, {216, "#9B6240", iniData.settings.lang == 0 and "Portocaliu" or "Orange"}, {217, "#659075", iniData.settings.lang == 0 and "Verde Cenusiu" or "Gray Green"},
+                                        {218, "#A76F57", iniData.settings.lang == 0 and "Maro Portocaliu" or "Orange Brown"}, {219, "#A3622B", iniData.settings.lang == 0 and "Portocaliu inchis" or "Dark Orange"}, {220, "#AC4E58", iniData.settings.lang == 0 and "Rosu Roz" or "Pink Red"}, {221, "#AC9246", iniData.settings.lang == 0 and "Galben inchis" or "Golden Yellow"}, {222, "#A94531", iniData.settings.lang == 0 and "Rosu Portocaliu" or "Orange Red"}, {223, "#263149", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {224, "#62362B", iniData.settings.lang == 0 and "Maro inchis" or "Dark Brown"}, {225, "#54622D", iniData.settings.lang == 0 and "Verde intunecat" or "Dark Olive"}, {226, "#5A9B36", iniData.settings.lang == 0 and "Verde" or "Green"}, {227, "#4E2B30", iniData.settings.lang == 0 and "Maro inchis" or "Dark Brown"},
+                                        {228, "#9E892D", iniData.settings.lang == 0 and "Galben inchis" or "Golden Yellow"}, {229, "#34832E", iniData.settings.lang == 0 and "Verde" or "Green"}, {230, "#502A29", iniData.settings.lang == 0 and "Maro inchis" or "Dark Brown"}, {231, "#815F21", iniData.settings.lang == 0 and "Galben Caramiziu" or "Bronze"}, {232, "#954D78", iniData.settings.lang == 0 and "Mov Roz" or "Purple Pink"}, {233, "#8D3166", iniData.settings.lang == 0 and "Roz Violet" or "Pink Purple"}, {234, "#264625", iniData.settings.lang == 0 and "Verde inchis" or "Dark Green"}, {235, "#3A5224", iniData.settings.lang == 0 and "Verde intunecat" or "Dark Olive"}, {236, "#1C3430", iniData.settings.lang == 0 and "Turcoaz inchis" or "Deep Teal"}, {237, "#895368", iniData.settings.lang == 0 and "Mov Roz" or "Purple Pink"},
+                                        {238, "#976E44", iniData.settings.lang == 0 and "Maro Galben" or "Brown Gold"}, {239, "#6D392B", iniData.settings.lang == 0 and "Maro Caramiziu" or "Rust Brown"}, {240, "#46947C", iniData.settings.lang == 0 and "Verde Turcoaz" or "Teal Green"}, {241, "#628F37", iniData.settings.lang == 0 and "Verde" or "Green"}, {242, "#672A41", iniData.settings.lang == 0 and "Mov inchis" or "Dark Purple"}, {243, "#2D8B37", iniData.settings.lang == 0 and "Verde" or "Green"}, {244, "#472B1F", iniData.settings.lang == 0 and "Maro inchis" or "Dark Brown"}, {245, "#17301B", iniData.settings.lang == 0 and "Verde inchis" or "Dark Green"}, {246, "#48656E", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {247, "#3C4D56", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"},
+                                        {248, "#683136", iniData.settings.lang == 0 and "Rosu inchis" or "Dark Red"}, {249, "#5F2835", iniData.settings.lang == 0 and "Rosu inchis" or "Dark Red"}, {250, "#7F7663", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {251, "#4E4F49", iniData.settings.lang == 0 and "Gri inchis" or "Dark Gray"}, {252, "#41403C", iniData.settings.lang == 0 and "Gri inchis" or "Dark Gray"}, {253, "#8B8670", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {254, "#5C5449", iniData.settings.lang == 0 and "Gri Cenusiu" or "Gray Brown"}, {255, "#3D4750", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}
                                     }
                                     for _, color in ipairs(hiddenColors) do
                                         local r = tonumber(color[2]:sub(2, 3), 16) / 255
@@ -9532,23 +9584,58 @@ end, function(player)
                         imgui.EndChild()
                                                         
                         imgui.Spacing()
-                            imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), "PRODUCTIE SI VANZARE:")
-                            imgui.BeginChild("BunkerProdBox", imgui.ImVec2(0, 115), true)
-                                imgui.BulletText("Viteza Max (Staff+Echip): 1 unitate / 10 min")
-                                imgui.BulletText("Consum Provizii (Maxim): 1 unitate / 300 sec")
-                                imgui.BulletText("Pret Vanzare (Departe): $2.000 / unitate | (Aproape): $1.000 / unitate")
-                                imgui.BulletText("Bonus Ajutoare: 10 '/. din plata finala")
-                            imgui.EndChild()
-                                                        
+                            imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), "PRODUCTIE sI VANZARE:")
+                                imgui.BeginChild("BunkerProdBox", imgui.ImVec2(0, 200), true)
+                                    imgui.BulletText("Stocul poate fi vandut incepand cu minim 1 unitate.");
+                                    imgui.BulletText("Pret per unitate: $1.000 (aproape) | $2.000 (departe). Exemplu: 100 unitati = $100k / $200k.");
+                                    imgui.BulletText("in functie de stoc, se folosesc mai multe vehicule Bandito. Poti chema prieteni sa te ajute!");
+                                    imgui.BulletText("Fiecare ajutor primeste 10'/. bonus din plata finala (fara a scadea din banii tai).");
+                                    imgui.BulletText("Timp alocat: 5 minute (aproape) | 10 minute (departe).");
+                                    imgui.BulletText("Conditie productie: Bunkerul are nevoie de provizii si proprietarul trebuie sa fie online.");
+                                    imgui.BulletText("Viteza productie - Fara imbunatatiri: 1 unitate / 20 minute");
+                                    imgui.BulletText("Viteza productie - Staff sau Echipament: 1 unitate / 15 minute");
+                                    imgui.BulletText("Viteza productie - Staff + Echipament (Maxim): 1 unitate / 10 minute");
+                                imgui.EndChild()                                                        
                             imgui.Spacing()
                             imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.95, 1.0), "CAPACITATE SI TIER PROGRES:")
-                            imgui.BeginChild("BunkerTiersBox", imgui.ImVec2(0, 65), true)
-                                imgui.Columns(2, "bunkTiersCols", false)
-                                imgui.Text("Tier 0: 100 Prov / 100 Stoc\nTier 5: 150 Prov / 100 Stoc"); imgui.NextColumn()
-                                imgui.Text("Tier 6: 150 Prov / 110 Stoc\nTier 10: 150 Prov / 150 Stoc"); imgui.Columns(1)
-                            imgui.EndChild()
-                            imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), "Nota: Comanda /buybunker (Lvl 10). Stocul se pierde la mutare!")
-                        else
+                                    imgui.BeginChild("BunkerTiersBox", imgui.ImVec2(0, 240), true)
+                                        
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 0"); imgui.SameLine();
+                                        imgui.Text("- nivelul de la care incepe orice bunker, acesta ofera o capacitate maxima de 100 provizii si 100 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 1"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $20.000.000, acesta are capacitate maxima de 110 provizii si 100 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 2"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $40.000.000, acesta are capacitate maxima de 120 provizii si 100 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 3"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $60.000.000, acesta are capacitate maxima de 130 provizii si 100 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 4"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $80.000.000, acesta are capacitate maxima de 140 provizii si 100 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 5"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $100.000.000, acesta are capacitate maxima de 150 provizii si 100 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 6"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $150.000.000, acesta are capacitate maxima de 150 provizii si 110 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 7"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $175.000.000, acesta are capacitate maxima de 150 provizii si 120 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 8"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $190.000.000, acesta are capacitate maxima de 150 provizii si 130 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 9"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $220.000.000, acesta are capacitate maxima de 150 provizii si 140 stocuri.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 10"); imgui.SameLine();
+                                        imgui.Text("- nivelul se deblocheaza cand bunkerul genereaza $250.000.000, acesta are capacitate maxima de 150 provizii si 150 stocuri.");
+
+                                    imgui.EndChild()
+                                    imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), "Nota: Comanda /buybunker (Lvl 10). Stocul se pierde la mutare!")
+                                 else
                             imgui.TextColored(imgui.ImVec4(1.0, 0.8, 0.0, 1.0), "--- BUNKER SYSTEM ---")
                             imgui.Separator()
                             imgui.TextColored(imgui.ImVec4(0.0, 1.0, 1.0, 1.0), "LOCATIONS AND PURCHASE PRICES:")
@@ -9581,24 +9668,60 @@ end, function(player)
                             imgui.EndChild()
                                                         
                             imgui.Spacing()
-                                imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), "PRODUCTION AND SELLING:")
-                                    imgui.BeginChild("BunkerProdBox", imgui.ImVec2(0, 115), true)
-                                    imgui.BulletText("Max Speed (Staff+Equip): 1 unit / 10 min")
-                                    imgui.BulletText("Supplies Consumption (Max): 1 unit / 300 sec")
-                                    imgui.BulletText("Selling Price (Far): $2.000 / unit | (Near): $1.000 / unit")
-                                    imgui.BulletText("Supporters Bonus: 10 '/. of the final payment")
-                            imgui.EndChild()
-                                                        
+                              imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), "PRODUCTION AND SELLING:")
+                                imgui.BeginChild("BunkerProdBox", imgui.ImVec2(0, 200), true)
+                                    imgui.BulletText("Stock can be sold starting from a minimum of 1 unit.");
+                                    imgui.BulletText("Price per unit: $1,000 (near) | $2,000 (far). Example: 100 units = $100k / $200k.");
+                                    imgui.BulletText("Depending on the stock, multiple Bandito vehicles are used. You can invite friends to help!");
+                                    imgui.BulletText("Each helper receives a 10'/. bonus from the final payment (without deducting from your money).");
+                                    imgui.BulletText("Time limit: 5 minutes (near) | 10 minutes (far).");
+                                    imgui.BulletText("Production condition: The bunker needs supplies and the owner must be online.");
+                                    imgui.BulletText("Production speed - No upgrades: 1 unit / 20 minutes");
+                                    imgui.BulletText("Production speed - Staff or Equipment: 1 unit / 15 minutes");
+                                    imgui.BulletText("Production speed - Staff + Equipment (Max): 1 unit / 10 minutes");
+                                imgui.EndChild()
+                                
                             imgui.Spacing()
                                 imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.95, 1.0), "CAPACITY AND TIER PROGRESS:")
-                                imgui.BeginChild("BunkerTiersBox", imgui.ImVec2(0, 65), true)
-                                    imgui.Columns(2, "bunkTiersCols", false)
-                                    imgui.Text("Tier 0: 100 Supp / 100 Stock\nTier 5: 150 Supp / 100 Stock"); imgui.NextColumn()
-                                    imgui.Text("Tier 6: 150 Supp / 110 Stock\nTier 10: 150 Supp / 150 Stock"); imgui.Columns(1)
-                            imgui.EndChild()
-                            imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), "Note: /buybunker command (Lvl 10). Stock is lost when changing locations!")
-                        end
-                elseif selected_system == 3 then -- JOB GOAL
+                                    imgui.BeginChild("BunkerTiersBox", imgui.ImVec2(0, 240), true)
+                                        
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 0"); imgui.SameLine();
+                                        imgui.Text("- the level at which any bunker starts, it offers a maximum capacity of 100 supplies and 100 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 1"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $20,000,000, it has a maximum capacity of 110 supplies and 100 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 2"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $40,000,000, it has a maximum capacity of 120 supplies and 100 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 3"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $60,000,000, it has a maximum capacity of 130 supplies and 100 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 4"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $80,000,000, it has a maximum capacity of 140 supplies and 100 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 5"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $100,000,000, it has a maximum capacity of 150 supplies and 100 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 6"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $150,000,000, it has a maximum capacity of 150 supplies and 110 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 7"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $175,000,000, it has a maximum capacity of 150 supplies and 120 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 8"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $190,000,000, it has a maximum capacity of 150 supplies and 130 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 9"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $220,000,000, it has a maximum capacity of 150 supplies and 140 stock.");
+
+                                        imgui.TextColored(imgui.ImVec4(1.0, 0.84, 0.0, 1.0), "Bunker Tier 10"); imgui.SameLine();
+                                        imgui.Text("- this level unlocks when the bunker generates $250,000,000, it has a maximum capacity of 150 supplies and 150 stock.");
+
+                                    imgui.EndChild()
+                                    imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), "Note: Command /buybunker (Lvl 10). Stock is lost on relocation!")
+                                end
+                     elseif selected_system == 3 then -- JOB GOAL
                     local isRO = (iniData.settings.lang == 0)
                     if isRO then
                         imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), "--- SISTEM JOB GOAL ---")
@@ -12268,19 +12391,19 @@ end, function(player)
                                     imgui.TextColored(imgui.ImVec4(1, 0.7, 0.2, 1), iniData.settings.lang == 0 and u8("Culorile Hidden") or "Hidden Colors")
                                     imgui.Separator()
                                     local hiddenColors = {
-                                        {128, "#166011", iniData.settings.lang == 0 and "Verde Închis" or "Deep Green"}, {129, "#381F21", iniData.settings.lang == 0 and "Maro Închis" or "Dark Maroon"}, {130, "#25646E", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {131, "#554019", iniData.settings.lang == 0 and "Maro Galben" or "Brown Gold"}, {132, "#65322F", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {133, "#19211F", iniData.settings.lang == 0 and "Negru" or "Black"}, {134, "#3B3855", iniData.settings.lang == 0 and "Violet Închis" or "Dark Purple"}, {135, "#3A8E8E", iniData.settings.lang == 0 and "Turcoaz" or "Turquoise"}, {136, "#935C9B", iniData.settings.lang == 0 and "Mov" or "Purple"}, {137, "#429C3D", iniData.settings.lang == 0 and "Verde" or "Green"},
-                                        {138, "#BDBA9B", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {139, "#586376", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {140, "#928980", iniData.settings.lang == 0 and "Gri" or "Gray"}, {141, "#917E5F", iniData.settings.lang == 0 and "Maro Bej" or "Brown Beige"}, {142, "#917F31", iniData.settings.lang == 0 and "Galben Înnorat" or "Muted Yellow"}, {143, "#745D61", iniData.settings.lang == 0 and "Violet Gri" or "Gray Purple"}, {144, "#6D4E62", iniData.settings.lang == 0 and "Roz Închis" or "Dark Pink"}, {145, "#9AAE77", iniData.settings.lang == 0 and "Verde Pădure" or "Olive Green"}, {146, "#926166", iniData.settings.lang == 0 and "Roz Cenușiu" or "Dusty Pink"}, {147, "#905D6C", iniData.settings.lang == 0 and "Roșu Roz" or "Rose Red"},
-                                        {148, "#383126", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {149, "#3A2F1D", iniData.settings.lang == 0 and "Maro Negru" or "Dark Brown"}, {150, "#323827", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {151, "#3F5539", iniData.settings.lang == 0 and "Verde Pădure" or "Forest Green"}, {152, "#305682", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {153, "#43684D", iniData.settings.lang == 0 and "Verde Gri" or "Green Gray"}, {154, "#299547", iniData.settings.lang == 0 and "Verde Luminos" or "Bright Green"}, {155, "#2B8C78", iniData.settings.lang == 0 and "Turcoaz" or "Teal"}, {156, "#AE9B6D", iniData.settings.lang == 0 and "Bej Galben" or "Yellow Beige"}, {157, "#838C88", iniData.settings.lang == 0 and "Gri Verzui" or "Green Gray"},
-                                        {158, "#A53E2D", iniData.settings.lang == 0 and "Roșu Cărămiziu" or "Brick Red"}, {159, "#3B2E1B", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {160, "#2C3A20", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {161, "#AA5050", iniData.settings.lang == 0 and "Roșu" or "Red"}, {162, "#2C5F84", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {163, "#238D71", iniData.settings.lang == 0 and "Verde Turcoaz" or "Teal Green"}, {164, "#353935", iniData.settings.lang == 0 and "Gri Închis" or "Dark Gray"}, {165, "#356565", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {166, "#724876", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {167, "#5E3029", iniData.settings.lang == 0 and "Maro Roșcat" or "Rust Brown"},
-                                        {168, "#827881", iniData.settings.lang == 0 and "Gri Violet" or "Gray Purple"}, {169, "#7F727B", iniData.settings.lang == 0 and "Gri Roz" or "Pink Gray"}, {170, "#827680", iniData.settings.lang == 0 and "Gri Mov" or "Purple Gray"}, {171, "#674C77", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {172, "#373A1F", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {173, "#3F2C1E", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {174, "#563A25", iniData.settings.lang == 0 and "Maro" or "Brown"}, {175, "#AA3930", iniData.settings.lang == 0 and "Roșu Aprins" or "Bright Red"}, {176, "#A75A80", iniData.settings.lang == 0 and "Roz Violet" or "Pink Purple"}, {177, "#8F6C77", iniData.settings.lang == 0 and "Roz Gri" or "Pink Gray"},
-                                        {178, "#8B4D70", iniData.settings.lang == 0 and "Roz Închis" or "Dark Pink"}, {179, "#4E2B44", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {180, "#874725", iniData.settings.lang == 0 and "Maro Portocaliu" or "Orange Brown"}, {181, "#872D33", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {182, "#914823", iniData.settings.lang == 0 and "Portocaliu Închis" or "Dark Orange"}, {183, "#9D4026", iniData.settings.lang == 0 and "Portocaliu Roșcat" or "Rust Orange"}, {184, "#894D50", iniData.settings.lang == 0 and "Roșu Gri" or "Gray Red"}, {185, "#87736E", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {186, "#1A231A", iniData.settings.lang == 0 and "Verde Închis" or "Deep Green"}, {187, "#19371C", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"},
-                                        {188, "#253F23", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Green"}, {189, "#273D25", iniData.settings.lang == 0 and "Verde Închis" or "Deep Green"}, {190, "#743D4D", iniData.settings.lang == 0 and "Roz Închis" or "Dark Pink"}, {191, "#4D894F", iniData.settings.lang == 0 and "Verde" or "Green"}, {192, "#A99981", iniData.settings.lang == 0 and "Bej Deschis" or "Light Beige"}, {193, "#8E8F81", iniData.settings.lang == 0 and "Gri" or "Gray"}, {194, "#A39E29", iniData.settings.lang == 0 and "Galben Verzuie" or "Yellow Green"}, {195, "#91A148", iniData.settings.lang == 0 and "Verde Galben" or "Yellow Green"}, {196, "#8E957F", iniData.settings.lang == 0 and "Gri Verzuie" or "Green Gray"}, {197, "#868738", iniData.settings.lang == 0 and "Verde Galben" or "Olive"},
-                                        {198, "#3E4B82", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {199, "#4B4B1D", iniData.settings.lang == 0 and "Galben Închis" or "Dark Yellow"}, {200, "#99844F", iniData.settings.lang == 0 and "Galben Cenușiu" or "Gray Yellow"}, {201, "#233256", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {202, "#27422C", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {203, "#233642", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {204, "#4E6367", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {205, "#1A2327", iniData.settings.lang == 0 and "Negru Albastru" or "Dark Blue"}, {206, "#335051", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {207, "#335051", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"},
-                                        {208, "#436179", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {209, "#285566", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {210, "#284554", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {211, "#3A2D60", iniData.settings.lang == 0 and "Violet Închis" or "Dark Purple"}, {212, "#7B3730", iniData.settings.lang == 0 and "Roșu Cărămiziu" or "Brick Red"}, {213, "#969381", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {214, "#606623", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Olive"}, {215, "#1F261B", iniData.settings.lang == 0 and "Negru Verzuie" or "Dark Green"}, {216, "#9B6240", iniData.settings.lang == 0 and "Portocaliu" or "Orange"}, {217, "#659075", iniData.settings.lang == 0 and "Verde Cenușiu" or "Gray Green"},
-                                        {218, "#A76F57", iniData.settings.lang == 0 and "Maro Portocaliu" or "Orange Brown"}, {219, "#A3622B", iniData.settings.lang == 0 and "Portocaliu Închis" or "Dark Orange"}, {220, "#AC4E58", iniData.settings.lang == 0 and "Roșu Roz" or "Pink Red"}, {221, "#AC9246", iniData.settings.lang == 0 and "Galben Închis" or "Golden Yellow"}, {222, "#A94531", iniData.settings.lang == 0 and "Roșu Portocaliu" or "Orange Red"}, {223, "#263149", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}, {224, "#62362B", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {225, "#54622D", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Olive"}, {226, "#5A9B36", iniData.settings.lang == 0 and "Verde" or "Green"}, {227, "#4E2B30", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"},
-                                        {228, "#9E892D", iniData.settings.lang == 0 and "Galben Închis" or "Golden Yellow"}, {229, "#34832E", iniData.settings.lang == 0 and "Verde" or "Green"}, {230, "#502A29", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {231, "#815F21", iniData.settings.lang == 0 and "Galben Cărămiziu" or "Bronze"}, {232, "#954D78", iniData.settings.lang == 0 and "Mov Roz" or "Purple Pink"}, {233, "#8D3166", iniData.settings.lang == 0 and "Roz Violet" or "Pink Purple"}, {234, "#264625", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {235, "#3A5224", iniData.settings.lang == 0 and "Verde Întunecat" or "Dark Olive"}, {236, "#1C3430", iniData.settings.lang == 0 and "Turcoaz Închis" or "Deep Teal"}, {237, "#895368", iniData.settings.lang == 0 and "Mov Roz" or "Purple Pink"},
-                                        {238, "#976E44", iniData.settings.lang == 0 and "Maro Galben" or "Brown Gold"}, {239, "#6D392B", iniData.settings.lang == 0 and "Maro Cărămiziu" or "Rust Brown"}, {240, "#46947C", iniData.settings.lang == 0 and "Verde Turcoaz" or "Teal Green"}, {241, "#628F37", iniData.settings.lang == 0 and "Verde" or "Green"}, {242, "#672A41", iniData.settings.lang == 0 and "Mov Închis" or "Dark Purple"}, {243, "#2D8B37", iniData.settings.lang == 0 and "Verde" or "Green"}, {244, "#472B1F", iniData.settings.lang == 0 and "Maro Închis" or "Dark Brown"}, {245, "#17301B", iniData.settings.lang == 0 and "Verde Închis" or "Dark Green"}, {246, "#48656E", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {247, "#3C4D56", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"},
-                                        {248, "#683136", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {249, "#5F2835", iniData.settings.lang == 0 and "Roșu Închis" or "Dark Red"}, {250, "#7F7663", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {251, "#4E4F49", iniData.settings.lang == 0 and "Gri Închis" or "Dark Gray"}, {252, "#41403C", iniData.settings.lang == 0 and "Gri Închis" or "Dark Gray"}, {253, "#8B8670", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {254, "#5C5449", iniData.settings.lang == 0 and "Gri Cenușiu" or "Gray Brown"}, {255, "#3D4750", iniData.settings.lang == 0 and "Albastru Închis" or "Deep Blue"}
+                                        {128, "#166011", iniData.settings.lang == 0 and "Verde inchis" or "Deep Green"}, {129, "#381F21", iniData.settings.lang == 0 and "Maro inchis" or "Dark Maroon"}, {130, "#25646E", iniData.settings.lang == 0 and "Turcoaz inchis" or "Deep Teal"}, {131, "#554019", iniData.settings.lang == 0 and "Maro Galben" or "Brown Gold"}, {132, "#65322F", iniData.settings.lang == 0 and "Rosu inchis" or "Dark Red"}, {133, "#19211F", iniData.settings.lang == 0 and "Negru" or "Black"}, {134, "#3B3855", iniData.settings.lang == 0 and "Violet inchis" or "Dark Purple"}, {135, "#3A8E8E", iniData.settings.lang == 0 and "Turcoaz" or "Turquoise"}, {136, "#935C9B", iniData.settings.lang == 0 and "Mov" or "Purple"}, {137, "#429C3D", iniData.settings.lang == 0 and "Verde" or "Green"},
+                                        {138, "#BDBA9B", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {139, "#586376", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {140, "#928980", iniData.settings.lang == 0 and "Gri" or "Gray"}, {141, "#917E5F", iniData.settings.lang == 0 and "Maro Bej" or "Brown Beige"}, {142, "#917F31", iniData.settings.lang == 0 and "Galben innorat" or "Muted Yellow"}, {143, "#745D61", iniData.settings.lang == 0 and "Violet Gri" or "Gray Purple"}, {144, "#6D4E62", iniData.settings.lang == 0 and "Roz inchis" or "Dark Pink"}, {145, "#9AAE77", iniData.settings.lang == 0 and "Verde Padure" or "Olive Green"}, {146, "#926166", iniData.settings.lang == 0 and "Roz Cenusiu" or "Dusty Pink"}, {147, "#905D6C", iniData.settings.lang == 0 and "Rosu Roz" or "Rose Red"},
+                                        {148, "#383126", iniData.settings.lang == 0 and "Maro inchis" or "Dark Brown"}, {149, "#3A2F1D", iniData.settings.lang == 0 and "Maro Negru" or "Dark Brown"}, {150, "#323827", iniData.settings.lang == 0 and "Verde inchis" or "Dark Green"}, {151, "#3F5539", iniData.settings.lang == 0 and "Verde Padure" or "Forest Green"}, {152, "#305682", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {153, "#43684D", iniData.settings.lang == 0 and "Verde Gri" or "Green Gray"}, {154, "#299547", iniData.settings.lang == 0 and "Verde Luminos" or "Bright Green"}, {155, "#2B8C78", iniData.settings.lang == 0 and "Turcoaz" or "Teal"}, {156, "#AE9B6D", iniData.settings.lang == 0 and "Bej Galben" or "Yellow Beige"}, {157, "#838C88", iniData.settings.lang == 0 and "Gri Verzui" or "Green Gray"},
+                                        {158, "#A53E2D", iniData.settings.lang == 0 and "Rosu Caramiziu" or "Brick Red"}, {159, "#3B2E1B", iniData.settings.lang == 0 and "Maro inchis" or "Dark Brown"}, {160, "#2C3A20", iniData.settings.lang == 0 and "Verde inchis" or "Dark Green"}, {161, "#AA5050", iniData.settings.lang == 0 and "Rosu" or "Red"}, {162, "#2C5F84", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {163, "#238D71", iniData.settings.lang == 0 and "Verde Turcoaz" or "Teal Green"}, {164, "#353935", iniData.settings.lang == 0 and "Gri inchis" or "Dark Gray"}, {165, "#356565", iniData.settings.lang == 0 and "Turcoaz inchis" or "Deep Teal"}, {166, "#724876", iniData.settings.lang == 0 and "Mov inchis" or "Dark Purple"}, {167, "#5E3029", iniData.settings.lang == 0 and "Maro Roscat" or "Rust Brown"},
+                                        {168, "#827881", iniData.settings.lang == 0 and "Gri Violet" or "Gray Purple"}, {169, "#7F727B", iniData.settings.lang == 0 and "Gri Roz" or "Pink Gray"}, {170, "#827680", iniData.settings.lang == 0 and "Gri Mov" or "Purple Gray"}, {171, "#674C77", iniData.settings.lang == 0 and "Mov inchis" or "Dark Purple"}, {172, "#373A1F", iniData.settings.lang == 0 and "Verde inchis" or "Dark Green"}, {173, "#3F2C1E", iniData.settings.lang == 0 and "Maro inchis" or "Dark Brown"}, {174, "#563A25", iniData.settings.lang == 0 and "Maro" or "Brown"}, {175, "#AA3930", iniData.settings.lang == 0 and "Rosu Aprins" or "Bright Red"}, {176, "#A75A80", iniData.settings.lang == 0 and "Roz Violet" or "Pink Purple"}, {177, "#8F6C77", iniData.settings.lang == 0 and "Roz Gri" or "Pink Gray"},
+                                        {178, "#8B4D70", iniData.settings.lang == 0 and "Roz inchis" or "Dark Pink"}, {179, "#4E2B44", iniData.settings.lang == 0 and "Mov inchis" or "Dark Purple"}, {180, "#874725", iniData.settings.lang == 0 and "Maro Portocaliu" or "Orange Brown"}, {181, "#872D33", iniData.settings.lang == 0 and "Rosu inchis" or "Dark Red"}, {182, "#914823", iniData.settings.lang == 0 and "Portocaliu inchis" or "Dark Orange"}, {183, "#9D4026", iniData.settings.lang == 0 and "Portocaliu Roscat" or "Rust Orange"}, {184, "#894D50", iniData.settings.lang == 0 and "Rosu Gri" or "Gray Red"}, {185, "#87736E", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {186, "#1A231A", iniData.settings.lang == 0 and "Verde inchis" or "Deep Green"}, {187, "#19371C", iniData.settings.lang == 0 and "Verde inchis" or "Dark Green"},
+                                        {188, "#253F23", iniData.settings.lang == 0 and "Verde intunecat" or "Dark Green"}, {189, "#273D25", iniData.settings.lang == 0 and "Verde inchis" or "Deep Green"}, {190, "#743D4D", iniData.settings.lang == 0 and "Roz inchis" or "Dark Pink"}, {191, "#4D894F", iniData.settings.lang == 0 and "Verde" or "Green"}, {192, "#A99981", iniData.settings.lang == 0 and "Bej Deschis" or "Light Beige"}, {193, "#8E8F81", iniData.settings.lang == 0 and "Gri" or "Gray"}, {194, "#A39E29", iniData.settings.lang == 0 and "Galben Verzuie" or "Yellow Green"}, {195, "#91A148", iniData.settings.lang == 0 and "Verde Galben" or "Yellow Green"}, {196, "#8E957F", iniData.settings.lang == 0 and "Gri Verzuie" or "Green Gray"}, {197, "#868738", iniData.settings.lang == 0 and "Verde Galben" or "Olive"},
+                                        {198, "#3E4B82", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {199, "#4B4B1D", iniData.settings.lang == 0 and "Galben inchis" or "Dark Yellow"}, {200, "#99844F", iniData.settings.lang == 0 and "Galben Cenusiu" or "Gray Yellow"}, {201, "#233256", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {202, "#27422C", iniData.settings.lang == 0 and "Verde inchis" or "Dark Green"}, {203, "#233642", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {204, "#4E6367", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {205, "#1A2327", iniData.settings.lang == 0 and "Negru Albastru" or "Dark Blue"}, {206, "#335051", iniData.settings.lang == 0 and "Turcoaz inchis" or "Deep Teal"}, {207, "#335051", iniData.settings.lang == 0 and "Turcoaz inchis" or "Deep Teal"},
+                                        {208, "#436179", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {209, "#285566", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {210, "#284554", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {211, "#3A2D60", iniData.settings.lang == 0 and "Violet inchis" or "Dark Purple"}, {212, "#7B3730", iniData.settings.lang == 0 and "Rosu Caramiziu" or "Brick Red"}, {213, "#969381", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {214, "#606623", iniData.settings.lang == 0 and "Verde intunecat" or "Dark Olive"}, {215, "#1F261B", iniData.settings.lang == 0 and "Negru Verzuie" or "Dark Green"}, {216, "#9B6240", iniData.settings.lang == 0 and "Portocaliu" or "Orange"}, {217, "#659075", iniData.settings.lang == 0 and "Verde Cenusiu" or "Gray Green"},
+                                        {218, "#A76F57", iniData.settings.lang == 0 and "Maro Portocaliu" or "Orange Brown"}, {219, "#A3622B", iniData.settings.lang == 0 and "Portocaliu inchis" or "Dark Orange"}, {220, "#AC4E58", iniData.settings.lang == 0 and "Rosu Roz" or "Pink Red"}, {221, "#AC9246", iniData.settings.lang == 0 and "Galben inchis" or "Golden Yellow"}, {222, "#A94531", iniData.settings.lang == 0 and "Rosu Portocaliu" or "Orange Red"}, {223, "#263149", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}, {224, "#62362B", iniData.settings.lang == 0 and "Maro inchis" or "Dark Brown"}, {225, "#54622D", iniData.settings.lang == 0 and "Verde intunecat" or "Dark Olive"}, {226, "#5A9B36", iniData.settings.lang == 0 and "Verde" or "Green"}, {227, "#4E2B30", iniData.settings.lang == 0 and "Maro inchis" or "Dark Brown"},
+                                        {228, "#9E892D", iniData.settings.lang == 0 and "Galben inchis" or "Golden Yellow"}, {229, "#34832E", iniData.settings.lang == 0 and "Verde" or "Green"}, {230, "#502A29", iniData.settings.lang == 0 and "Maro inchis" or "Dark Brown"}, {231, "#815F21", iniData.settings.lang == 0 and "Galben Caramiziu" or "Bronze"}, {232, "#954D78", iniData.settings.lang == 0 and "Mov Roz" or "Purple Pink"}, {233, "#8D3166", iniData.settings.lang == 0 and "Roz Violet" or "Pink Purple"}, {234, "#264625", iniData.settings.lang == 0 and "Verde inchis" or "Dark Green"}, {235, "#3A5224", iniData.settings.lang == 0 and "Verde intunecat" or "Dark Olive"}, {236, "#1C3430", iniData.settings.lang == 0 and "Turcoaz inchis" or "Deep Teal"}, {237, "#895368", iniData.settings.lang == 0 and "Mov Roz" or "Purple Pink"},
+                                        {238, "#976E44", iniData.settings.lang == 0 and "Maro Galben" or "Brown Gold"}, {239, "#6D392B", iniData.settings.lang == 0 and "Maro Caramiziu" or "Rust Brown"}, {240, "#46947C", iniData.settings.lang == 0 and "Verde Turcoaz" or "Teal Green"}, {241, "#628F37", iniData.settings.lang == 0 and "Verde" or "Green"}, {242, "#672A41", iniData.settings.lang == 0 and "Mov inchis" or "Dark Purple"}, {243, "#2D8B37", iniData.settings.lang == 0 and "Verde" or "Green"}, {244, "#472B1F", iniData.settings.lang == 0 and "Maro inchis" or "Dark Brown"}, {245, "#17301B", iniData.settings.lang == 0 and "Verde inchis" or "Dark Green"}, {246, "#48656E", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"}, {247, "#3C4D56", iniData.settings.lang == 0 and "Albastru Gri" or "Blue Gray"},
+                                        {248, "#683136", iniData.settings.lang == 0 and "Rosu inchis" or "Dark Red"}, {249, "#5F2835", iniData.settings.lang == 0 and "Rosu inchis" or "Dark Red"}, {250, "#7F7663", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {251, "#4E4F49", iniData.settings.lang == 0 and "Gri inchis" or "Dark Gray"}, {252, "#41403C", iniData.settings.lang == 0 and "Gri inchis" or "Dark Gray"}, {253, "#8B8670", iniData.settings.lang == 0 and "Gri Bej" or "Gray Beige"}, {254, "#5C5449", iniData.settings.lang == 0 and "Gri Cenusiu" or "Gray Brown"}, {255, "#3D4750", iniData.settings.lang == 0 and "Albastru inchis" or "Deep Blue"}
                                     }
                                     for _, color in ipairs(hiddenColors) do
                                         local r = tonumber(color[2]:sub(2, 3), 16) / 255
