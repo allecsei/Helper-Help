@@ -97,7 +97,7 @@ local vehiclesData = {
     {Name = "Banshee", Price_Gold = "$755.000", Price = "$2.265.000", Gold = "2.599 Gold", Speed = "201 KM/h", Model = "1991 Dodge Viper", Seats = "2", Tune = "Transfender"},
     {Name = "Hotring", Price_Gold = "$1.150.000", Price = "$12.000.000", Gold = "3.799 Gold", Speed = "214 KM/h", Model = "1987 Chevy Monte Carlo SS", Seats = "2", Tune = "Transfender"},
     {Name = "Hotring A", Price_Gold = "$1.150.000", Price = "$12.000.000", Gold = "3.799 Gold", Speed = "214 KM/h", Model = "1985 Chevrolet Camaro", Seats = "2", Tune = "Transfender"},
-    {Name = "Hotring B", Price_Gold = "$1.150.000", Price = "$12.000.000", Gold = "3.799 Gold", Speed = "142 KM/h", Model = "1982 Ford Thunderbird", Seats = "2", Tune = "Transfender"},
+    {Name = "Hotring B", Price_Gold = "$1.150.000", Price = "$12.000.000", Gold = "3.799 Gold", Speed = "214 KM/h", Model = "1982 Ford Thunderbird", Seats = "2", Tune = "Transfender"},
     {Name = "Landstalker", Price = "$25.500", Gold = "N/A", Speed = "158 KM/h", Model = "Jeep Grand Cherokee", Seats = "4", Tune = "Transfender"},
     {Name = "Bravura", Price = "$21.450", Gold = "N/A", Speed = "147 KM/h", Model = "Oldsmobile Calais", Seats = "2", Tune = "Transfender"},
     {Name = "Buffalo", Price_Gold = "$260.000", Price = "$1.950.000", Gold = "2.149 Gold", Speed = "186 KM/h", Model = "Chevrolet Camaro", Seats = "2", Tune = "Transfender"},
