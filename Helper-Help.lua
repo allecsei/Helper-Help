@@ -1,7 +1,7 @@
-script_name("Helper Help v.2.5")
+script_name("Helper Help v3.0")
 script_author("[TLG] allecsei") 
 script_description("Inspirat dupa Tupi & Madalin") 
-script_version("v2.5")
+script_version("v3.0")
 
 local imgui = require 'mimgui'
 local sampevents = require 'samp.events'
@@ -18,7 +18,7 @@ local isHelperDuty = false
 local isFontScaleSet = false
 
 local footerText = "{FFFFFF}Created by {00ffff}[TLG]{aa3333}allecsei" 
-local headerText = "Helper Menu v2.5 - [TLG] allecsei" 
+local headerText = "Helper Menu v3.0 - [TLG] allecsei" 
 
 -- [ TAB NAMES ] --
 local tabs = {
@@ -1673,112 +1673,278 @@ local function renderChemistDetails()
 end
 
 local function renderDetectiveDetails()
-    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "D E T E C T I V E") 
-    imgui.Separator()
-    
-    imgui.BeginChild("DetectiveGeneral", imgui.ImVec2(0, 120), true)
-        if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "INFORMATII SI LOCATIE:")
-            imgui.Separator()
-            imgui.BulletText("Tip Job: Legal | Nivel Minim: 3 | HQ: Primaria Los Santos.")
-            imgui.Spacing()
-            imgui.TextWrapped("Scop: Gasirea locatiei exacte a unui anumit jucator pe harta.")
-        else
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "INFORMATION AND LOCATION:")
-            imgui.Separator()
-            imgui.BulletText("Job Type: Legal | Minimum Level: 3 | HQ: Los Santos City Hall.")
-            imgui.Spacing()
-            imgui.TextWrapped("Purpose: Finding the exact location of a specific player on the map.")
-        end
-    imgui.EndChild()
-    imgui.Spacing()
-    
-    if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "UTILIZARE COMANDA /FIND:")
-    else
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "USING THE /FIND COMMAND:")
-    end
-
-    imgui.BeginChild("DetectiveCmd", imgui.ImVec2(0, 140), true)  
-        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "/find [ID/Name]")
+    imgui.BeginChild("DetectiveFullDetails", imgui.ImVec2(0, 0), true)
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "D E T E C T I V E") 
         imgui.Separator()
-        if iniData.settings.lang == 0 then
-            imgui.BulletText("Fixeaza un punct rosu (checkpoint) pe harta la locatia tintei.")
-            imgui.BulletText("Afiseaza in chat zona si orasul (LS, SF, LV) unde se afla tinta.")
-            imgui.BulletText("Actualizeaza periodic distanta pana la jucatorul cautat.")
-            imgui.Spacing()
-            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Cooldown: Comanda poate fi activa o data la 2 minute (S1-4).")
-        else
-            imgui.BulletText("Places a red checkpoint on the map at the target's location.")
-            imgui.BulletText("Displays the zone and city (LS, SF, LV) where the target is located in chat.")
-            imgui.BulletText("Periodically updates the distance to the tracked player.")
-            imgui.Spacing()
-            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "Cooldown: The command can be used once every 2 minutes (S1-4).")
-        end
-    imgui.EndChild()
-    imgui.Spacing()
-    
-    if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "DURATA CHECKPOINT PER SKILL:")
-    else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "CHECKPOINT DURATION PER SKILL:")
-    end
 
-    imgui.BeginChild("DetectiveTable", imgui.ImVec2(0, 160), true)  
-        imgui.Columns(2, "detSkillCols", false)
         if iniData.settings.lang == 0 then
-            imgui.Text("Hex Nivel Skill") imgui.NextColumn()
-            imgui.Text("Durata Checkpoint") imgui.NextColumn()
-            imgui.Separator()       
-            imgui.Text("Skill 1") imgui.NextColumn() imgui.Text("30 secunde") imgui.NextColumn()
-            imgui.Text("Skill 2") imgui.NextColumn() imgui.Text("60 secunde") imgui.NextColumn()
-            imgui.Text("Skill 3") imgui.NextColumn() imgui.Text("100 secunde") imgui.NextColumn()
-            imgui.Text("Skill 4") imgui.NextColumn() imgui.Text("180 secunde") imgui.NextColumn()
-            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 5") imgui.NextColumn() 
-            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "PERMANENT") imgui.NextColumn()    
+            imgui.Spacing()
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "INFORMATII GENERALE:")
+            imgui.Spacing()
+            imgui.Separator()
+            imgui.Spacing()
+            imgui.BulletText("Tip Job: Legal | Nivel Minim: 3 | HQ: Primaria Los Santos.")
+            imgui.TextWrapped("Scop: Investigarea scenelor de crima, rezolvarea cazurilor speciale si localizarea jucatorilor pe harta.")
         else
+            imgui.Spacing()
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "GENERAL INFORMATION:")
+            imgui.Spacing()
+            imgui.Separator()
+            imgui.Spacing()
+            imgui.BulletText("Job Type: Legal | Minimum Level: 3 | HQ: Los Santos City Hall.")
+            imgui.TextWrapped("Purpose: Investigating crime scenes, solving special cases, and tracking players on the map.")
+        end
+        
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+
+        if iniData.settings.lang == 0 then
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "SISTEM LOCALIZARE (/FIND):")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Comenzi: /find [ID/Name] | /cancel find")
+            imgui.BulletText("Fiecare tinta primeste un marker unic pe mini-map: Rosu, Verde, Albastru, Galben.")
+            imgui.BulletText("Comanda /cancel find pe o singura tinta o opreste direct. Daca sunt mai multe, deschide meniu UI.")
+            imgui.BulletText("Deconectarea/dezactivarea unei tinte elimina doar markerul ei, restul raman active.")
+            imgui.Separator()
+            imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), "* Skill points si achievement-urile NU se mai primesc din /find, ci DOAR din investigatii!")
+            imgui.Separator()
+            imgui.Spacing()
+            
+            imgui.Columns(2, "detFindCols", false)
+            imgui.Text("Skill 1 - 5:") imgui.NextColumn() imgui.Text("1 jucator urmarit") imgui.NextColumn()
+            imgui.Text("Skill 6:") imgui.NextColumn() imgui.Text("2 jucatori (Tinta #2: max 120s)") imgui.NextColumn()
+            imgui.Text("Skill 7:") imgui.NextColumn() imgui.Text("2 jucatori (Permanent)") imgui.NextColumn()
+            imgui.Text("Skill 8:") imgui.NextColumn() imgui.Text("3 jucatori (Tinta #3: max 120s)") imgui.NextColumn()
+            imgui.Text("Skill 9:") imgui.NextColumn() imgui.Text("3 jucatori (Permanent)") imgui.NextColumn()
+            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 10:") imgui.NextColumn() 
+            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "4 jucatori (Permanent)") imgui.NextColumn()
+            imgui.Columns(1)
+        else
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "TRACKING SYSTEM (/FIND):")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Commands: /find [ID/Name] | /cancel find")
+            imgui.BulletText("Each target gets a unique mini-map marker color: Red, Green, Blue, Yellow.")
+            imgui.BulletText("Using /cancel find with 1 target stops it directly. Multiple targets open an interaction menu.")
+            imgui.BulletText("If a tracked target disconnects, only its marker is removed while others remain active.")
+            imgui.Separator()
+            imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), "* Skill points & achievements are NO LONGER earned from /find, ONLY from completed cases!")
+            imgui.Separator()
+            imgui.Spacing()
+            
+            imgui.Columns(2, "detFindCols", false)
+            imgui.Text("Skill 1 - 5:") imgui.NextColumn() imgui.Text("1 tracked player") imgui.NextColumn()
+            imgui.Text("Skill 6:") imgui.NextColumn() imgui.Text("2 players (Target #2: max 120s)") imgui.NextColumn()
+            imgui.Text("Skill 7:") imgui.NextColumn() imgui.Text("2 players (Permanent)") imgui.NextColumn()
+            imgui.Text("Skill 8:") imgui.NextColumn() imgui.Text("3 players (Target #3: max 120s)") imgui.NextColumn()
+            imgui.Text("Skill 9:") imgui.NextColumn() imgui.Text("3 players (Permanent)") imgui.NextColumn()
+            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 10:") imgui.NextColumn() 
+            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "4 players (Permanent)") imgui.NextColumn()
+            imgui.Columns(1)
+        end
+        
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+
+        if iniData.settings.lang == 0 then
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "TIPURI DE INVESTIGATII:")
+            imgui.Spacing()
+            imgui.Separator()
+            
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "Skill 1 - 3: Witness Statements (Declaratii Martori)")
+            imgui.BulletText("Te deplasezi la scena crimei marcata pe harta.")
+            imgui.BulletText("Inspectezi probele fizice apasand tasta Y.")
+            imgui.BulletText("Intervievezi cei 3 martori aparuti la fata locului (tasta Y).")
+            imgui.BulletText("Te intorci la markerul principal pentru analiza si trimiterea raportului final.")
+            imgui.Spacing()
+            imgui.Separator()
+            
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "Skill 4 - 6: Bullet Trajectory Reconstruction (Probe Balistice)")
+            imgui.BulletText("Examinare puncte de impact ale gloantelor la scena crimei.")
+            imgui.BulletText("Secventa interactiva: alinierea corecta a liniilor de traiectorie balistica si blocarea lor.")
+            imgui.BulletText("Cazul se finalizeaza dupa reconstruirea tuturor impacturilor gasite.")
+            imgui.Spacing()
+            imgui.Separator()
+            
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "Skill 7 - 9: Coded Dead Drops (Criptografie)")
+            imgui.BulletText("Descoperire si inspectare 3 indicii secrete marcate pe harta (tasta Y).")
+            imgui.BulletText("Minigame decodare cod din 4 cifre: Verde (corect), Galben (pozitie gresita), Rosu (inexistent).")
+            imgui.BulletText("Incercari disponibile: Skill 7 -> 6 incercari | Skill 8 -> 7 incercari | Skill 9 -> 8 incercari.")
+            imgui.Spacing()
+            imgui.Separator()
+            
+            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Skill 10: Investigation Selection & Personal Vehicle")
+            imgui.BulletText("Alegere libera a tipului de investigatie dorit.")
+            imgui.BulletText("Posibilitatea de a efectua munca de detectiv cu vehiculul personal.")
+            
+        else
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "INVESTIGATION TYPES:")
+            imgui.Spacing()
+            imgui.Separator()
+            imgui.Spacing()
+            
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "Skill 1 - 3: Witness Statements")
+            imgui.BulletText("Travel to the crime scene marked on the map.")
+            imgui.BulletText("Inspect physical evidence using the Y key.")
+            imgui.BulletText("Interview all 3 witnesses present at the scene (Y key).")
+            imgui.BulletText("Return to the main marker to analyze and submit the final report.")
+            imgui.Spacing()
+            imgui.Separator()
+            
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "Skill 4 - 6: Bullet Trajectory Reconstruction")
+            imgui.BulletText("Examine bullet impact points at the crime scene.")
+            imgui.BulletText("Interactive sequence: correctly align ballistic trajectory lines and lock them in.")
+            imgui.BulletText("Case completes once all bullet trajectories are successfully reconstructed.")
+            imgui.Spacing()
+            
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "Skill 7 - 9: Coded Dead Drops")
+            imgui.BulletText("Locate and inspect 3 hidden clues marked on the map (Y key).")
+            imgui.BulletText("4-digit code mini-game: Green (correct), Yellow (wrong position), Red (does not exist).")
+            imgui.BulletText("Available attempts: Skill 7 -> 6 tries | Skill 8 -> 7 tries | Skill 9 -> 8 tries.")
+            imgui.Spacing()
+            imgui.Separator()
+            
+            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Skill 10: Investigation Selection & Personal Vehicle")
+            imgui.BulletText("Select any desired investigation type.")
+            imgui.BulletText("Ability to conduct detective duties using your personal vehicle.")
+            
+        end
+        
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+
+        if iniData.settings.lang == 0 then
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "VEHICULE SI SALARII BAZA PER SKILL:")
+            imgui.Spacing()
+            imgui.Separator()
+            imgui.Spacing()
+            imgui.Columns(3, "detSkillCols", false)
+            imgui.Text("Skill") imgui.NextColumn()
+            imgui.Text("Vehicul") imgui.NextColumn()
+            imgui.Text("Salariu Baza") imgui.NextColumn()
+            imgui.Separator()       
+            
+            imgui.Text("Skill 1") imgui.NextColumn() imgui.Text("Washington") imgui.NextColumn() imgui.Text("$500") imgui.NextColumn()
+            imgui.Text("Skill 2") imgui.NextColumn() imgui.Text("Washington") imgui.NextColumn() imgui.Text("$550") imgui.NextColumn()
+            imgui.Text("Skill 3") imgui.NextColumn() imgui.Text("Sentinel") imgui.NextColumn() imgui.Text("$680") imgui.NextColumn()
+            imgui.Text("Skill 4") imgui.NextColumn() imgui.Text("Sentinel") imgui.NextColumn() imgui.Text("$970") imgui.NextColumn()
+            imgui.Text("Skill 5") imgui.NextColumn() imgui.Text("Rancher") imgui.NextColumn() imgui.Text("$1,250") imgui.NextColumn()
+            imgui.Text("Skill 6") imgui.NextColumn() imgui.Text("Rancher") imgui.NextColumn() imgui.Text("$1,550") imgui.NextColumn()
+            imgui.Text("Skill 7") imgui.NextColumn() imgui.Text("Huntley") imgui.NextColumn() imgui.Text("$2,100") imgui.NextColumn()
+            imgui.Text("Skill 8") imgui.NextColumn() imgui.Text("Huntley") imgui.NextColumn() imgui.Text("$2,700") imgui.NextColumn()
+            imgui.Text("Skill 9") imgui.NextColumn() imgui.Text("Buffalo") imgui.NextColumn() imgui.Text("$3,300") imgui.NextColumn()
+            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 10") imgui.NextColumn() 
+            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Buffalo / Personal") imgui.NextColumn() 
+            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "$3,900") imgui.NextColumn()    
+            imgui.Columns(1)
+        else
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "VEHICLES AND BASE SALARY PER SKILL:")
+            imgui.Spacing()
+            imgui.Separator()
+            imgui.Spacing()
+            imgui.Columns(3, "detSkillCols", false)
             imgui.Text("Skill Level") imgui.NextColumn()
-            imgui.Text("Checkpoint Duration") imgui.NextColumn()
+            imgui.Text("Vehicle") imgui.NextColumn()
+            imgui.Text("Base Salary") imgui.NextColumn()
             imgui.Separator()       
-            imgui.Text("Skill 1") imgui.NextColumn() imgui.Text("30 seconds") imgui.NextColumn()
-            imgui.Text("Skill 2") imgui.NextColumn() imgui.Text("60 seconds") imgui.NextColumn()
-            imgui.Text("Skill 3") imgui.NextColumn() imgui.Text("100 seconds") imgui.NextColumn()
-            imgui.Text("Skill 4") imgui.NextColumn() imgui.Text("180 seconds") imgui.NextColumn()
-            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 5") imgui.NextColumn() 
-            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "PERMANENT") imgui.NextColumn()    
+            
+            imgui.Text("Skill 1") imgui.NextColumn() imgui.Text("Washington") imgui.NextColumn() imgui.Text("$500") imgui.NextColumn()
+            imgui.Text("Skill 2") imgui.NextColumn() imgui.Text("Washington") imgui.NextColumn() imgui.Text("$550") imgui.NextColumn()
+            imgui.Text("Skill 3") imgui.NextColumn() imgui.Text("Sentinel") imgui.NextColumn() imgui.Text("$680") imgui.NextColumn()
+            imgui.Text("Skill 4") imgui.NextColumn() imgui.Text("Sentinel") imgui.NextColumn() imgui.Text("$970") imgui.NextColumn()
+            imgui.Text("Skill 5") imgui.NextColumn() imgui.Text("Rancher") imgui.NextColumn() imgui.Text("$1,250") imgui.NextColumn()
+            imgui.Text("Skill 6") imgui.NextColumn() imgui.Text("Rancher") imgui.NextColumn() imgui.Text("$1,550") imgui.NextColumn()
+            imgui.Text("Skill 7") imgui.NextColumn() imgui.Text("Huntley") imgui.NextColumn() imgui.Text("$2,100") imgui.NextColumn()
+            imgui.Text("Skill 8") imgui.NextColumn() imgui.Text("Huntley") imgui.NextColumn() imgui.Text("$2,700") imgui.NextColumn()
+            imgui.Text("Skill 9") imgui.NextColumn() imgui.Text("Buffalo") imgui.NextColumn() imgui.Text("$3,300") imgui.NextColumn()
+            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 10") imgui.NextColumn() 
+            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Buffalo / Personal") imgui.NextColumn() 
+            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "$3,900") imgui.NextColumn()    
+            imgui.Columns(1)
         end
-        imgui.Columns(1)
-    imgui.EndChild()
-    imgui.Spacing()
-    
-    imgui.BeginChild("DetectiveProgression", imgui.ImVec2(0, 150), true)  
+        
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "PRAGURI AVANSARE (UTILIZARI /FIND):")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "PUNCTE SKILL PRIMITE PER CHECKPOINT:")
+            imgui.Spacing()
             imgui.Separator()
-            imgui.Spacing()   
-            imgui.Columns(2, "detProgCols", false)
-            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 1 -> Skill 2:") imgui.SameLine() imgui.Text("50 utilizari")
-            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 2 -> Skill 3:") imgui.SameLine() imgui.Text("50 utilizari")
-            imgui.NextColumn()        
-            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 3 -> Skill 4:") imgui.SameLine() imgui.Text("100 utilizari")
-            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 4 -> Skill 5:") imgui.SameLine() imgui.Text("200 utilizari")       
+            imgui.Spacing()
+            imgui.Columns(3, "detPtsCols", false)
+            imgui.Text("Nivel Skill") imgui.NextColumn()
+            imgui.Text("Puncte Solo / Partener") imgui.NextColumn()
+            imgui.Text("Puncte Co-op (Lider)") imgui.NextColumn()
+            imgui.Separator()
+
+            imgui.Text("Skill 1") imgui.NextColumn() imgui.Text("+2 pct") imgui.NextColumn() imgui.Text("+2 pct") imgui.NextColumn()
+            imgui.Text("Skill 2") imgui.NextColumn() imgui.Text("+2 pct") imgui.NextColumn() imgui.Text("+2 pct") imgui.NextColumn()
+            imgui.Text("Skill 3") imgui.NextColumn() imgui.Text("+4 pct") imgui.NextColumn() imgui.Text("+4 pct") imgui.NextColumn()
+            imgui.Text("Skill 4") imgui.NextColumn() imgui.Text("+8 pct") imgui.NextColumn() imgui.Text("+8 pct") imgui.NextColumn()
+            imgui.Text("Skill 5") imgui.NextColumn() imgui.Text("+16 pct") imgui.NextColumn() imgui.Text("+16 pct") imgui.NextColumn()
+            imgui.Text("Skill 6") imgui.NextColumn() imgui.Text("+32 pct") imgui.NextColumn() imgui.Text("+16 pct") imgui.NextColumn()
+            imgui.Text("Skill 7") imgui.NextColumn() imgui.Text("+64 pct") imgui.NextColumn() imgui.Text("+24 pct") imgui.NextColumn()
+            imgui.Text("Skill 8") imgui.NextColumn() imgui.Text("+128 pct") imgui.NextColumn() imgui.Text("+32 pct") imgui.NextColumn()
+            imgui.Text("Skill 9") imgui.NextColumn() imgui.Text("+256 pct") imgui.NextColumn() imgui.Text("+48 pct") imgui.NextColumn()
+            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 10") imgui.NextColumn() 
+            imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), "0 pct (MAX)") imgui.NextColumn() 
+            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "+64 pct (Mentorat)") imgui.NextColumn()
             imgui.Columns(1)
-            imgui.Separator()
-            imgui.Text("Total necesar pentru Skill 5: 400 folosiri /find.")
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "PROGRESSION THRESHOLDS (/FIND USES):")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SKILL POINTS EARNED PER CHECKPOINT:")
+            imgui.Spacing()
             imgui.Separator()
-            imgui.Spacing()   
-            imgui.Columns(2, "detProgCols", false)
-            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 1 -> Skill 2:") imgui.SameLine() imgui.Text("50 uses")
-            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 2 -> Skill 3:") imgui.SameLine() imgui.Text("50 uses")
-            imgui.NextColumn()        
-            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 3 -> Skill 4:") imgui.SameLine() imgui.Text("100 uses")
-            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 4 -> Skill 5:") imgui.SameLine() imgui.Text("200 uses")       
+            imgui.Spacing()
+            imgui.Columns(3, "detPtsCols", false)
+            imgui.Text("Skill Level") imgui.NextColumn()
+            imgui.Text("Solo / Partner Points") imgui.NextColumn()
+            imgui.Text("Co-op Points (Leader)") imgui.NextColumn()
+            imgui.Separator()
+
+            imgui.Text("Skill 1") imgui.NextColumn() imgui.Text("+2 pts") imgui.NextColumn() imgui.Text("+2 pts") imgui.NextColumn()
+            imgui.Text("Skill 2") imgui.NextColumn() imgui.Text("+2 pts") imgui.NextColumn() imgui.Text("+2 pts") imgui.NextColumn()
+            imgui.Text("Skill 3") imgui.NextColumn() imgui.Text("+4 pts") imgui.NextColumn() imgui.Text("+4 pts") imgui.NextColumn()
+            imgui.Text("Skill 4") imgui.NextColumn() imgui.Text("+8 pts") imgui.NextColumn() imgui.Text("+8 pts") imgui.NextColumn()
+            imgui.Text("Skill 5") imgui.NextColumn() imgui.Text("+16 pts") imgui.NextColumn() imgui.Text("+16 pts") imgui.NextColumn()
+            imgui.Text("Skill 6") imgui.NextColumn() imgui.Text("+32 pts") imgui.NextColumn() imgui.Text("+16 pts") imgui.NextColumn()
+            imgui.Text("Skill 7") imgui.NextColumn() imgui.Text("+64 pts") imgui.NextColumn() imgui.Text("+24 pts") imgui.NextColumn()
+            imgui.Text("Skill 8") imgui.NextColumn() imgui.Text("+128 pts") imgui.NextColumn() imgui.Text("+32 pts") imgui.NextColumn()
+            imgui.Text("Skill 9") imgui.NextColumn() imgui.Text("+256 pts") imgui.NextColumn() imgui.Text("+48 pts") imgui.NextColumn()
+            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 10") imgui.NextColumn() 
+            imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), "0 pts (MAX)") imgui.NextColumn() 
+            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "+64 pts (Mentorship)") imgui.NextColumn()
             imgui.Columns(1)
-            imgui.Separator()
-            imgui.Text("Total required for Skill 5: 400 /find uses.")
         end
+
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+
+        if iniData.settings.lang == 0 then
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SISTEM CO-OP & MENTORAT:")
+            imgui.Spacing()
+            imgui.Separator()
+            imgui.Spacing()
+            imgui.BulletText("Permite 2 jucatori (Lider + Partener) in acelasi vehicul si misiune.")
+            imgui.BulletText("Salariul de baza se imparte 50/50, dar bonusurile de job se calculeaza separat.")
+            imgui.BulletText("Echitate: Partenerul trebuie sa faca cel putin 1 interactiune pentru a primi recompensa.")
+            imgui.BulletText("Partenerii inactivi NU primesc bani, skill points, Marathon points sau Clan XP.")
+            imgui.BulletText("Mentorat: Partenerul cu skill mic primeste progres de skill bazat pe nivelul investigatiei Liderului.")
+            imgui.BulletText("Daca partenerul iese din joc, Liderul poate continua si termina singur investigatia.")
+        else
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "CO-OP & MENTORSHIP SYSTEM:")
+            imgui.Spacing()
+            imgui.Separator()
+            imgui.Spacing()
+            imgui.BulletText("Allows 2 players (Leader + Partner) in the same vehicle and mission.")
+            imgui.BulletText("Base pay is split 50/50, but additional job bonuses are calculated separately.")
+            imgui.BulletText("Fair Play: Partner must complete at least 1 action to be eligible for rewards.")
+            imgui.BulletText("Inactive partners receive NO money, skill points, Marathon points, or Clan XP.")
+            imgui.BulletText("Mentorship: Lower-skill partners gain skill progression scaled to the Leader's case level.")
+            imgui.BulletText("If the partner disconnects, the Leader can complete the investigation alone.")
+        end
+
     imgui.EndChild()
 end
 
@@ -5236,437 +5402,619 @@ end, function(player)
                             end
 
                             elseif sm.id == 7 then -- ROB ATM
-                                if iniData.settings.lang == 0 then
-                                    imgui.SetWindowFontScale(1.2) 
-                                    imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - A T M")
-                                    imgui.Separator()
-                                    imgui.Spacing()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("RECOMPENSE FINANCIARE PE SKILL (LA SUCCES)"))
-                                    imgui.SetWindowFontScale(1.0) 
-                                    
-                                    imgui.Columns(3, "robAtmCols", false)
-                                    imgui.SetColumnWidth(0, 110)  
-                                    imgui.SetColumnWidth(1, 200)
-                                    imgui.SetColumnWidth(2, 160) 
-                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill Rob")) imgui.NextColumn()
-                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Recompensa de Baza")) imgui.NextColumn()
-                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Puncte Skill")) imgui.NextColumn()
-                                    imgui.Separator()
+                            imgui.BeginChild("RobATMDetails", imgui.ImVec2(0, 0), true)
+                            
+                            if iniData.settings.lang == 0 then
+                                imgui.SetWindowFontScale(1.2) 
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - A T M")
+                                imgui.Separator()
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("RECOMPENSE FINANCIARE PE SKILL (LA SUCCES)"))
+                                imgui.SetWindowFontScale(1.0) 
+                                
+                                imgui.Columns(3, "robAtmCols", false)
+                                imgui.SetColumnWidth(0, 110)  
+                                imgui.SetColumnWidth(1, 200)
+                                imgui.SetColumnWidth(2, 160) 
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill Rob")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Recompensa de Baza")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Puncte Skill")) imgui.NextColumn()
+                                imgui.Separator()
 
-                                    local atmData = {
-                                        {"Skill 1", "intre $12.500 - $17.500", "+1 punct skill"},
-                                        {"Skill 2", "intre $17.500 - $22.500", "+1 punct skill"},
-                                        {"Skill 3", "intre $22.500 - $27.500", "+1 punct skill"},
-                                        {"Skill 4", "intre $27.500 - $32.500", "+1 punct skill"},
-                                        {"Skill 5", "intre $32.500 - $37.500", "Nivel Maxim"}
-                                    }
-                                    for _, v in ipairs(atmData) do
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
-                                        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
-                                        imgui.Text(u8(v[3])) imgui.NextColumn()
-                                    end
-                                    imgui.Columns(1)
-                                    
-                                    imgui.Spacing()
-                                    imgui.Separator()
-                                    imgui.Spacing()
-                                    
-                                    imgui.SetWindowFontScale(1.2) 
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("1. CONDITII MINIME & DECLANSARE"))
-                                    imgui.BulletText(u8("Nivel minim 7 | Sa nu fii membru PD."))
-                                    imgui.BulletText(u8("Minim 10 puncte de jaf (se consuma automat la initiere)."))
-                                    imgui.BulletText(u8("Sa NU ai Wanted in acel moment | Licenta de zbor valabila."))
-                                    imgui.BulletText(u8("Trebuie sa detii cel putin o bomba creata in inventar."))
-                                    imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Mecanica de Armare:"))
-                                    imgui.TextWrapped(u8("Te apropii de un ATM si foloseste comanda /robatm. Vei primi un SMS de la Comerciantul de Explozibil cu un cod de 10 cifre. Trebuie sa introduci exact codul in interfata grafica (textdraw) pentru a arma bomba."))
-                                    imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("Reguli de warfare/anulare instant:"))
-                                    imgui.TextWrapped(u8("Daca parasesti zona, inchizi interfata, primesti crash sau mori in timp ce bagi codul -> jaful esueaza si primesti Wanted. Cod incorect = Explozie locala cu daune + Wanted."))
-                                    
-                                    imgui.Spacing()
-                                    imgui.Separator()
-                                    imgui.Spacing()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("2. COLECTAREA BANILOR SI COOLDOWN"))
-                                    imgui.TextWrapped(u8("Dupa ce bomba explodeaza, langa ATM apare un sac personal cu bani. Ai la dispozitie fix 90 de secunde sa il ridici, altfel prada expira si jaful e esuat."))
-                                    imgui.BulletText(u8("La ridicarea sacului primesti Wanted automat si porneste evadarea."))
-                                    imgui.BulletText(u8("ATM-ul intra in cooldown 180s (este dezactivat pt operatiuni si jafuri)."))
-                                    
-                                    imgui.Spacing()
-                                    imgui.Separator()
-                                    imgui.Spacing()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("3. ETAPA DE EVADARE SI ALTITUDINE"))
-                                    imgui.TextWrapped(u8("Se va seta un checkpoint de extractie in alt oras. Trebuie sa zbori pana acolo cu un avion sau un elicopter. Cand atingi punctul, esti aruncat automat in aer si primesti o parasuta."))
-                                    imgui.Spacing()
-                                    imgui.TextWrapped(u8("Urmareste cu mare atentie indicatorul de altitudine pentru deschidere:"))
-                                    imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("   [X] Mai mare de 500 m -> Prea sus (NU deschide parasuta!)"))
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8("   [V] Intre 350 si 500 m -> PERFECT! (Deschide aici pentru a finaliza cu succes)"))
-                                    imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("   [X] Mai mic de 350 m -> Prea jos (Prabusire si esec jaful)"))
-                                    
-                                    imgui.Spacing()
-                                    imgui.Separator()
-                                    imgui.Spacing()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.7), u8("Bonus la succes: Daca deschizi parasuta corect, Wanted-ul este sters complet. Primesti +7 puncte maraton, +3 EXP clan si +1 punct de skill la Rob."))
-                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.5), u8("Sumele de bani pot fi marite suplimentar de maratoane active, bonus de nivel sau skinuri posedate."))
-                                    imgui.SetWindowFontScale(1.0)
-                                else
-                                    imgui.SetWindowFontScale(1.2) 
-                                    imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - A T M")
-                                    imgui.Separator()
-                                    imgui.Spacing()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("FINANCIAL REWARDS BY SKILL (ON SUCCESS)"))
-                                    imgui.SetWindowFontScale(1.0) 
-                                    
-                                    imgui.Columns(3, "robAtmCols", false)
-                                    imgui.SetColumnWidth(0, 110)  
-                                    imgui.SetColumnWidth(1, 200)
-                                    imgui.SetColumnWidth(2, 160) 
-                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Rob Skill")) imgui.NextColumn()
-                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Base Reward")) imgui.NextColumn()
-                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill Points")) imgui.NextColumn()
-                                    imgui.Separator()
-
-                                    local atmData = {
-                                        {"Skill 1", "between $12.500 - $17.500", "+1 skill point"},
-                                        {"Skill 2", "between $17.500 - $22.500", "+1 skill point"},
-                                        {"Skill 3", "between $22.500 - $27.500", "+1 skill point"},
-                                        {"Skill 4", "between $27.500 - $32.500", "+1 skill point"},
-                                        {"Skill 5", "between $32.500 - $37.500", "Max Level"}
-                                    }
-                                    for _, v in ipairs(atmData) do
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
-                                        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
-                                        imgui.Text(u8(v[3])) imgui.NextColumn()
-                                    end
-                                    imgui.Columns(1)
-                                    
-                                    imgui.Spacing()
-                                    imgui.Separator()
-                                    imgui.Spacing()
-                                    
-                                    imgui.SetWindowFontScale(1.2) 
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("1. MINIMUM CONDITIONS & INITIATION"))
-                                    imgui.BulletText(u8("Minimum level 7 | Must not be a PD member."))
-                                    imgui.BulletText(u8("Minimum 10 rob points (automatically consumed at initiation)."))
-                                    imgui.BulletText(u8("Must NOT have Wanted at that moment | Valid flying license."))
-                                    imgui.BulletText(u8("You must own at least one crafted bomb in your inventory."))
-                                    imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Arming Mechanics:"))
-                                    imgui.TextWrapped(u8("Approach an ATM and use the /robatm command. You will receive an SMS from the Explosive Dealer with a 10-digit code. You must enter the exact code into the graphical interface (textdraw) to arm the bomb."))
-                                    imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("Instant Cancellation Rules:"))
-                                    imgui.TextWrapped(u8("If you leave the area, close the interface, crash, or die while entering the code -> the rob fails and you receive Wanted. Incorrect code = Local explosion with damage + Wanted."))
-                                    
-                                    imgui.Spacing()
-                                    imgui.Separator()
-                                    imgui.Spacing()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("2. COLLECTING MONEY AND COOLDOWN"))
-                                    imgui.TextWrapped(u8("After the bomb explodes, a personal bag with money appears near the ATM. You have exactly 90 seconds to pick it up, otherwise the loot expires and the rob fails."))
-                                    imgui.BulletText(u8("Upon picking up the bag, you automatically receive Wanted and the escape begins."))
-                                    imgui.BulletText(u8("The ATM enters a 180s cooldown (it is disabled for transactions and robberies)."))
-                                    
-                                    imgui.Spacing()
-                                    imgui.Separator()
-                                    imgui.Spacing()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("3. ESCAPE STAGE AND ALTITUDE"))
-                                    imgui.TextWrapped(u8("An extraction checkpoint will be set in another city. You must fly there using a plane or a helicopter. When you hit the checkpoint, you are automatically thrown into the air and given a parachute."))
-                                    imgui.Spacing()
-                                    imgui.TextWrapped(u8("Pay close attention to the altitude indicator for deployment:"))
-                                    imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("   [X] Higher than 500 m -> Too high (DO NOT open the parachute!)"))
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8("   [V] Between 350 and 500 m -> PERFECT! (Open here to successfully complete)"))
-                                    imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("   [X] Lower than 350 m -> Too low (Crash and rob failure)"))
-                                    
-                                    imgui.Spacing()
-                                    imgui.Separator()
-                                    imgui.Spacing()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.7), u8("Success Bonus: If you deploy the parachute correctly, your Wanted is completely cleared. You receive +7 marathon points, +3 clan EXP, and +1 Rob skill point."))
-                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.5), u8("Money amounts can be further increased by active marathons, level bonuses, or owned skins."))
-                                    imgui.SetWindowFontScale(1.0)
+                                local atmData = {
+                                    {"Skill 1", "intre $12.500 - $17.500", "+1 punct skill"},
+                                    {"Skill 2", "intre $17.500 - $22.500", "+1 punct skill"},
+                                    {"Skill 3", "intre $22.500 - $27.500", "+1 punct skill"},
+                                    {"Skill 4", "intre $27.500 - $32.500", "+1 punct skill"},
+                                    {"Skill 5", "intre $32.500 - $37.500", "Nivel Maxim"}
+                                }
+                                for _, v in ipairs(atmData) do
+                                    imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
+                                    imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
+                                    imgui.Text(u8(v[3])) imgui.NextColumn()
                                 end
+                                imgui.Columns(1)
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("1. CERINTE PENTRU INITIERE"))
+                                imgui.BulletText(u8("Nivel minim 7 | Sa nu fii membru PD."))
+                                imgui.BulletText(u8("Minim 10 puncte de jaf (se consuma la initiere, reduse de bonusuri de skin)."))
+                                imgui.BulletText(u8("Sa NU ai Wanted in acel moment | Licenta de zbor valabila."))
+                                imgui.BulletText(u8("Trebuie sa detii cel putin o bomba creata in inventar."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("2. DECLANSAREA JAFULUI SI CODUL"))
+                                imgui.TextWrapped(u8("Te apropie de un ATM si foloseste comanda /robatm. Vei primi un SMS de la Comerciantul de Explozibil cu un cod de 10 cifre pe care trebuie sa il introduci in interfata grafica (textdraw)."))
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("Mecanica de anulare / esec:"))
+                                imgui.BulletText(u8("Cod gresit / incomplet: Explozie locala cu daune + Wanted pt detonare esuata."))
+                                imgui.BulletText(u8("Parasirea zonei / inchiderea UI-ului: Jaful esueaza + cooldown scurt."))
+                                imgui.BulletText(u8("Crash sau Morte cu UI activ: Jaful esueaza + primesti Wanted pt tentativa."))
+                                imgui.BulletText(u8("Crash sau Moarte fara UI activ: Jaful esueaza silentios (fara Wanted)."))
+
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("3. COLECTAREA BANILOR SI COOLDOWN"))
+                                imgui.TextWrapped(u8("Dupa detonare, langa ATM apare un sac personal cu bani. Ai la dispozitie 90 de secunde sa il ridici, altfel prada expira si jaful esueaza."))
+                                imgui.BulletText(u8("La ridicarea sacului primesti Wanted 4 (fara drept de predare) si incepe evadarea."))
+                                imgui.BulletText(u8("ATM-ul intra in cooldown 180s (dezactivat pt tranzactii si jafuri)."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("4. ETAPA DE EVADARE SI ALTITUDINE"))
+                                imgui.TextWrapped(u8("Se va seta un checkpoint de extractie in alt oras. Zboara pana acolo cu un avion sau elicopter. La atingerea punctului, esti aruncat in aer si primesti o parasuta."))
+                                imgui.Spacing()
+                                imgui.TextWrapped(u8("Urmareste cu atentie indicatorul de altitudine pentru deschiderea parasutei:"))
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("   [X] Mai mare de 500 m -> Prea sus (NU deschide parasuta!)"))
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8("   [V] Intre 350 si 500 m -> PERFECT! (Deschide aici pt finalizare cu succes)"))
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("   [X] Mai mic de 350 m -> Prea jos (Prabusire si esec)"))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("5. RECOMPENSE LA SUCCES"))
+                                imgui.BulletText(u8("Wanted-ul este eliminat complet."))
+                                imgui.BulletText(u8("+7 puncte de maraton | +3 EXP de clan | +1 punct skill Rob."))
+                                imgui.BulletText(u8("Recompensa financiara poate fi marita de maratoane, nivel si skinuri."))
+
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("COMERCIANT EXPLOZIBIL (NPC SAN FIERRO)"))
+                                imgui.TextWrapped(u8("NPC situat in SF (/gps -> Locatii Importante -> Comerciant Explozibil) folosit pentru fabricarea bombelor. Poti detine MAXIM 3 bombe in inventar."))
+                                imgui.Spacing()
+                                
+                                imgui.Columns(2, "armsCraftCols", false)
+                                imgui.SetColumnWidth(0, 150)
+                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Skill Arms Dealer")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8("Cost Materiale / Bomba")) imgui.NextColumn()
+                                imgui.Separator()
+                                
+                                imgui.Text("Skill 1") imgui.NextColumn() imgui.Text("500.000 mat") imgui.NextColumn()
+                                imgui.Text("Skill 2") imgui.NextColumn() imgui.Text("437.500 mat") imgui.NextColumn()
+                                imgui.Text("Skill 3") imgui.NextColumn() imgui.Text("375.000 mat") imgui.NextColumn()
+                                imgui.Text("Skill 4") imgui.NextColumn() imgui.Text("312.500 mat") imgui.NextColumn()
+                                imgui.Text("Skill 5") imgui.NextColumn() imgui.Text("250.000 mat") imgui.NextColumn()
+                                imgui.Columns(1)
+                                
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("Conditii plasare comanda:"))
+                                imgui.BulletText(u8("Fara PD, Fara Wanted, Fara job activ, Fara grup jaf, Unfreeze, Fara vehicul."))
+                                imgui.BulletText(u8("Materialele se scad doar la ridicarea pickup-ului (nu la comanda)."))
+                                imgui.BulletText(u8("Daca primesti Wanted/vehicul inainte de colectare, nu poti ridica bombele."))
+                                
+                            else
+
+                                imgui.SetWindowFontScale(1.2) 
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - A T M")
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("FINANCIAL REWARDS BY SKILL (ON SUCCESS)"))
+                                imgui.SetWindowFontScale(1.0) 
+                                
+                                imgui.Columns(3, "robAtmCols", false)
+                                imgui.SetColumnWidth(0, 110)  
+                                imgui.SetColumnWidth(1, 200)
+                                imgui.SetColumnWidth(2, 160) 
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Rob Skill")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Base Reward")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill Points")) imgui.NextColumn()
+                                imgui.Separator()
+
+                                local atmData = {
+                                    {"Skill 1", "between $12.500 - $17.500", "+1 skill point"},
+                                    {"Skill 2", "between $17.500 - $22.500", "+1 skill point"},
+                                    {"Skill 3", "between $22.500 - $27.500", "+1 skill point"},
+                                    {"Skill 4", "between $27.500 - $32.500", "+1 skill point"},
+                                    {"Skill 5", "between $32.500 - $37.500", "Max Level"}
+                                }
+                                for _, v in ipairs(atmData) do
+                                    imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
+                                    imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
+                                    imgui.Text(u8(v[3])) imgui.NextColumn()
+                                end
+                                imgui.Columns(1)
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("1. INITIATION REQUIREMENTS"))
+                                imgui.BulletText(u8("Minimum level 7 | Must not be a PD member."))
+                                imgui.BulletText(u8("Minimum 10 rob points (consumed at initiation, reduced by skin bonuses)."))
+                                imgui.BulletText(u8("Must NOT have Wanted at that moment | Valid flying license."))
+                                imgui.BulletText(u8("You must own at least one crafted bomb in your inventory."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("2. ROBBERY TRIGGER & CODE"))
+                                imgui.TextWrapped(u8("Approach an ATM and use /robatm. You will receive an SMS from the Explosive Dealer with a 10-digit code. Enter it into the graphical interface (textdraw) to arm the bomb."))
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("Cancellation / Failure Rules:"))
+                                imgui.BulletText(u8("Wrong / incomplete code: Local explosion + damage + Wanted for failed detonation."))
+                                imgui.BulletText(u8("Leaving area / closing UI: Rob fails + short cooldown applied."))
+                                imgui.BulletText(u8("Crash or Death with active UI: Rob fails + Wanted for attempt."))
+                                imgui.BulletText(u8("Crash or Death without active UI: Rob fails silently (no Wanted)."))
+
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("3. MONEY COLLECTION & COOLDOWN"))
+                                imgui.TextWrapped(u8("After the explosion, a personal money bag appears near the ATM. You have 90 seconds to pick it up, otherwise the loot expires and the rob fails."))
+                                imgui.BulletText(u8("Upon picking up the bag, you get Wanted 4 (no surrender) and escape begins."))
+                                imgui.BulletText(u8("The ATM enters a 180s cooldown (disabled for transactions and robs)."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("4. ESCAPE STAGE & ALTITUDE"))
+                                imgui.TextWrapped(u8("An extraction checkpoint is set in another city. Fly there with a plane or helicopter. Reaching the checkpoint ejects you into the air with a parachute."))
+                                imgui.Spacing()
+                                imgui.TextWrapped(u8("Pay close attention to the altitude indicator for deployment:"))
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("   [X] Higher than 500 m -> Too high (DO NOT open parachute!)"))
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8("   [V] Between 350 and 500 m -> PERFECT! (Open here for success)"))
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("   [X] Lower than 350 m -> Too low (Crash and failure)"))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("5. SUCCESS REWARDS"))
+                                imgui.BulletText(u8("Wanted level is completely cleared."))
+                                imgui.BulletText(u8("+7 marathon points | +3 clan EXP | +1 Rob skill point."))
+                                imgui.BulletText(u8("Cash rewards can be boosted by active marathons, level, and skins."))
+
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("EXPLOSIVE DEALER (SAN FIERRO NPC)"))
+                                imgui.TextWrapped(u8("NPC located in SF (/gps -> Important Locations -> Explosive Dealer) used to craft ATM bombs. You can hold a MAXIMUM of 3 bombs in inventory."))
+                                imgui.Spacing()
+                                
+                                imgui.Columns(2, "armsCraftCols", false)
+                                imgui.SetColumnWidth(0, 150)
+                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Arms Dealer Skill")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8("Materials Cost / Bomb")) imgui.NextColumn()
+                                imgui.Separator()
+                                
+                                imgui.Text("Skill 1") imgui.NextColumn() imgui.Text("500,000 mats") imgui.NextColumn()
+                                imgui.Text("Skill 2") imgui.NextColumn() imgui.Text("437,500 mats") imgui.NextColumn()
+                                imgui.Text("Skill 3") imgui.NextColumn() imgui.Text("375,000 mats") imgui.NextColumn()
+                                imgui.Text("Skill 4") imgui.NextColumn() imgui.Text("312,500 mats") imgui.NextColumn()
+                                imgui.Text("Skill 5") imgui.NextColumn() imgui.Text("250,000 mats") imgui.NextColumn()
+                                imgui.Columns(1)
+                                
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("Order conditions:"))
+                                imgui.BulletText(u8("No PD, No Wanted, No active job, No rob group, Unfrozen, No vehicle."))
+                                imgui.BulletText(u8("Materials are deducted upon pickup collection (not order placement)."))
+                                imgui.BulletText(u8("Gaining Wanted or entering a vehicle before pickup blocks collection."))
+                            end
 
                             elseif sm.id == 8 then -- ROB SOLO
-                                if iniData.settings.lang == 0 then
-                                    imgui.SetWindowFontScale(1.2)  
-                                    imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - S O L O")
-                                    imgui.Separator()
-                                    imgui.Spacing()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("CASTIGURI SI TIMP DISPONIBIL PE SKILL"))
-                                    imgui.SetWindowFontScale(1.0)  
-                                    imgui.BeginChild("RobSoloEarnings", imgui.ImVec2(0, 165), true)
-                                        imgui.Columns(3, "robSoloCols", false)
-                                        imgui.SetColumnWidth(0, 100)  
-                                        imgui.SetColumnWidth(1, 180)
-                                        imgui.SetColumnWidth(2, 160) 
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill")) imgui.NextColumn()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Castig Estimativ")) imgui.NextColumn()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Timp Circuit")) imgui.NextColumn()
-                                        imgui.Separator()
+                            imgui.BeginChild("RobSoloDetails", imgui.ImVec2(0, 0), true)              
+                            if iniData.settings.lang == 0 then
+                                imgui.SetWindowFontScale(1.2) 
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - S O L O")
+                                imgui.Separator()
+                                imgui.Spacing()
 
-                                        local robData = {
-                                            {"Skill 1", "intre $25.000 - $35.000", "300 secunde"},
-                                            {"Skill 2", "intre $35.000 - $45.000", "310 secunde"},
-                                            {"Skill 3", "intre $45.000 - $55.000", "320 secunde"},
-                                            {"Skill 4", "intre $55.000 - $65.000", "330 secunde"},
-                                            {"Skill 5", "intre $65.000 - $70.000", "340 secunde"}
-                                        }
-                                        for _, v in ipairs(robData) do
-                                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
-                                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
-                                            imgui.Text(u8(v[3])) imgui.NextColumn()
-                                        end
-                                        imgui.Columns(1)
-                                    imgui.EndChild()
-                                    imgui.Spacing()
-                                    
-                                    imgui.Columns(2, "robInfo", false)    
-                                    imgui.SetWindowFontScale(1.2)  
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("RESURSE & PROCEDURI"))
-                                    imgui.BeginChild("RobRequirements", imgui.ImVec2(0, 400), true)  
-                                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Cerinte Jaf (Casa/Biz):"))
-                                        imgui.BulletText(u8("Cel putin nivel 7."))
-                                        imgui.BulletText(u8("Cel putin 15 puncte de jaf (/robpoints)."))
-                                        imgui.BulletText(u8("Cazier curat (fara wanted)."))
-                                        imgui.BulletText(u8("Ora serverului: intre 08:00 - 04:00."))
-                                        imgui.Spacing(); imgui.Separator(); imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Spargerea Seifului:"))
-                                        imgui.TextWrapped(u8("Se foloseste tasta SPACE pentru burghiu. Mentineti burghiul cat mai rece urmarind indicele de temperatura; daca se supraincalzeste, devine ineficient si spargerea dureaza mult mai mult."))
-                                    imgui.EndChild()
-                                    imgui.NextColumn()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("MINIJOCURI (IN FUNCTIE DE SKILL)"))
-                                    imgui.BeginChild("RobMinigames", imgui.ImVec2(0, 400), true) 
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Skill 1 - 5: Scurtcircuit (Implicit)"))
-                                        imgui.TextWrapped(u8("Directionati sarma cu sagetile dintr-o parte in alta fara a atinge peretii. Atingerea lor reseteaza traseul."))
-                                        imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Skill 6 - 7: Taiere SAU Conectare Fire"))
-                                        imgui.TextWrapped(u8("- Taiere: Ghiciti si taiati firul corect (rosu/verde/albastru) de 3 ori.\n- Conectare: Uniti culoarea din stanga cu cea corespondenta din dreapta de 3 ori."))
-                                        imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Skill 8 - 10: Taiere / Conectare / Voltaj"))
-                                        imgui.TextWrapped(u8("- Reglare Voltaj: Cresteti/scadeti voltajul curent pana devine identic cu cel optim (de 3 ori pentru a trece)."))
-                                    imgui.EndChild()
-                                    imgui.Columns(1)   
-                                    imgui.Separator()
-                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.7), u8("Nota: In incaperea speciala aveti un timp limita sa terminati minijocurile si seiful, altfel jaful va esua."))
-                                    imgui.SetWindowFontScale(1.0)
-                                else
-                                    imgui.SetWindowFontScale(1.2)  
-                                    imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - S O L O")
-                                    imgui.Separator()
-                                    imgui.Spacing()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("EARNINGS AND TIME PER SKILL"))
-                                    imgui.SetWindowFontScale(1.0)  
-                                    imgui.BeginChild("RobSoloEarnings", imgui.ImVec2(0, 165), true)
-                                        imgui.Columns(3, "robSoloCols", false)
-                                        imgui.SetColumnWidth(0, 100); imgui.SetColumnWidth(1, 180); imgui.SetColumnWidth(2, 160) 
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill")) imgui.NextColumn()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Estimated Gain")) imgui.NextColumn()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Circuit Time")) imgui.NextColumn()
-                                        imgui.Separator()
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("CASTIGURI SI TIMP DISPONIBIL PE SKILL"))
+                                imgui.SetWindowFontScale(1.0) 
+                                
+                                imgui.Columns(3, "robSoloCols", false)
+                                imgui.SetColumnWidth(0, 110)  
+                                imgui.SetColumnWidth(1, 200)
+                                imgui.SetColumnWidth(2, 160) 
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill Rob")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Castig de Baza")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Timp Limita Circuit")) imgui.NextColumn()
+                                imgui.Separator()
 
-                                        local robData = {
-                                            {"Skill 1", "between $25.000 - $35.000", "300 seconds"},
-                                            {"Skill 2", "between $35.000 - $45.000", "310 seconds"},
-                                            {"Skill 3", "between $45.000 - $55.000", "320 seconds"},
-                                            {"Skill 4", "between $55.000 - $65.000", "330 seconds"},
-                                            {"Skill 5", "between $65.000 - $70.000", "340 seconds"}
-                                        }
-                                        for _, v in ipairs(robData) do
-                                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
-                                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
-                                            imgui.Text(u8(v[3])) imgui.NextColumn()
-                                        end
-                                        imgui.Columns(1)
-                                    imgui.EndChild()
-                                    imgui.Spacing()
-                                    
-                                    imgui.Columns(2, "robInfo", false)    
-                                    imgui.SetWindowFontScale(1.2)  
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("RESOURCES & PROCEDURES"))
-                                    imgui.BeginChild("RobRequirements", imgui.ImVec2(0, 400), true)  
-                                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Rob Requirements (House/Biz):"))
-                                        imgui.BulletText(u8("Minimum level 7."))
-                                        imgui.BulletText(u8("Minimum 15 rob points (/robpoints)."))
-                                        imgui.BulletText(u8("Clean criminal record (no wanted)."))
-                                        imgui.BulletText(u8("Server time: between 08:00 - 04:00."))
-                                        imgui.Spacing(); imgui.Separator(); imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Safe Cracking:"))
-                                        imgui.TextWrapped(u8("Use the SPACE key for the drill. Keep the drill cool by watching the temperature gauge; if it overheats, it becomes inefficient and breaking takes much longer."))
-                                    imgui.EndChild()
-                                    imgui.NextColumn()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("MINIGAMES (BY SKILL LEVEL)"))
-                                    imgui.BeginChild("RobMinigames", imgui.ImVec2(0, 400), true) 
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Skill 1 - 5: Short Circuit (Default)"))
-                                        imgui.TextWrapped(u8("Guide the wire from side to side without touching the walls. Touching them resets the path."))
-                                        imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Skill 6 - 7: Cut OR Connect Wires"))
-                                        imgui.TextWrapped(u8("- Cut: Guess and cut the correct wire (red/green/blue) 3 times.\n- Connect: Match the color on the left with the corresponding one on the right 3 times."))
-                                        imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Skill 8 - 10: Cut / Connect / Voltage"))
-                                        imgui.TextWrapped(u8("- Voltage Reg: Increase/decrease the current voltage until it matches the optimal one (3 times to pass)."))
-                                    imgui.EndChild()
-                                    imgui.Columns(1)   
-                                    imgui.Separator()
-                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.7), u8("Note: In the special room you have a time limit to finish the minigames and the safe, otherwise the robbery will fail."))
-                                    imgui.SetWindowFontScale(1.0)
+                                local robSoloData = {
+                                    {"Skill 1", "intre $25.000 - $35.000", "300 secunde"},
+                                    {"Skill 2", "intre $35.000 - $45.000", "310 secunde"},
+                                    {"Skill 3", "intre $45.000 - $55.000", "320 secunde"},
+                                    {"Skill 4", "intre $55.000 - $65.000", "330 secunde"},
+                                    {"Skill 5", "intre $65.000 - $70.000", "340 secunde"}
+                                }
+                                for _, v in ipairs(robSoloData) do
+                                    imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
+                                    imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
+                                    imgui.Text(u8(v[3])) imgui.NextColumn()
                                 end
+                                imgui.Columns(1)
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
 
-                        elseif sm.id == 9 then -- ROB TEAM
-                                if iniData.settings.lang == 0 then
-                                    imgui.SetWindowFontScale(1.2)  
-                                    imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - T E A M")
-                                    imgui.Separator()
-                                    imgui.Spacing()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("CAPACITATE GRAB SI AVANSARE PE SKILL"))
-                                    imgui.SetWindowFontScale(1.0)  
-                                    imgui.BeginChild("RobGroupEarnings", imgui.ImVec2(0, 145), true)
-                                        imgui.Columns(3, "robGroupCols", false)
-                                        imgui.SetColumnWidth(0, 110); imgui.SetColumnWidth(1, 160); imgui.SetColumnWidth(2, 200) 
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill")) imgui.NextColumn()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Bijuterii / Grab")) imgui.NextColumn()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Avansare (Jafuri Necesare)")) imgui.NextColumn()
-                                        imgui.Separator()
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("1. CERINTE SI INITIERE JAF"))
+                                imgui.BulletText(u8("Nivel minim 7 | Ora serverului intre 08:00 - 04:00."))
+                                imgui.BulletText(u8("Minim 15 puncte de jaf (se scad 10 pct la intrare + 5 pct la finalizare)."))
+                                imgui.BulletText(u8("Cazier curat (fara Wanted) | Sa nu fii membru PD."))
+                                imgui.BulletText(u8("Initiere: Foloseste /rob in fata oricarei case sau biz si alege 'Solo Rob'."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
 
-                                        local robGroupData = {
-                                            {"Skill 1", "25 bijuterii", "25 jafuri -> Skill 2"},
-                                            {"Skill 2", "30 bijuterii", "50 jafuri -> Skill 3"},
-                                            {"Skill 3", "35 bijuterii", "100 jafuri -> Skill 4"},
-                                            {"Skill 4", "40 bijuterii", "200 jafuri -> Skill 5"},
-                                            {"Skill 5", "45 bijuterii", "Maxim"}
-                                        }
-                                        for _, v in ipairs(robGroupData) do
-                                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
-                                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
-                                            imgui.Text(u8(v[3])) imgui.NextColumn()
-                                        end
-                                        imgui.Columns(1)
-                                    imgui.EndChild()
-                                    imgui.Spacing()
-                                    
-                                    imgui.Columns(2, "robGroupInfo", false)    
-                                    imgui.SetWindowFontScale(1.2)  
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("RESURSE & PROCES"))
-                                    imgui.BeginChild("RobGroupReqs", imgui.ImVec2(0, 400), true) 
-                                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Resurse Necesare:"))
-                                        imgui.BulletText(u8("Echipa de minim 4 si maxim 8 membri."))
-                                        imgui.BulletText(u8("Fiecare membru: minim nivel 7 & 10 robpoints."))
-                                        imgui.BulletText(u8("Cel putin un membru trebuie sa aiba licenta de pilot."))
-                                        imgui.BulletText(u8("Cazier curat (fara wanted) pentru toti membrii."))
-                                        imgui.Spacing(); imgui.Separator(); imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Procesul de Jaf:"))
-                                        imgui.TextWrapped(u8("Liderul alege 1 din 21 locatii prin /rob (Next Step). Se deblocheaza chat-ul /rc. Liderul atribuie cele 4 roluri. Dupa indeplinirea misiunilor rolurilor, se intra in magazin."))
-                                        imgui.Spacing()
-                                        imgui.TextWrapped(u8("In magazin sunt 15 mese a cate 40 bijuterii (Total: 600 bijuterii)."))
-                                    imgui.EndChild()
-                                    imgui.NextColumn()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("COMENZI SPECIFICE"))
-                                    imgui.BeginChild("RobGroupCmds", imgui.ImVec2(0, 400), true) 
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/rob")
-                                        imgui.TextWrapped(u8("Meniul principal al jafului, gestionare membri, invitatii (max 8) si pornire."))
-                                        imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/robbers")
-                                        imgui.TextWrapped(u8("Lista de cautare echipa. Interzis pt: PD, < Lvl 7, wanted, < 10 puncte jaf sau deja in echipa."))
-                                        imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/accept rob [id] | /cancel rob")
-                                        imgui.TextWrapped(u8("Accepta invitatia / Anuleaza jaful (lider) sau paraseste echipa (membru)."))
-                                        imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/grab | /drop | /rc")
-                                        imgui.TextWrapped(u8("/grab: Fura bijuterii de la mese.\n/drop: Depoziteaza bijuteriile in vehicul.\n/rc: Chatul echipei de jaf."))
-                                    imgui.EndChild()
-                                    imgui.Columns(1)   
-                                    imgui.Separator()
-                                    imgui.SetWindowFontScale(1.2) 
-                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.7), u8("Formula Castig: [ (Bijuterii Furate * 626) - 20000 ] / Numar Membri"))
-                                    imgui.SetWindowFontScale(1.0) 
-                                else
-                                    imgui.SetWindowFontScale(1.2)  
-                                    imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - T E A M")
-                                    imgui.Separator()
-                                    imgui.Spacing()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("GRAB CAPACITY AND SKILL PROGRESS"))
-                                    imgui.SetWindowFontScale(1.0)  
-                                    imgui.BeginChild("RobGroupEarnings", imgui.ImVec2(0, 145), true)
-                                        imgui.Columns(3, "robGroupCols", false)
-                                        imgui.SetColumnWidth(0, 110); imgui.SetColumnWidth(1, 160); imgui.SetColumnWidth(2, 200) 
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill")) imgui.NextColumn()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Jewels / Grab")) imgui.NextColumn()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Progression (Required Robs)")) imgui.NextColumn()
-                                        imgui.Separator()
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("2. INCAPERILE SPECIALE SI MINIJOCURILE"))
+                                imgui.TextWrapped(u8("Intri automat intr-un interior special avand un timp limita (conform tabelului) pentru a trece de usa si seif:"))
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("A. Deblocarea Ușii (in functie de Skill):"))
+                                imgui.BulletText(u8("Skill 1 - 5 (Scurtcircuit): Ghideaza sarma cu sagetile dintr-o parte in alta fara a atinge peretii (atingerea lor reseteaza traseul)."))
+                                imgui.BulletText(u8("Skill 6 - 7 (Taiere / Conectare Fire): Taiati firul corect de 3 ori SAU conectati cele 3 puncte colorate din stanga cu cele din dreapta."))
+                                imgui.BulletText(u8("Skill 8 - 10 (Taiere / Conectare / Voltaj): Reglati voltajul curent (crescut/scazut) pana devine identic cu cel optim de 3 ori."))
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("B. Spargerea Seifului:"))
+                                imgui.TextWrapped(u8("Mentineti tasta SPACE apasata pentru burghiu. Urmariti indicele de temperatura — mentineti burghiul cat mai rece; daca se supraincalzeste, devine ineficient si spargerea dureaza mult mai mult."))
 
-                                        local robGroupData = {
-                                            {"Skill 1", "25 jewels", "25 robs -> Skill 2"},
-                                            {"Skill 2", "30 jewels", "50 robs -> Skill 3"},
-                                            {"Skill 3", "35 jewels", "100 robs -> Skill 4"},
-                                            {"Skill 4", "40 jewels", "200 robs -> Skill 5"},
-                                            {"Skill 5", "45 jewels", "Maximum"}
-                                        }
-                                        for _, v in ipairs(robGroupData) do
-                                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
-                                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
-                                            imgui.Text(u8(v[3])) imgui.NextColumn()
-                                        end
-                                        imgui.Columns(1)
-                                    imgui.EndChild()
-                                    imgui.Spacing()
-                                    
-                                    imgui.Columns(2, "robGroupInfo", false)    
-                                    imgui.SetWindowFontScale(1.2)  
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("RESOURCES & PROCESS"))
-                                    imgui.BeginChild("RobGroupReqs", imgui.ImVec2(0, 400), true) 
-                                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Required Resources:"))
-                                        imgui.BulletText(u8("Team of at least 4 and max 8 members."))
-                                        imgui.BulletText(u8("Each member: min level 7 & 10 robpoints."))
-                                        imgui.BulletText(u8("At least one member must have a pilot license."))
-                                        imgui.BulletText(u8("Clean criminal record for all members."))
-                                        imgui.Spacing(); imgui.Separator(); imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Robbery Process:"))
-                                        imgui.TextWrapped(u8("The leader chooses 1 of 21 locations via /rob. /rc chat unlocks. The leader assigns 4 roles. After completing role missions, enter the store."))
-                                        imgui.Spacing()
-                                        imgui.TextWrapped(u8("There are 15 tables with 40 jewels each inside (Total: 600 jewels)."))
-                                    imgui.EndChild()
-                                    imgui.NextColumn()
-                                    
-                                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("SPECIFIC COMMANDS"))
-                                    imgui.BeginChild("RobGroupCmds", imgui.ImVec2(0, 400), true) 
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/rob")
-                                        imgui.TextWrapped(u8("Main robbery menu, member management, invites (max 8) and start."))
-                                        imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/robbers")
-                                        imgui.TextWrapped(u8("Team search list. Forbidden for: PD, < Lvl 7, wanted, < 10 rob points or already in a team."))
-                                        imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/accept rob [id] | /cancel rob")
-                                        imgui.TextWrapped(u8("Accept invite / Cancel robbery (leader) or leave team (member)."))
-                                        imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/grab | /drop | /rc")
-                                        imgui.TextWrapped(u8("/grab: Steal jewels from tables.\n/drop: Store jewels in vehicle.\n/rc: Robbery team chat."))
-                                    imgui.EndChild()
-                                    imgui.Columns(1)   
-                                    imgui.Separator()
-                                    imgui.SetWindowFontScale(1.2) 
-                                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.7), u8("Earnings Formula: [ (Jewels Stolen * 626) - 20000 ] / Number of Members"))
-                                    imgui.SetWindowFontScale(1.0) 
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("3. PLASAREA BANILOR FURATI"))
+                                imgui.TextWrapped(u8("Dupa finalizarea interiorului, iesi afara cu sacul de bani si primesti Wanted 6 (fara drept de predare)."))
+                                imgui.BulletText(u8("Vei primi 2 checkpoint-uri consecutive la case diferite unde trebuie sa ascunzi banii."))
+                                imgui.BulletText(u8("Este recomandat sa ai un vehicul rapid pregatit la usa inainte de a da /rob."))
+                                imgui.BulletText(u8("Daca esti omorat de PD pe parcurs, jaful esueaza si ajungi la inchisoare."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("4. PROCESUL DE EVADARE (BARCA & VEHICUL)"))
+                                imgui.TextWrapped(u8("Dupa ce ai ascuns banii la cele 2 locatii, intri in etapa de evadare (necesita minim 4 evadari din inchisoare reusite):"))
+                                imgui.BulletText(u8("Mergi la checkpoint-ul primit pe harta unde te asteapta o barca oferita de server."))
+                                imgui.BulletText(u8("Mergi cu barca spre urmatorul checkpoint. La sosire, Wanted-ul scade la jumatate si esti urcat automat intr-un vehicul."))
+                                imgui.BulletText(u8("Condu vehiculul pana la cel mai apropiat Pay'n Spray."))
+                                imgui.BulletText(u8("La intrarea in Pay'n Spray, jaful este FINALIZAT CU SUCCES: scapi complet de Wanted, primesti plata de baza + 1 Skill Rob."))
+                                
+                            else
+                                imgui.SetWindowFontScale(1.2) 
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - S O L O")
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("EARNINGS AND TIME LIMIT PER SKILL"))
+                                imgui.SetWindowFontScale(1.0) 
+                                
+                                imgui.Columns(3, "robSoloCols", false)
+                                imgui.SetColumnWidth(0, 110)  
+                                imgui.SetColumnWidth(1, 200)
+                                imgui.SetColumnWidth(2, 160) 
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Rob Skill")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Base Reward")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Circuit Time Limit")) imgui.NextColumn()
+                                imgui.Separator()
+
+                                local robSoloData = {
+                                    {"Skill 1", "between $25.000 - $35.000", "300 seconds"},
+                                    {"Skill 2", "between $35.000 - $45.000", "310 seconds"},
+                                    {"Skill 3", "between $45.000 - $55.000", "320 seconds"},
+                                    {"Skill 4", "between $55.000 - $65.000", "330 seconds"},
+                                    {"Skill 5", "between $65.000 - $70.000", "340 seconds"}
+                                }
+                                for _, v in ipairs(robSoloData) do
+                                    imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
+                                    imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
+                                    imgui.Text(u8(v[3])) imgui.NextColumn()
                                 end
+                                imgui.Columns(1)
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("1. REQUIREMENTS & INITIATION"))
+                                imgui.BulletText(u8("Minimum level 7 | Server time between 08:00 - 04:00."))
+                                imgui.BulletText(u8("Minimum 15 rob points (10 pts deducted at entry + 5 pts at completion)."))
+                                imgui.BulletText(u8("Clean record (no Wanted) | Must not be a PD member."))
+                                imgui.BulletText(u8("Initiation: Use /rob outside any house or biz and select 'Solo Rob'."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("2. SPECIAL INTERIOR & MINIGAMES"))
+                                imgui.TextWrapped(u8("You enter a special interior with a time limit (see table above) to breach the door and crack the safe:"))
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("A. Unlocking the Door (by Skill level):"))
+                                imgui.BulletText(u8("Skill 1 - 5 (Short Circuit): Guide the wire using arrow keys without touching the walls (touching resets path)."))
+                                imgui.BulletText(u8("Skill 6 - 7 (Cut / Connect Wires): Cut the correct wire 3 times OR connect matching colored dots from left to right."))
+                                imgui.BulletText(u8("Skill 8 - 10 (Cut / Connect / Voltage): Match current voltage to optimal voltage 3 times."))
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("B. Safe Cracking:"))
+                                imgui.TextWrapped(u8("Hold SPACE key to drill. Watch the temperature gauge — keep the drill cool; overheating makes it inefficient and cracking takes much longer."))
+
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("3. STASHING THE MONEY"))
+                                imgui.TextWrapped(u8("After leaving the interior with the money bag, you receive Wanted 6 (no surrender)."))
+                                imgui.BulletText(u8("You will get 2 consecutive checkpoints at different houses to hide the money."))
+                                imgui.BulletText(u8("It is strongly recommended to have a fast vehicle parked outside before starting."))
+                                imgui.BulletText(u8("If killed by PD during this phase, the rob fails and you go to prison."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("4. ESCAPE PROCESS (BOAT & VEHICLE)"))
+                                imgui.TextWrapped(u8("After hiding the loot, you enter the escape phase (requires at least 4 successful prison escapes):"))
+                                imgui.BulletText(u8("Head to the red map checkpoint where a server-provided boat awaits."))
+                                imgui.BulletText(u8("Drive the boat to the next checkpoint. Upon arrival, Wanted is halved and you get warped into a getaway vehicle."))
+                                imgui.BulletText(u8("Drive the vehicle to the nearest Pay'n Spray."))
+                                imgui.BulletText(u8("Entering the Pay'n Spray COMPLETES THE ROB: Wanted is fully cleared, and you receive base cash + 1 Rob Skill point."))
+                            end
+
+                        elseif sm.id == 9 then -- ROB TEAM  
+                        if iniData.settings.lang == 0 then
+                            imgui.SetWindowFontScale(1.2)  
+                            imgui.Spacing()
+                            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - T E A M  ( GHID COMPLET )")
+                            imgui.Separator()
+                            imgui.SetWindowFontScale(1.0)
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("1. CAPACITATE GRAB SI AVANSARE SKILL"))
+                            imgui.Separator()
+                            imgui.Spacing()
+                            
+                            imgui.Columns(3, "robGroupColsSingle", false)
+                            imgui.SetColumnWidth(0, 100); imgui.SetColumnWidth(1, 150); imgui.SetColumnWidth(2, 220) 
+                            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill")) imgui.NextColumn()
+                            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Bijuterii / Grab")) imgui.NextColumn()
+                            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Avansare (Jafuri Necesare)")) imgui.NextColumn()
+                            imgui.Separator()
+
+                            local robGroupData = {
+                                {"Skill 1", "25 bijuterii", "25 jafuri -> Skill 2"},
+                                {"Skill 2", "30 bijuterii", "50 jafuri -> Skill 3"},
+                                {"Skill 3", "35 bijuterii", "100 jafuri -> Skill 4"},
+                                {"Skill 4", "40 bijuterii", "200 jafuri -> Skill 5"},
+                                {"Skill 5", "45 bijuterii", "Skill Maxim"}
+                            }
+                            for _, v in ipairs(robGroupData) do
+                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
+                                imgui.Text(u8(v[3])) imgui.NextColumn()
+                            end
+                            imgui.Columns(1)
+                            
+                            imgui.Spacing(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("2. CERINTE SI ROLURI OBLIGATORII"))
+                            imgui.Separator()
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Cerinte de participare:"))
+                            imgui.BulletText(u8("Echipa formata din minim 4 si maxim 8 membri."))
+                            imgui.BulletText(u8("Fiecare membru: minim nivel 7 si cel putin 10 Rob Points."))
+                            imgui.BulletText(u8("Cel putin un membru trebuie sa detina licenta de pilot valabila."))
+                            imgui.BulletText(u8("Cazier curat (fara wanted) pentru toti membrii la initiere."))
+                            
+                            imgui.Spacing()
+                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Cele 4 Roluri Specifice (atribuite din /rob):"))
+                            imgui.BulletText(u8("Airplane Loaner: Inchiriaza avionul de evadare la momentul oportun."))
+                            imgui.BulletText(u8("Gold Melter: Stabileste locatia de topire/vanzare a bijuteriilor."))
+                            imgui.BulletText(u8("Scout: Inchiriaza pachetul de arme si distruge cele 4 camere de supraveghere."))
+                            imgui.BulletText(u8("Gas Man: Inchiriaza si arunca 10 fumigene in fata magazinului."))
+
+                            imgui.Spacing(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("3. DESFASURAREA JAFULUI & EVADAREA"))
+                            imgui.Separator()
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Cost Rob Points:"))
+                            imgui.TextWrapped(u8("Trecerea la faza misiunilor consuma 3 RP per membru. Payout-ul final consuma inca 7 RP (total 10 RP) si ofera +1 Skill Point."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Interior Magazin:"))
+                            imgui.TextWrapped(u8("Contine 15 mese cu bijuterii (total 600 bijuterii disponibile)."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Alarma & Wanted:"))
+                            imgui.TextWrapped(u8("Furtul primei bijuterii declanseaza alarma (3 minute) si acorda Wanted 6 tuturor membrilor. Dupa 30 secunde primiti armura automat."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Vehicule Permise:"))
+                            imgui.TextWrapped(u8("Doar vehicule personale, inchiriate (Rent) sau civile. SUNT INTERZISE avioanele, motocicletele si vehiculele de factiune."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Timer Topire:"))
+                            imgui.TextWrapped(u8("Gold Melter activeaza un timer de 5 minute la sosirea primului vehicul cu bijuterii la punctul de topire."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Mecanica de Evadare:"))
+                            imgui.TextWrapped(u8("Toti membrii urca in avionul pregatit pe aeroport. Cand pilotul atinge checkpoint-ul aerian marcat, toti membrii scapa de Wanted!"))
+
+                            imgui.Spacing(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("4. COMENZI SPECIFICE"))
+                            imgui.Separator()
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/rob")
+                            imgui.TextWrapped(u8("Deschide meniul principal: invitare membri (max 8), kick (lider in faza 1), selectare din cele 21 locatii (Next Step), atribuire roluri."))
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/robbers")
+                            imgui.TextWrapped(u8("Lista publica pentru cautare echipa (max 60 playeri, expira in 10 min). Interzis pt: PD, sub Lvl 7, jucatori cu wanted sau sub 10 RP. Click pe un nume face apel direct."))
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/accept rob [id/nume] | /cancel rob")
+                            imgui.TextWrapped(u8("Accepta invitatia in echipa. /cancel rob anuleaza jaful (lider) sau paraseste echipa (membru)."))
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/grab | /drop | /rc")
+                            imgui.TextWrapped(u8("/grab: Fura bijuterii cand esti langa masa.\n/drop: Depoziteaza bijuteriile in vehiculul din apropiere.\n/rc: Chat privat al echipei (se deblocheaza dupa alegerea locatiei)."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/enter | /goup | /godown")
+                            imgui.TextWrapped(u8("Comenzi folosite pentru accesul in interiorul magazinului sau pe acoperisurile marcate ale cladirii."))
+
+                            imgui.Spacing(); imgui.Separator(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("FORMULA CALCUL PROFIT:"))
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8("[ (Bijuterii Furate * 626$) - 20.000$ (Echipamente) ] / Numar Membri"))
+
+                        else
+                            imgui.SetWindowFontScale(1.2)  
+                            imgui.Spacing()
+                            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - T E A M  ( FULL GUIDE )")
+                            imgui.Separator()
+                            imgui.SetWindowFontScale(1.0)
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("1. GRAB CAPACITY AND SKILL PROGRESS"))
+                            imgui.Separator()
+                            imgui.Spacing()
+                            
+                            imgui.Columns(3, "robGroupColsSingleEn", false)
+                            imgui.SetColumnWidth(0, 100); imgui.SetColumnWidth(1, 150); imgui.SetColumnWidth(2, 220) 
+                            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill")) imgui.NextColumn()
+                            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Jewels / Grab")) imgui.NextColumn()
+                            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Progression (Required Robs)")) imgui.NextColumn()
+                            imgui.Separator()
+
+                            local robGroupData = {
+                                {"Skill 1", "25 jewels", "25 robs -> Skill 2"},
+                                {"Skill 2", "30 jewels", "50 robs -> Skill 3"},
+                                {"Skill 3", "35 jewels", "100 robs -> Skill 4"},
+                                {"Skill 4", "40 jewels", "200 robs -> Skill 5"},
+                                {"Skill 5", "45 jewels", "Maximum Skill"}
+                            }
+                            for _, v in ipairs(robGroupData) do
+                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
+                                imgui.Text(u8(v[3])) imgui.NextColumn()
+                            end
+                            imgui.Columns(1)
+                            
+                            imgui.Spacing(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("2. REQUIREMENTS & MANDATORY ROLES"))
+                            imgui.Separator()
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Participation Requirements:"))
+                            imgui.BulletText(u8("Team of minimum 4 and maximum 8 members."))
+                            imgui.BulletText(u8("Each member: min level 7 and at least 10 Rob Points."))
+                            imgui.BulletText(u8("At least one member must possess a valid pilot license."))
+                            imgui.BulletText(u8("Clean criminal record (no wanted) for all members at start."))
+                            
+                            imgui.Spacing()
+                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("The 4 Specific Roles (assigned via /rob):"))
+                            imgui.BulletText(u8("Airplane Loaner: Rents the getaway plane at the right time."))
+                            imgui.BulletText(u8("Gold Melter: Selects the melting/drop-off location for jewels."))
+                            imgui.BulletText(u8("Scout: Rents weapon package and destroys 4 security cameras."))
+                            imgui.BulletText(u8("Gas Man: Rents and throws 10 tear gas canisters in front of store."))
+
+                            imgui.Spacing(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("3. EXECUTION & ESCAPE MECHANICS"))
+                            imgui.Separator()
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Rob Points Cost:"))
+                            imgui.TextWrapped(u8("Moving to mission phase costs 3 RP per member. Final payout costs 7 RP (total 10 RP) and awards +1 Skill Point."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Store Interior:"))
+                            imgui.TextWrapped(u8("Contains 15 tables with jewels (600 total jewels available)."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Alarm & Wanted:"))
+                            imgui.TextWrapped(u8("Stealing first jewel triggers 3-min alarm and grants Wanted 6 to all members. Armor granted after 30 seconds."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Allowed Vehicles:"))
+                            imgui.TextWrapped(u8("Personal, Rent, or Civilian vehicles only. Planes, motorcycles, and faction cars are FORBIDDEN."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Melting Timer:"))
+                            imgui.TextWrapped(u8("Gold Melter triggers a 5-minute payout timer upon first vehicle arrival at drop location."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Getaway Mechanics:"))
+                            imgui.TextWrapped(u8("All members board the plane at airport. When pilot hits aerial checkpoint, all members clear Wanted!"))
+
+                            imgui.Spacing(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("4. SPECIFIC COMMANDS"))
+                            imgui.Separator()
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/rob")
+                            imgui.TextWrapped(u8("Main menu: invite members (max 8), kick (leader phase 1), pick 1 of 21 locations (Next Step), assign roles."))
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/robbers")
+                            imgui.TextWrapped(u8("Public team search list (max 60 players, 10 min expiry). Restricted for: PD, <Lvl 7, wanted, <10 RP. Clicking player calls directly."))
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/accept rob [id/name] | /cancel rob")
+                            imgui.TextWrapped(u8("Accept team invite. /cancel rob cancels robbery (leader) or leaves team (member)."))
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/grab | /drop | /rc")
+                            imgui.TextWrapped(u8("/grab: Steal jewels near tables.\n/drop: Store jewels in nearby vehicle.\n/rc: Private team chat (unlocked after location selection)."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/enter | /goup | /godown")
+                            imgui.TextWrapped(u8("Commands used to enter store interior or access marked rooftops."))
+
+                            imgui.Spacing(); imgui.Separator(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("PROFIT CALCULATOR FORMULA:"))
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8("[ (Stolen Jewels * 626$) - 20,000$ (Equipment) ] / Team Members"))
+                        end
 
                             elseif sm.id == 10 then -- ESCAPE
                                 if iniData.settings.lang == 0 then
@@ -10075,269 +10423,647 @@ end, function(player)
                                 end
                             end
 
-                    elseif selected_system == 7 then -- ROB ATM
-                    local isRO = (iniData.settings.lang == 0)
-                    
-                    imgui.SetWindowFontScale(1.2)
-                    imgui.Spacing()
-                    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - A T M")
-                    imgui.Separator()
-                    imgui.Spacing()
-                    
-                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRO and u8("RECOMPENSE FINANCIARE PE SKILL (LA SUCCES)") or "FINANCIAL REWARDS BY SKILL (ON SUCCESS)")
-                    imgui.SetWindowFontScale(1.0)
-                    
-                    imgui.Columns(3, "robAtmCols", false)
-                    imgui.SetColumnWidth(0, 110)
-                    imgui.SetColumnWidth(1, 200)
-                    imgui.SetColumnWidth(2, 160)
-                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), isRO and u8("Skill Rob") or "Rob Skill") imgui.NextColumn()
-                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), isRO and u8("Recompensa de Baza") or "Base Reward") imgui.NextColumn()
-                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), isRO and u8("Puncte Skill") or "Skill Points") imgui.NextColumn()
-                    imgui.Separator()
+                     elseif selected_system == 7 then -- ROB ATM
+                    imgui.BeginChild("RobATMDetails", imgui.ImVec2(0, 0), true)
+                            
+                            if iniData.settings.lang == 0 then
+                                imgui.SetWindowFontScale(1.2) 
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - A T M")
+                                imgui.Separator()
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("RECOMPENSE FINANCIARE PE SKILL (LA SUCCES)"))
+                                imgui.SetWindowFontScale(1.0) 
+                                
+                                imgui.Columns(3, "robAtmCols", false)
+                                imgui.SetColumnWidth(0, 110)  
+                                imgui.SetColumnWidth(1, 200)
+                                imgui.SetColumnWidth(2, 160) 
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill Rob")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Recompensa de Baza")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Puncte Skill")) imgui.NextColumn()
+                                imgui.Separator()
 
-                    local atmDataRO = {
-                        {"Skill 1", "intre $12.500 - $17.500", "+1 punct skill"},
-                        {"Skill 2", "intre $17.500 - $22.500", "+1 punct skill"},
-                        {"Skill 3", "intre $22.500 - $27.500", "+1 punct skill"},
-                        {"Skill 4", "intre $27.500 - $32.500", "+1 punct skill"},
-                        {"Skill 5", "intre $32.500 - $37.500", "Nivel Maxim"}
-                    }
-                    local atmDataEN = {
-                        {"Skill 1", "between $12,500 - $17,500", "+1 skill point"},
-                        {"Skill 2", "between $17,500 - $22,500", "+1 skill point"},
-                        {"Skill 3", "between $22,500 - $27,500", "+1 skill point"},
-                        {"Skill 4", "between $27,500 - $32,500", "+1 skill point"},
-                        {"Skill 5", "between $32,500 - $37,500", "Max Level"}
-                    }
-                    
-                    local currentData = isRO and atmDataRO or atmDataEN
-                    for _, v in ipairs(currentData) do
-                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), v[1]) imgui.NextColumn()
-                        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), isRO and u8(v[2]) or v[2]) imgui.NextColumn()
-                        imgui.Text(isRO and u8(v[3]) or v[3]) imgui.NextColumn()
-                    end
-                    imgui.Columns(1)
-                    
-                    imgui.Spacing(); imgui.Separator(); imgui.Spacing()
-                    imgui.SetWindowFontScale(1.2)
-                    
-                    -- [ SECTIUNEA 1 ] --
-                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRO and u8("1. CONDITII MINIME & DECLANSARE") or "1. MINIMUM REQUIREMENTS & TRIGGER")
-                    imgui.BulletText(isRO and u8("Nivel minim 7 | Sa nu fii membru PD.") or "Minimum level 7 | Cannot be a PD member.")
-                    imgui.BulletText(isRO and u8("Minim 10 puncte de jaf (se consuma automat la initiere).") or "Minimum 10 robbery points (consumed automatically on start).")
-                    imgui.BulletText(isRO and u8("Sa NU ai Wanted in acel moment | Licenta de zbor valabila.") or "Must NOT have Wanted | Valid flying license.")
-                    imgui.BulletText(isRO and u8("Trebuie sa detii cel putin o bomba creata in inventar.") or "Must own at least one crafted bomb in inventory.")
-                    
-                    imgui.Spacing()
-                    imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), isRO and u8("Mecanica de Armare:") or "Arming Mechanic:")
-                    imgui.TextWrapped(isRO and u8("Te apropii de un ATM si foloseste comanda /robatm. Vei primi un SMS de la Comerciantul de Explozibil cu un cod de 10 cifre. Trebuie sa introduci exact codul in interfata grafica (textdraw) pentru a arma bomba.") or "Approach an ATM and use /robatm. You'll receive an SMS from the Explosives Dealer with a 10-digit code. You must enter the exact code in the GUI (textdraw) to arm the bomb.")
-                    
-                    imgui.Spacing()
-                    imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), isRO and u8("Reguli de anulare instant:") or "Instant failure rules:")
-                    imgui.TextWrapped(isRO and u8("Daca parasesti zona, inchizi interfata, primesti crash sau mori in timp ce bagi codul -> jaful esueaza si primesti Wanted. Cod incorect = Explozie locala cu daune + Wanted.") or "If you leave the area, close the GUI, crash, or die while entering the code -> robbery fails and you get Wanted. Wrong code = Local explosion with damage + Wanted.")
-                    
-                    -- [ SECTIUNEA 2 ] --
-                    imgui.Spacing(); imgui.Separator(); imgui.Spacing()
-                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRO and u8("2. COLECTAREA BANILOR SI COOLDOWN") or "2. MONEY COLLECTION AND COOLDOWN")
-                    imgui.TextWrapped(isRO and u8("Dupa ce bomba explodeaza, langa ATM apare un sac personal cu bani. Ai la dispozitie fix 90 de secunde sa il ridici, altfel prada expira si jaful e esuat.") or "After the bomb explodes, a personal money bag appears near the ATM. You have exactly 90 seconds to pick it up, otherwise the loot expires and the robbery fails.")
-                    imgui.BulletText(isRO and u8("La ridicarea sacului primesti Wanted automat si porneste evadarea.") or "Upon picking up the bag, you automatically get Wanted and the escape starts.")
-                    imgui.BulletText(isRO and u8("ATM-ul intra in cooldown 180s (este dezactivat pt operatiuni si jafuri).") or "ATM enters a 180s cooldown (disabled for operations and robberies).")
-                    
-                    -- [ SECTIUNEA 3 ] --
-                    imgui.Spacing(); imgui.Separator(); imgui.Spacing()
-                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRO and u8("3. ETAPA DE EVADARE SI ALTITUDINE") or "3. ESCAPE STAGE AND ALTITUDE")
-                    imgui.TextWrapped(isRO and u8("Se va seta un checkpoint de extractie in alt oras. Trebuie sa zbori pana acolo cu un avion sau un elicopter. Cand atingi punctul, esti aruncat automat in aer si primesti o parasuta.") or "An extraction checkpoint will be set in another city. You must fly there by plane or helicopter. When you hit the point, you are automatically ejected and given a parachute.")
-                    
-                    imgui.TextWrapped(isRO and u8("Urmareste cu mare atentie indicatorul de altitudine pentru deschidere:") or "Watch the altitude indicator very carefully for opening:")
-                    imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), isRO and u8(" [X] Mai mare de 500 m -> Prea sus (NU deschide parasuta!)") or " [X] Higher than 500m -> Too high (DO NOT open parachute!)")
-                    imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), isRO and u8(" [V] Intre 350 si 500 m -> PERFECT! (Deschide aici pentru a finaliza cu succes)") or " [V] Between 350 and 500m -> PERFECT! (Open here to finish successfully)")
-                    imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), isRO and u8(" [X] Mai mic de 350 m -> Prea jos (Prabusire si esec jaful)") or " [X] Lower than 350m -> Too low (Crash and robbery failure)")
-                    
-                    -- [ PARTEA FINALA ] --
-                    imgui.Spacing(); imgui.Separator(); imgui.Spacing()
-                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.7), isRO and u8("Bonus la succes: Daca deschizi parasuta corect, Wanted-ul este sters complet. Primesti +7 puncte maraton, +3 EXP clan si +1 punct de skill la Rob.") or "Success bonus: If you open the parachute correctly, Wanted is completely cleared. You get +7 marathon points, +3 clan EXP, and +1 Rob skill point.")
-                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.5), isRO and u8("Sumele de bani pot fi marite suplimentar de maratoane active, bonus de nivel sau skinuri posedate.") or "Money amounts can be further increased by active marathons, level bonuses, or owned skins.")
-                    
-                    imgui.SetWindowFontScale(1.0)
+                                local atmData = {
+                                    {"Skill 1", "intre $12.500 - $17.500", "+1 punct skill"},
+                                    {"Skill 2", "intre $17.500 - $22.500", "+1 punct skill"},
+                                    {"Skill 3", "intre $22.500 - $27.500", "+1 punct skill"},
+                                    {"Skill 4", "intre $27.500 - $32.500", "+1 punct skill"},
+                                    {"Skill 5", "intre $32.500 - $37.500", "Nivel Maxim"}
+                                }
+                                for _, v in ipairs(atmData) do
+                                    imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
+                                    imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
+                                    imgui.Text(u8(v[3])) imgui.NextColumn()
+                                end
+                                imgui.Columns(1)
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("1. CERINTE PENTRU INITIERE"))
+                                imgui.BulletText(u8("Nivel minim 7 | Sa nu fii membru PD."))
+                                imgui.BulletText(u8("Minim 10 puncte de jaf (se consuma la initiere, reduse de bonusuri de skin)."))
+                                imgui.BulletText(u8("Sa NU ai Wanted in acel moment | Licenta de zbor valabila."))
+                                imgui.BulletText(u8("Trebuie sa detii cel putin o bomba creata in inventar."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("2. DECLANSAREA JAFULUI SI CODUL"))
+                                imgui.TextWrapped(u8("Te apropie de un ATM si foloseste comanda /robatm. Vei primi un SMS de la Comerciantul de Explozibil cu un cod de 10 cifre pe care trebuie sa il introduci in interfata grafica (textdraw)."))
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("Mecanica de anulare / esec:"))
+                                imgui.BulletText(u8("Cod gresit / incomplet: Explozie locala cu daune + Wanted pt detonare esuata."))
+                                imgui.BulletText(u8("Parasirea zonei / inchiderea UI-ului: Jaful esueaza + cooldown scurt."))
+                                imgui.BulletText(u8("Crash sau Morte cu UI activ: Jaful esueaza + primesti Wanted pt tentativa."))
+                                imgui.BulletText(u8("Crash sau Moarte fara UI activ: Jaful esueaza silentios (fara Wanted)."))
+
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("3. COLECTAREA BANILOR SI COOLDOWN"))
+                                imgui.TextWrapped(u8("Dupa detonare, langa ATM apare un sac personal cu bani. Ai la dispozitie 90 de secunde sa il ridici, altfel prada expira si jaful esueaza."))
+                                imgui.BulletText(u8("La ridicarea sacului primesti Wanted 4 (fara drept de predare) si incepe evadarea."))
+                                imgui.BulletText(u8("ATM-ul intra in cooldown 180s (dezactivat pt tranzactii si jafuri)."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("4. ETAPA DE EVADARE SI ALTITUDINE"))
+                                imgui.TextWrapped(u8("Se va seta un checkpoint de extractie in alt oras. Zboara pana acolo cu un avion sau elicopter. La atingerea punctului, esti aruncat in aer si primesti o parasuta."))
+                                imgui.Spacing()
+                                imgui.TextWrapped(u8("Urmareste cu atentie indicatorul de altitudine pentru deschiderea parasutei:"))
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("   [X] Mai mare de 500 m -> Prea sus (NU deschide parasuta!)"))
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8("   [V] Intre 350 si 500 m -> PERFECT! (Deschide aici pt finalizare cu succes)"))
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("   [X] Mai mic de 350 m -> Prea jos (Prabusire si esec)"))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("5. RECOMPENSE LA SUCCES"))
+                                imgui.BulletText(u8("Wanted-ul este eliminat complet."))
+                                imgui.BulletText(u8("+7 puncte de maraton | +3 EXP de clan | +1 punct skill Rob."))
+                                imgui.BulletText(u8("Recompensa financiara poate fi marita de maratoane, nivel si skinuri."))
+
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("COMERCIANT EXPLOZIBIL (NPC SAN FIERRO)"))
+                                imgui.TextWrapped(u8("NPC situat in SF (/gps -> Locatii Importante -> Comerciant Explozibil) folosit pentru fabricarea bombelor. Poti detine MAXIM 3 bombe in inventar."))
+                                imgui.Spacing()
+                                
+                                imgui.Columns(2, "armsCraftCols", false)
+                                imgui.SetColumnWidth(0, 150)
+                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Skill Arms Dealer")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8("Cost Materiale / Bomba")) imgui.NextColumn()
+                                imgui.Separator()
+                                
+                                imgui.Text("Skill 1") imgui.NextColumn() imgui.Text("500.000 mat") imgui.NextColumn()
+                                imgui.Text("Skill 2") imgui.NextColumn() imgui.Text("437.500 mat") imgui.NextColumn()
+                                imgui.Text("Skill 3") imgui.NextColumn() imgui.Text("375.000 mat") imgui.NextColumn()
+                                imgui.Text("Skill 4") imgui.NextColumn() imgui.Text("312.500 mat") imgui.NextColumn()
+                                imgui.Text("Skill 5") imgui.NextColumn() imgui.Text("250.000 mat") imgui.NextColumn()
+                                imgui.Columns(1)
+                                
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("Conditii plasare comanda:"))
+                                imgui.BulletText(u8("Fara PD, Fara Wanted, Fara job activ, Fara grup jaf, Unfreeze, Fara vehicul."))
+                                imgui.BulletText(u8("Materialele se scad doar la ridicarea pickup-ului (nu la comanda)."))
+                                imgui.BulletText(u8("Daca primesti Wanted/vehicul inainte de colectare, nu poti ridica bombele."))
+                                
+                            else
+
+                                imgui.SetWindowFontScale(1.2) 
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - A T M")
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("FINANCIAL REWARDS BY SKILL (ON SUCCESS)"))
+                                imgui.SetWindowFontScale(1.0) 
+                                
+                                imgui.Columns(3, "robAtmCols", false)
+                                imgui.SetColumnWidth(0, 110)  
+                                imgui.SetColumnWidth(1, 200)
+                                imgui.SetColumnWidth(2, 160) 
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Rob Skill")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Base Reward")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill Points")) imgui.NextColumn()
+                                imgui.Separator()
+
+                                local atmData = {
+                                    {"Skill 1", "between $12.500 - $17.500", "+1 skill point"},
+                                    {"Skill 2", "between $17.500 - $22.500", "+1 skill point"},
+                                    {"Skill 3", "between $22.500 - $27.500", "+1 skill point"},
+                                    {"Skill 4", "between $27.500 - $32.500", "+1 skill point"},
+                                    {"Skill 5", "between $32.500 - $37.500", "Max Level"}
+                                }
+                                for _, v in ipairs(atmData) do
+                                    imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
+                                    imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
+                                    imgui.Text(u8(v[3])) imgui.NextColumn()
+                                end
+                                imgui.Columns(1)
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("1. INITIATION REQUIREMENTS"))
+                                imgui.BulletText(u8("Minimum level 7 | Must not be a PD member."))
+                                imgui.BulletText(u8("Minimum 10 rob points (consumed at initiation, reduced by skin bonuses)."))
+                                imgui.BulletText(u8("Must NOT have Wanted at that moment | Valid flying license."))
+                                imgui.BulletText(u8("You must own at least one crafted bomb in your inventory."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("2. ROBBERY TRIGGER & CODE"))
+                                imgui.TextWrapped(u8("Approach an ATM and use /robatm. You will receive an SMS from the Explosive Dealer with a 10-digit code. Enter it into the graphical interface (textdraw) to arm the bomb."))
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("Cancellation / Failure Rules:"))
+                                imgui.BulletText(u8("Wrong / incomplete code: Local explosion + damage + Wanted for failed detonation."))
+                                imgui.BulletText(u8("Leaving area / closing UI: Rob fails + short cooldown applied."))
+                                imgui.BulletText(u8("Crash or Death with active UI: Rob fails + Wanted for attempt."))
+                                imgui.BulletText(u8("Crash or Death without active UI: Rob fails silently (no Wanted)."))
+
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("3. MONEY COLLECTION & COOLDOWN"))
+                                imgui.TextWrapped(u8("After the explosion, a personal money bag appears near the ATM. You have 90 seconds to pick it up, otherwise the loot expires and the rob fails."))
+                                imgui.BulletText(u8("Upon picking up the bag, you get Wanted 4 (no surrender) and escape begins."))
+                                imgui.BulletText(u8("The ATM enters a 180s cooldown (disabled for transactions and robs)."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("4. ESCAPE STAGE & ALTITUDE"))
+                                imgui.TextWrapped(u8("An extraction checkpoint is set in another city. Fly there with a plane or helicopter. Reaching the checkpoint ejects you into the air with a parachute."))
+                                imgui.Spacing()
+                                imgui.TextWrapped(u8("Pay close attention to the altitude indicator for deployment:"))
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("   [X] Higher than 500 m -> Too high (DO NOT open parachute!)"))
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8("   [V] Between 350 and 500 m -> PERFECT! (Open here for success)"))
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("   [X] Lower than 350 m -> Too low (Crash and failure)"))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("5. SUCCESS REWARDS"))
+                                imgui.BulletText(u8("Wanted level is completely cleared."))
+                                imgui.BulletText(u8("+7 marathon points | +3 clan EXP | +1 Rob skill point."))
+                                imgui.BulletText(u8("Cash rewards can be boosted by active marathons, level, and skins."))
+
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("EXPLOSIVE DEALER (SAN FIERRO NPC)"))
+                                imgui.TextWrapped(u8("NPC located in SF (/gps -> Important Locations -> Explosive Dealer) used to craft ATM bombs. You can hold a MAXIMUM of 3 bombs in inventory."))
+                                imgui.Spacing()
+                                
+                                imgui.Columns(2, "armsCraftCols", false)
+                                imgui.SetColumnWidth(0, 150)
+                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Arms Dealer Skill")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8("Materials Cost / Bomb")) imgui.NextColumn()
+                                imgui.Separator()
+                                
+                                imgui.Text("Skill 1") imgui.NextColumn() imgui.Text("500,000 mats") imgui.NextColumn()
+                                imgui.Text("Skill 2") imgui.NextColumn() imgui.Text("437,500 mats") imgui.NextColumn()
+                                imgui.Text("Skill 3") imgui.NextColumn() imgui.Text("375,000 mats") imgui.NextColumn()
+                                imgui.Text("Skill 4") imgui.NextColumn() imgui.Text("312,500 mats") imgui.NextColumn()
+                                imgui.Text("Skill 5") imgui.NextColumn() imgui.Text("250,000 mats") imgui.NextColumn()
+                                imgui.Columns(1)
+                                
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), u8("Order conditions:"))
+                                imgui.BulletText(u8("No PD, No Wanted, No active job, No rob group, Unfrozen, No vehicle."))
+                                imgui.BulletText(u8("Materials are deducted upon pickup collection (not order placement)."))
+                                imgui.BulletText(u8("Gaining Wanted or entering a vehicle before pickup blocks collection."))
+                            end
 
                     elseif selected_system == 8 then -- ROB SOLO
-                    local isRO = (iniData.settings.lang == 0)
-                    
-                    imgui.SetWindowFontScale(1.2)  
-                    imgui.Spacing()
-                    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - S O L O")
-                    imgui.Separator()
-                    imgui.Spacing()
-                    
-                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRO and u8("CASTIGURI SI TIMP DISPONIBIL PE SKILL") or "EARNINGS AND AVAILABLE TIME BY SKILL")
-                    imgui.SetWindowFontScale(1.0)  
-                    imgui.BeginChild("RobSoloEarnings", imgui.ImVec2(0, 165), true)
-                        imgui.Columns(3, "robSoloCols", false)
-                        imgui.SetColumnWidth(0, 100)  
-                        imgui.SetColumnWidth(1, 180)
-                        imgui.SetColumnWidth(2, 160) 
-                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), isRO and u8("Skill") or "Skill") imgui.NextColumn()
-                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), isRO and u8("Castig Estimativ") or "Estimated Gain") imgui.NextColumn()
-                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), isRO and u8("Timp Circuit") or "Circuit Time") imgui.NextColumn()
-                        imgui.Separator()
+                    imgui.BeginChild("RobSoloDetails", imgui.ImVec2(0, 0), true)              
+                            if iniData.settings.lang == 0 then
+                                imgui.SetWindowFontScale(1.2) 
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - S O L O")
+                                imgui.Separator()
+                                imgui.Spacing()
 
-                        local robData = {
-                            {"Skill 1", isRO and u8("intre $25.000 - $35.000") or "between $25,000 - $35,000", isRO and u8("300 secunde") or "300 seconds"},
-                            {"Skill 2", isRO and u8("intre $35.000 - $45.000") or "between $35,000 - $45,000", isRO and u8("310 secunde") or "310 seconds"},
-                            {"Skill 3", isRO and u8("intre $45.000 - $55.000") or "between $45,000 - $55,000", isRO and u8("320 secunde") or "320 seconds"},
-                            {"Skill 4", isRO and u8("intre $55.000 - $65.000") or "between $55,000 - $65,000", isRO and u8("330 secunde") or "330 seconds"},
-                            {"Skill 5", isRO and u8("intre $65.000 - $70.000") or "between $65,000 - $70,000", isRO and u8("340 secunde") or "340 seconds"}
-                        }
-                        for _, v in ipairs(robData) do
-                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), v[1]) imgui.NextColumn()
-                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), v[2]) imgui.NextColumn()
-                            imgui.Text(v[3]) imgui.NextColumn()
-                        end
-                        imgui.Columns(1)
-                    imgui.EndChild()
-                    
-                    imgui.Spacing()
-                    imgui.Columns(2, "robInfo", false)    
-                    
-                    -- [ COLOANA 1: CERINTE ]
-                    imgui.SetWindowFontScale(1.2)  
-                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRO and u8("RESURSE & PROCEDURI") or "RESOURCES & PROCEDURES")
-                    imgui.BeginChild("RobRequirements", imgui.ImVec2(0, 400), true)  
-                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), isRO and u8("Cerinte Jaf (Casa/Biz):") or "Robbery Requirements (House/Biz):")
-                        imgui.BulletText(isRO and u8("Cel putin nivel 7.") or "At least level 7.")
-                        imgui.BulletText(isRO and u8("Cel putin 15 puncte de jaf (/robpoints).") or "At least 15 robbery points (/robpoints).")
-                        imgui.BulletText(isRO and u8("Cazier curat (fara wanted).") or "Clean criminal record (no wanted).")
-                        imgui.BulletText(isRO and u8("Ora serverului: intre 08:00 - 04:00.") or "Server time: between 08:00 - 04:00.")
-                        imgui.Spacing(); imgui.Separator(); imgui.Spacing()
-                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), isRO and u8("Spargerea Seifului:") or "Safe Cracking:")
-                        imgui.TextWrapped(isRO and u8("Se foloseste tasta SPACE pentru burghiu. Mentineti burghiul cat mai rece urmarind indicele de temperatura; daca se supraincalzeste, devine ineficient si spargerea dureaza mult mai mult.") or "Use the SPACE key for the drill. Keep the drill cool by monitoring the temperature gauge; if it overheats, it becomes inefficient and the cracking takes much longer.")
-                    imgui.EndChild()
-                    
-                    imgui.NextColumn()
-                    
-                    -- [ COLOANA 2: MINIGAMES ]
-                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRO and u8("MINIJOCURI (IN FUNCTIE DE SKILL)") or "MINIGAMES (BY SKILL)")
-                    imgui.BeginChild("RobMinigames", imgui.ImVec2(0, 400), true) 
-                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("Skill 1 - 5: Scurtcircuit (Implicit)") or "Skill 1 - 5: Short Circuit (Default)")
-                        imgui.TextWrapped(isRO and u8("Directionati sarma cu sagetile dintr-o parte in alta fara a atinge peretii. Atingerea lor reseteaza traseul.") or "Guide the wire with the arrow keys side to side without touching the walls. Touching them resets the path.")
-                        imgui.Spacing()
-                        
-                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("Skill 6 - 7: Taiere SAU Conectare Fire") or "Skill 6 - 7: Wire Cutting OR Connection")
-                        imgui.TextWrapped(isRO and u8("- Taiere: Ghiciti si taiati firul corect (rosu/verde/albastru) de 3 ori.\n- Conectare: Uniti culoarea din stanga cu cea corespondenta din dreapta de 3 ori.") or "- Cutting: Guess and cut the correct wire (red/green/blue) 3 times.\n- Connection: Connect the left color to the corresponding right one 3 times.")
-                        imgui.Spacing()
-                        
-                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("Skill 8 - 10: Taiere / Conectare / Voltaj") or "Skill 8 - 10: Cutting / Connection / Voltage")
-                        imgui.TextWrapped(isRO and u8("- Reglare Voltaj: Cresteti/scadeti voltajul curent pana devine identic cu cel optim (de 3 ori pentru a trece).") or "- Voltage Regulation: Increase/decrease current voltage until it matches the optimal one (3 times to pass).")
-                    imgui.EndChild()
-                    
-                    imgui.Columns(1)   
-                    imgui.Separator()
-                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.7), isRO and u8("Nota: In incaperea speciala aveti un timp limita sa terminati minijocurile si seiful, altfel jaful va esua.") or "Note: In the special room you have a time limit to finish the minigames and the safe, otherwise the robbery will fail.")
-                    imgui.SetWindowFontScale(1.0)
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("CASTIGURI SI TIMP DISPONIBIL PE SKILL"))
+                                imgui.SetWindowFontScale(1.0) 
+                                
+                                imgui.Columns(3, "robSoloCols", false)
+                                imgui.SetColumnWidth(0, 110)  
+                                imgui.SetColumnWidth(1, 200)
+                                imgui.SetColumnWidth(2, 160) 
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill Rob")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Castig de Baza")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Timp Limita Circuit")) imgui.NextColumn()
+                                imgui.Separator()
+
+                                local robSoloData = {
+                                    {"Skill 1", "intre $25.000 - $35.000", "300 secunde"},
+                                    {"Skill 2", "intre $35.000 - $45.000", "310 secunde"},
+                                    {"Skill 3", "intre $45.000 - $55.000", "320 secunde"},
+                                    {"Skill 4", "intre $55.000 - $65.000", "330 secunde"},
+                                    {"Skill 5", "intre $65.000 - $70.000", "340 secunde"}
+                                }
+                                for _, v in ipairs(robSoloData) do
+                                    imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
+                                    imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
+                                    imgui.Text(u8(v[3])) imgui.NextColumn()
+                                end
+                                imgui.Columns(1)
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("1. CERINTE SI INITIERE JAF"))
+                                imgui.BulletText(u8("Nivel minim 7 | Ora serverului intre 08:00 - 04:00."))
+                                imgui.BulletText(u8("Minim 15 puncte de jaf (se scad 10 pct la intrare + 5 pct la finalizare)."))
+                                imgui.BulletText(u8("Cazier curat (fara Wanted) | Sa nu fii membru PD."))
+                                imgui.BulletText(u8("Initiere: Foloseste /rob in fata oricarei case sau biz si alege 'Solo Rob'."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("2. INCAPERILE SPECIALE SI MINIJOCURILE"))
+                                imgui.TextWrapped(u8("Intri automat intr-un interior special avand un timp limita (conform tabelului) pentru a trece de usa si seif:"))
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("A. Deblocarea Ușii (in functie de Skill):"))
+                                imgui.BulletText(u8("Skill 1 - 5 (Scurtcircuit): Ghideaza sarma cu sagetile dintr-o parte in alta fara a atinge peretii (atingerea lor reseteaza traseul)."))
+                                imgui.BulletText(u8("Skill 6 - 7 (Taiere / Conectare Fire): Taiati firul corect de 3 ori SAU conectati cele 3 puncte colorate din stanga cu cele din dreapta."))
+                                imgui.BulletText(u8("Skill 8 - 10 (Taiere / Conectare / Voltaj): Reglati voltajul curent (crescut/scazut) pana devine identic cu cel optim de 3 ori."))
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("B. Spargerea Seifului:"))
+                                imgui.TextWrapped(u8("Mentineti tasta SPACE apasata pentru burghiu. Urmariti indicele de temperatura — mentineti burghiul cat mai rece; daca se supraincalzeste, devine ineficient si spargerea dureaza mult mai mult."))
+
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("3. PLASAREA BANILOR FURATI"))
+                                imgui.TextWrapped(u8("Dupa finalizarea interiorului, iesi afara cu sacul de bani si primesti Wanted 6 (fara drept de predare)."))
+                                imgui.BulletText(u8("Vei primi 2 checkpoint-uri consecutive la case diferite unde trebuie sa ascunzi banii."))
+                                imgui.BulletText(u8("Este recomandat sa ai un vehicul rapid pregatit la usa inainte de a da /rob."))
+                                imgui.BulletText(u8("Daca esti omorat de PD pe parcurs, jaful esueaza si ajungi la inchisoare."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("4. PROCESUL DE EVADARE (BARCA & VEHICUL)"))
+                                imgui.TextWrapped(u8("Dupa ce ai ascuns banii la cele 2 locatii, intri in etapa de evadare (necesita minim 4 evadari din inchisoare reusite):"))
+                                imgui.BulletText(u8("Mergi la checkpoint-ul primit pe harta unde te asteapta o barca oferita de server."))
+                                imgui.BulletText(u8("Mergi cu barca spre urmatorul checkpoint. La sosire, Wanted-ul scade la jumatate si esti urcat automat intr-un vehicul."))
+                                imgui.BulletText(u8("Condu vehiculul pana la cel mai apropiat Pay'n Spray."))
+                                imgui.BulletText(u8("La intrarea in Pay'n Spray, jaful este FINALIZAT CU SUCCES: scapi complet de Wanted, primesti plata de baza + 1 Skill Rob."))
+                                
+                            else
+                                imgui.SetWindowFontScale(1.2) 
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - S O L O")
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("EARNINGS AND TIME LIMIT PER SKILL"))
+                                imgui.SetWindowFontScale(1.0) 
+                                
+                                imgui.Columns(3, "robSoloCols", false)
+                                imgui.SetColumnWidth(0, 110)  
+                                imgui.SetColumnWidth(1, 200)
+                                imgui.SetColumnWidth(2, 160) 
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Rob Skill")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Base Reward")) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Circuit Time Limit")) imgui.NextColumn()
+                                imgui.Separator()
+
+                                local robSoloData = {
+                                    {"Skill 1", "between $25.000 - $35.000", "300 seconds"},
+                                    {"Skill 2", "between $35.000 - $45.000", "310 seconds"},
+                                    {"Skill 3", "between $45.000 - $55.000", "320 seconds"},
+                                    {"Skill 4", "between $55.000 - $65.000", "330 seconds"},
+                                    {"Skill 5", "between $65.000 - $70.000", "340 seconds"}
+                                }
+                                for _, v in ipairs(robSoloData) do
+                                    imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
+                                    imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
+                                    imgui.Text(u8(v[3])) imgui.NextColumn()
+                                end
+                                imgui.Columns(1)
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("1. REQUIREMENTS & INITIATION"))
+                                imgui.BulletText(u8("Minimum level 7 | Server time between 08:00 - 04:00."))
+                                imgui.BulletText(u8("Minimum 15 rob points (10 pts deducted at entry + 5 pts at completion)."))
+                                imgui.BulletText(u8("Clean record (no Wanted) | Must not be a PD member."))
+                                imgui.BulletText(u8("Initiation: Use /rob outside any house or biz and select 'Solo Rob'."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("2. SPECIAL INTERIOR & MINIGAMES"))
+                                imgui.TextWrapped(u8("You enter a special interior with a time limit (see table above) to breach the door and crack the safe:"))
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("A. Unlocking the Door (by Skill level):"))
+                                imgui.BulletText(u8("Skill 1 - 5 (Short Circuit): Guide the wire using arrow keys without touching the walls (touching resets path)."))
+                                imgui.BulletText(u8("Skill 6 - 7 (Cut / Connect Wires): Cut the correct wire 3 times OR connect matching colored dots from left to right."))
+                                imgui.BulletText(u8("Skill 8 - 10 (Cut / Connect / Voltage): Match current voltage to optimal voltage 3 times."))
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("B. Safe Cracking:"))
+                                imgui.TextWrapped(u8("Hold SPACE key to drill. Watch the temperature gauge — keep the drill cool; overheating makes it inefficient and cracking takes much longer."))
+
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("3. STASHING THE MONEY"))
+                                imgui.TextWrapped(u8("After leaving the interior with the money bag, you receive Wanted 6 (no surrender)."))
+                                imgui.BulletText(u8("You will get 2 consecutive checkpoints at different houses to hide the money."))
+                                imgui.BulletText(u8("It is strongly recommended to have a fast vehicle parked outside before starting."))
+                                imgui.BulletText(u8("If killed by PD during this phase, the rob fails and you go to prison."))
+                                
+                                imgui.Spacing()
+                                imgui.Separator()
+                                imgui.Spacing()
+
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("4. ESCAPE PROCESS (BOAT & VEHICLE)"))
+                                imgui.TextWrapped(u8("After hiding the loot, you enter the escape phase (requires at least 4 successful prison escapes):"))
+                                imgui.BulletText(u8("Head to the red map checkpoint where a server-provided boat awaits."))
+                                imgui.BulletText(u8("Drive the boat to the next checkpoint. Upon arrival, Wanted is halved and you get warped into a getaway vehicle."))
+                                imgui.BulletText(u8("Drive the vehicle to the nearest Pay'n Spray."))
+                                imgui.BulletText(u8("Entering the Pay'n Spray COMPLETES THE ROB: Wanted is fully cleared, and you receive base cash + 1 Rob Skill point."))
+                            end
 
                    elseif selected_system == 9 then -- Rob Team  
-                    local isRO = (iniData.settings.lang == 0)
+                                         if iniData.settings.lang == 0 then
+                            imgui.SetWindowFontScale(1.2)  
+                            imgui.Spacing()
+                            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - T E A M  ( GHID COMPLET )")
+                            imgui.Separator()
+                            imgui.SetWindowFontScale(1.0)
+                            imgui.Spacing()
 
-                    imgui.SetWindowFontScale(1.2)  
-                    imgui.Spacing()
-                    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - T E A M")
-                    imgui.Separator()
-                    imgui.Spacing()
-                    
-                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRO and u8("CAPACITATE GRAB SI AVANSARE PE SKILL") or "GRAB CAPACITY AND SKILL PROGRESSION")
-                    imgui.SetWindowFontScale(1.0)  
-                    imgui.BeginChild("RobGroupEarnings", imgui.ImVec2(0, 145), true)
-                        imgui.Columns(3, "robGroupCols", false)
-                        imgui.SetColumnWidth(0, 110)  
-                        imgui.SetColumnWidth(1, 160)
-                        imgui.SetColumnWidth(2, 200) 
-                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), isRO and u8("Skill") or "Skill") imgui.NextColumn()
-                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), isRO and u8("Bijuterii / Grab") or "Jewelry / Grab") imgui.NextColumn()
-                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), isRO and u8("Avansare (Jafuri Necesare)") or "Progression (Robberies Needed)") imgui.NextColumn()
-                        imgui.Separator()
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("1. CAPACITATE GRAB SI AVANSARE SKILL"))
+                            imgui.Separator()
+                            imgui.Spacing()
+                            
+                            imgui.Columns(3, "robGroupColsSingle", false)
+                            imgui.SetColumnWidth(0, 100); imgui.SetColumnWidth(1, 150); imgui.SetColumnWidth(2, 220) 
+                            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill")) imgui.NextColumn()
+                            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Bijuterii / Grab")) imgui.NextColumn()
+                            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Avansare (Jafuri Necesare)")) imgui.NextColumn()
+                            imgui.Separator()
 
-                        local robGroupData = {
-                            {"Skill 1", "25 "..(isRO and u8("bijuterii") or "jewelry"), isRO and u8("25 jafuri -> Skill 2") or "25 robberies -> Skill 2"},
-                            {"Skill 2", "30 "..(isRO and u8("bijuterii") or "jewelry"), isRO and u8("50 jafuri -> Skill 3") or "50 robberies -> Skill 3"},
-                            {"Skill 3", "35 "..(isRO and u8("bijuterii") or "jewelry"), isRO and u8("100 jafuri -> Skill 4") or "100 robberies -> Skill 4"},
-                            {"Skill 4", "40 "..(isRO and u8("bijuterii") or "jewelry"), isRO and u8("200 jafuri -> Skill 5") or "200 robberies -> Skill 5"},
-                            {"Skill 5", "45 "..(isRO and u8("bijuterii") or "jewelry"), isRO and u8("Maxim") or "Max"}
-                        }
-                        for _, v in ipairs(robGroupData) do
-                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), v[1]) imgui.NextColumn()
-                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), v[2]) imgui.NextColumn()
-                            imgui.Text(v[3]) imgui.NextColumn()
+                            local robGroupData = {
+                                {"Skill 1", "25 bijuterii", "25 jafuri -> Skill 2"},
+                                {"Skill 2", "30 bijuterii", "50 jafuri -> Skill 3"},
+                                {"Skill 3", "35 bijuterii", "100 jafuri -> Skill 4"},
+                                {"Skill 4", "40 bijuterii", "200 jafuri -> Skill 5"},
+                                {"Skill 5", "45 bijuterii", "Skill Maxim"}
+                            }
+                            for _, v in ipairs(robGroupData) do
+                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
+                                imgui.Text(u8(v[3])) imgui.NextColumn()
+                            end
+                            imgui.Columns(1)
+                            
+                            imgui.Spacing(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("2. CERINTE SI ROLURI OBLIGATORII"))
+                            imgui.Separator()
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Cerinte de participare:"))
+                            imgui.BulletText(u8("Echipa formata din minim 4 si maxim 8 membri."))
+                            imgui.BulletText(u8("Fiecare membru: minim nivel 7 si cel putin 10 Rob Points."))
+                            imgui.BulletText(u8("Cel putin un membru trebuie sa detina licenta de pilot valabila."))
+                            imgui.BulletText(u8("Cazier curat (fara wanted) pentru toti membrii la initiere."))
+                            
+                            imgui.Spacing()
+                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Cele 4 Roluri Specifice (atribuite din /rob):"))
+                            imgui.BulletText(u8("Airplane Loaner: Inchiriaza avionul de evadare la momentul oportun."))
+                            imgui.BulletText(u8("Gold Melter: Stabileste locatia de topire/vanzare a bijuteriilor."))
+                            imgui.BulletText(u8("Scout: Inchiriaza pachetul de arme si distruge cele 4 camere de supraveghere."))
+                            imgui.BulletText(u8("Gas Man: Inchiriaza si arunca 10 fumigene in fata magazinului."))
+
+                            imgui.Spacing(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("3. DESFASURAREA JAFULUI & EVADAREA"))
+                            imgui.Separator()
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Cost Rob Points:"))
+                            imgui.TextWrapped(u8("Trecerea la faza misiunilor consuma 3 RP per membru. Payout-ul final consuma inca 7 RP (total 10 RP) si ofera +1 Skill Point."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Interior Magazin:"))
+                            imgui.TextWrapped(u8("Contine 15 mese cu bijuterii (total 600 bijuterii disponibile)."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Alarma & Wanted:"))
+                            imgui.TextWrapped(u8("Furtul primei bijuterii declanseaza alarma (3 minute) si acorda Wanted 6 tuturor membrilor. Dupa 30 secunde primiti armura automat."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Vehicule Permise:"))
+                            imgui.TextWrapped(u8("Doar vehicule personale, inchiriate (Rent) sau civile. SUNT INTERZISE avioanele, motocicletele si vehiculele de factiune."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Timer Topire:"))
+                            imgui.TextWrapped(u8("Gold Melter activeaza un timer de 5 minute la sosirea primului vehicul cu bijuterii la punctul de topire."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Mecanica de Evadare:"))
+                            imgui.TextWrapped(u8("Toti membrii urca in avionul pregatit pe aeroport. Cand pilotul atinge checkpoint-ul aerian marcat, toti membrii scapa de Wanted!"))
+
+                            imgui.Spacing(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("4. COMENZI SPECIFICE"))
+                            imgui.Separator()
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/rob")
+                            imgui.TextWrapped(u8("Deschide meniul principal: invitare membri (max 8), kick (lider in faza 1), selectare din cele 21 locatii (Next Step), atribuire roluri."))
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/robbers")
+                            imgui.TextWrapped(u8("Lista publica pentru cautare echipa (max 60 playeri, expira in 10 min). Interzis pt: PD, sub Lvl 7, jucatori cu wanted sau sub 10 RP. Click pe un nume face apel direct."))
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/accept rob [id/nume] | /cancel rob")
+                            imgui.TextWrapped(u8("Accepta invitatia in echipa. /cancel rob anuleaza jaful (lider) sau paraseste echipa (membru)."))
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/grab | /drop | /rc")
+                            imgui.TextWrapped(u8("/grab: Fura bijuterii cand esti langa masa.\n/drop: Depoziteaza bijuteriile in vehiculul din apropiere.\n/rc: Chat privat al echipei (se deblocheaza dupa alegerea locatiei)."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/enter | /goup | /godown")
+                            imgui.TextWrapped(u8("Comenzi folosite pentru accesul in interiorul magazinului sau pe acoperisurile marcate ale cladirii."))
+
+                            imgui.Spacing(); imgui.Separator(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("FORMULA CALCUL PROFIT:"))
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8("[ (Bijuterii Furate * 626$) - 20.000$ (Echipamente) ] / Numar Membri"))
+
+                        else
+                            imgui.SetWindowFontScale(1.2)  
+                            imgui.Spacing()
+                            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), " R O B - T E A M  ( FULL GUIDE )")
+                            imgui.Separator()
+                            imgui.SetWindowFontScale(1.0)
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("1. GRAB CAPACITY AND SKILL PROGRESS"))
+                            imgui.Separator()
+                            imgui.Spacing()
+                            
+                            imgui.Columns(3, "robGroupColsSingleEn", false)
+                            imgui.SetColumnWidth(0, 100); imgui.SetColumnWidth(1, 150); imgui.SetColumnWidth(2, 220) 
+                            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Skill")) imgui.NextColumn()
+                            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Jewels / Grab")) imgui.NextColumn()
+                            imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Progression (Required Robs)")) imgui.NextColumn()
+                            imgui.Separator()
+
+                            local robGroupData = {
+                                {"Skill 1", "25 jewels", "25 robs -> Skill 2"},
+                                {"Skill 2", "30 jewels", "50 robs -> Skill 3"},
+                                {"Skill 3", "35 jewels", "100 robs -> Skill 4"},
+                                {"Skill 4", "40 jewels", "200 robs -> Skill 5"},
+                                {"Skill 5", "45 jewels", "Maximum Skill"}
+                            }
+                            for _, v in ipairs(robGroupData) do
+                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8(v[1])) imgui.NextColumn()
+                                imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8(v[2])) imgui.NextColumn()
+                                imgui.Text(u8(v[3])) imgui.NextColumn()
+                            end
+                            imgui.Columns(1)
+                            
+                            imgui.Spacing(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("2. REQUIREMENTS & MANDATORY ROLES"))
+                            imgui.Separator()
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("Participation Requirements:"))
+                            imgui.BulletText(u8("Team of minimum 4 and maximum 8 members."))
+                            imgui.BulletText(u8("Each member: min level 7 and at least 10 Rob Points."))
+                            imgui.BulletText(u8("At least one member must possess a valid pilot license."))
+                            imgui.BulletText(u8("Clean criminal record (no wanted) for all members at start."))
+                            
+                            imgui.Spacing()
+                            imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), u8("The 4 Specific Roles (assigned via /rob):"))
+                            imgui.BulletText(u8("Airplane Loaner: Rents the getaway plane at the right time."))
+                            imgui.BulletText(u8("Gold Melter: Selects the melting/drop-off location for jewels."))
+                            imgui.BulletText(u8("Scout: Rents weapon package and destroys 4 security cameras."))
+                            imgui.BulletText(u8("Gas Man: Rents and throws 10 tear gas canisters in front of store."))
+
+                            imgui.Spacing(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("3. EXECUTION & ESCAPE MECHANICS"))
+                            imgui.Separator()
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Rob Points Cost:"))
+                            imgui.TextWrapped(u8("Moving to mission phase costs 3 RP per member. Final payout costs 7 RP (total 10 RP) and awards +1 Skill Point."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Store Interior:"))
+                            imgui.TextWrapped(u8("Contains 15 tables with jewels (600 total jewels available)."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Alarm & Wanted:"))
+                            imgui.TextWrapped(u8("Stealing first jewel triggers 3-min alarm and grants Wanted 6 to all members. Armor granted after 30 seconds."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Allowed Vehicles:"))
+                            imgui.TextWrapped(u8("Personal, Rent, or Civilian vehicles only. Planes, motorcycles, and faction cars are FORBIDDEN."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Melting Timer:"))
+                            imgui.TextWrapped(u8("Gold Melter triggers a 5-minute payout timer upon first vehicle arrival at drop location."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("Getaway Mechanics:"))
+                            imgui.TextWrapped(u8("All members board the plane at airport. When pilot hits aerial checkpoint, all members clear Wanted!"))
+
+                            imgui.Spacing(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), u8("4. SPECIFIC COMMANDS"))
+                            imgui.Separator()
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/rob")
+                            imgui.TextWrapped(u8("Main menu: invite members (max 8), kick (leader phase 1), pick 1 of 21 locations (Next Step), assign roles."))
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/robbers")
+                            imgui.TextWrapped(u8("Public team search list (max 60 players, 10 min expiry). Restricted for: PD, <Lvl 7, wanted, <10 RP. Clicking player calls directly."))
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/accept rob [id/name] | /cancel rob")
+                            imgui.TextWrapped(u8("Accept team invite. /cancel rob cancels robbery (leader) or leaves team (member)."))
+                            imgui.Spacing()
+                            
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/grab | /drop | /rc")
+                            imgui.TextWrapped(u8("/grab: Steal jewels near tables.\n/drop: Store jewels in nearby vehicle.\n/rc: Private team chat (unlocked after location selection)."))
+                            imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/enter | /goup | /godown")
+                            imgui.TextWrapped(u8("Commands used to enter store interior or access marked rooftops."))
+
+                            imgui.Spacing(); imgui.Separator(); imgui.Spacing()
+
+                            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), u8("PROFIT CALCULATOR FORMULA:"))
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), u8("[ (Stolen Jewels * 626$) - 20,000$ (Equipment) ] / Team Members"))
                         end
-                        imgui.Columns(1)
-                    imgui.EndChild()
-                    imgui.Spacing()
-                    
-                    imgui.Columns(2, "robGroupInfo", false)    
-                    imgui.SetWindowFontScale(1.2)  
-                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRO and u8("RESURSE & PROCES") or "RESOURCES & PROCESS")
-                    imgui.BeginChild("RobGroupReqs", imgui.ImVec2(0, 400), true) 
-                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), isRO and u8("Resurse Necesare:") or "Required Resources:")
-                        imgui.BulletText(isRO and u8("Echipa de minim 4 si maxim 8 membri.") or "Team of min 4 and max 8 members.")
-                        imgui.BulletText(isRO and u8("Fiecare membru: minim nivel 7 & 10 robpoints.") or "Each member: min level 7 & 10 robpoints.")
-                        imgui.BulletText(isRO and u8("Cel putin un membru trebuie sa aiba licenta de pilot.") or "At least one member must have a pilot license.")
-                        imgui.BulletText(isRO and u8("Cazier curat (fara wanted) pentru toti membrii.") or "Clean criminal record (no wanted) for all members.")
-                        imgui.Spacing(); imgui.Separator(); imgui.Spacing()
-                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), isRO and u8("Procesul de Jaf:") or "Robbery Process:")
-                        imgui.TextWrapped(isRO and u8("Liderul alege 1 din 21 locatii prin /rob (Next Step). Se deblocheaza chat-ul /rc. Liderul atribuie cele 4 roluri. Dupa indeplinirea misiunilor rolurilor, se intra in magazin.") or "The leader chooses 1 of 21 locations via /rob (Next Step). /rc chat unlocks. The leader assigns 4 roles. After completing role missions, you enter the shop.")
-                        imgui.Spacing()
-                        imgui.TextWrapped(isRO and u8("In magazin sunt 15 mese a cate 40 bijuterii (Total: 600 bijuterii).") or "In the shop there are 15 tables with 40 jewelry each (Total: 600 jewelry).")
-                    imgui.EndChild()
-                    imgui.NextColumn()
-                    
-                    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRO and u8("COMENZI SPECIFICE") or "SPECIFIC COMMANDS")
-                    imgui.BeginChild("RobGroupCmds", imgui.ImVec2(0, 400), true) 
-                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/rob")
-                        imgui.TextWrapped(isRO and u8("Meniul principal al jafului, gestionare membri, invitatii (max 8) si pornire.") or "Main robbery menu, member management, invites (max 8) and start.")
-                        imgui.Spacing()
-                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/robbers")
-                        imgui.TextWrapped(isRO and u8("Lista de cautare echipa (max 60 jucatori, stergere dupa 10 min). Interzis pt: PD, < Lvl 7, wanted, < 10 puncte jaf sau deja in echipa.") or "Team search list (max 60 players, clears after 10 min). Forbidden for: PD, < Lvl 7, wanted, < 10 rob points or already in team.")
-                        imgui.Spacing()
-                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("/accept rob [id] | /cancel rob") or "/accept rob [id] | /cancel rob")
-                        imgui.TextWrapped(isRO and u8("Accepta invitatia / Anuleaza jaful (lider) sau paraseste echipa (membru).") or "Accept invite / Cancel robbery (leader) or leave team (member).")
-                        imgui.Spacing()
-                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/grab | /drop | /rc")
-                        imgui.TextWrapped(isRO and u8("/grab: Fura bijuterii de la mese.\n/drop: Depoziteaza bijuteriile in vehicul.\n/rc: Chatul echipei de jaf.") or "/grab: Steal jewelry from tables.\n/drop: Store jewelry in vehicle.\n/rc: Robbery team chat.")
-                        imgui.Spacing()
-                        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "/enter | /goup | /godown")
-                        imgui.TextWrapped(isRO and u8("Accesarea interiorului sau a acoperisurilor marcate.") or "Access the marked interior or rooftops.")
-                    imgui.EndChild()
-                    imgui.Columns(1)   
-                    imgui.Separator()
-                    imgui.SetWindowFontScale(1.2) 
-                    imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.7), isRO and u8("Formula Castig: [ (Bijuterii Furate * 626) - 20000 ] / Numar Membri") or "Gain Formula: [ (Jewelry Stolen * 626) - 20000 ] / Number of Members")
-                    imgui.SetWindowFontScale(1.0)
 
-                    elseif selected_system == 10 then -- ESCAPE
-                    local isRO = (iniData.settings.lang == 0)
-
-                    imgui.TextColored(imgui.ImVec4(1.0, 0.4, 0.0, 1.0), "--- ESCAPE ---")
-                    imgui.Separator()
-                    
-                    imgui.BeginChild("EscapeLocalBox", imgui.ImVec2(0, 220), true)
-                        imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), isRO and u8("CONDITII SI SPARGERE GARD:") or "REQUIREMENTS AND FENCE BREAKING:")
-                        
-                        if isRO then
+                   elseif selected_system == 10 then -- ESCAPE
+                    if iniData.settings.lang == 0 then
+                        imgui.TextColored(imgui.ImVec4(1.0, 0.4, 0.0, 1.0), "--- ESCAPE ---")
+                        imgui.Separator()
+                        imgui.BeginChild("EscapeLocalBox", imgui.ImVec2(0, 220), true)
+                            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), u8("CONDITII SI SPARGERE GARD:"))
                             imgui.BulletText(u8("Minim 20 puncte evadare, grup max 6 oameni, timp jail > 500s."))
                             imgui.BulletText(u8("/escape (formare grup) -> mergi la gard -> /hit pentru a lovi."))
                             imgui.TextWrapped(u8("Fiecare /hit alerteaza politistii pe o raza de 15 metri. Gardul are HP limitat."))
                             imgui.Spacing()
                             imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), u8("CONSECINTE:"))
                             imgui.TextWrapped(u8("Primiti Wanted 6 fara drept, marcat pe harta. Alt jucator poate folosi /snitch pe tine pentru o reducere a pedepsei sale."))
-                        else
-                            imgui.BulletText("Min 20 escape points, max group of 6, jail time > 500s.")
-                            imgui.BulletText("/escape (form group) -> go to the fence -> /hit to strike.")
-                            imgui.TextWrapped("Every /hit alerts police within 15 meters. The fence has limited HP.")
-                            imgui.Spacing()
-                            imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), "CONSEQUENCES:")
-                            imgui.TextWrapped("You receive Wanted 6 non-bailable, marked on the map. Another player can use /snitch on you for a sentence reduction.")
-                        end
-                    imgui.EndChild()
+                            imgui.EndChild()
+                         else
+                            imgui.TextColored(imgui.ImVec4(1.0, 0.4, 0.0, 1.0), "--- ESCAPE ---")
+                            imgui.Separator()
+                            imgui.BeginChild("EscapeLocalBox", imgui.ImVec2(0, 220), true)
+                                imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), u8("CONDITIONS AND FENCE BREACHING:"))
+                                imgui.BulletText(u8("Minimum 20 escape points, max group size 6, jail time > 500s."))
+                                imgui.BulletText(u8("/escape (form group) -> go to the fence -> /hit to strike."))
+                                imgui.TextWrapped(u8("Each /hit alerts cops within a 15-meter radius. The fence has limited HP."))
+                                imgui.Spacing()
+                                imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), u8("CONSEQUENCES:"))
+                                imgui.TextWrapped(u8("You receive Wanted 6 without right, marked on map. Another player can use /snitch on you for a reduction of their sentence."))
+                        imgui.EndChild()
+                    end
 
                 elseif selected_system == 11 then -- JAIL
                     local isRO = (iniData.settings.lang == 0)
@@ -14319,11 +15045,11 @@ end
     local cGray  = "{B4B4B4}"
     sampAddChatMessage(cGray .. "______________________________________________________", -1)    
     if iniData.settings.lang == 0 then
-        sampAddChatMessage(string.format("%s>> %sScriptul %sHelper Help v2.5 %sa fost incarcat cu succes!", cMain, cWhite, cMain, cWhite), -1)
+        sampAddChatMessage(string.format("%s>> %sScriptul %sHelper Help v3.0 %sa fost incarcat cu succes!", cMain, cWhite, cMain, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sFoloseste comanda %s/%s %ssau tasta %s[%s] %spentru meniu.", cMain, cWhite, cMain, iniData.settings.cmd, cWhite, cMain, activeKeysStr, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sDiscord Support: %sallecsei %s| Inspirat de la %sTupi & Madalin", cMain, cWhite, cMain, cWhite, cWhite), -1)        
     else
-        sampAddChatMessage(string.format("%s>> %sScript %sHelper Help v2.5 %shas been successfully loaded!", cMain, cWhite, cMain, cWhite), -1)
+        sampAddChatMessage(string.format("%s>> %sScript %sHelper Help v3.0 %shas been successfully loaded!", cMain, cWhite, cMain, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sUse command %s/%s %sor key %s[%s] %sfor the menu.", cMain, cWhite, cMain, iniData.settings.cmd, cWhite, cMain, activeKeysStr, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sDiscord Support: %sallecsei %s| Inspired by %sTupi & Madalin", cMain, cWhite, cMain, cWhite, cWhite), -1)        
     end
