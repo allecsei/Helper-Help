@@ -14407,7 +14407,9 @@ end, function(player)
                     {"/unfz <id>", isRO and u8("Dezgheata un jucator anume") or "Unfreeze a specific player"},
                     {"/wagon", isRO and u8("Spawneaza un vagon (ID 570)") or "Spawn a wagon (ID 570)"},
                     {"/es", isRO and u8("Te pune /eventsupport automat si da /join") or "Auto-sets /eventsupport and performs /join"},
-                    {"/ae <id>", isRO and u8("Accepta un event (ID x)") or "Accept an event (ID x)"}
+                    {"/ae <id>", isRO and u8("Accepta un event (ID x)") or "Accept an event (ID x)"},
+                    {"/ch <id>", isRO and u8("Verifica un jucator check + /events") or "Check an player + send /events"},
+                    {"/ev <id>", isRO and u8("Verifica lista de evenimente") or "Eveniments detalies."},
                 }
 
                 for _, data in ipairs(helper_cmds) do
@@ -14418,6 +14420,39 @@ end, function(player)
                     imgui.TextWrapped("> " .. data[2])
                     imgui.Separator()
                 end
+
+                imgui.Spacing()
+                imgui.Spacing()
+
+                -- SECTIUNE REGULAMENT
+                local rules_title = isRO and u8(">> REGULAMENT HELPERI <<") or ">> HELPER RULES <<"
+                imgui.TextColored(imgui.ImVec4(1.0, 1.0, 0.0, 1.0), rules_title)
+                imgui.Separator()
+
+                local helper_rules = {
+                    isRO and u8("Jucatorii pot pune orice fel de premiu; prioritate au evenimentele cu premiile cele mai mari.") or "Players can set any prize; priority goes to events with higher prizes.",
+                    isRO and u8("Trebuie sa supravegheati evenimentele acceptate pana la final (exceptie: SMS/Whisper/Trivia/Kill). Daca nu puteti, rugati un coleg sau nu acceptati.") or "You must supervise accepted events until the end (except SMS/Whisper/Trivia/Kill). If unable, ask a colleague or do not accept.",
+                    isRO and u8("Nu sunteti obligati sa supravegheati event-urile organizate de admini.") or "You are not required to supervise events organized by admins.",
+                    isRO and u8("Aveti voie sa va acceptati propriile evenimente cat timp respectati regulamentul si nu incurcati colegii.") or "You may accept your own events as long as rules are followed and colleagues aren't hindered.",
+                    isRO and u8("Fiecare eveniment trebuie sa aiba titlu sugestiv, premiu specificat si ora aproximativa. Fara CAPS-LOCK excesiv.") or "Each event must have a descriptive title, specified prize, and approximate time. No excessive CAPS-LOCK.",
+                    isRO and u8("Daca nu sunt suficienti membri din staff pentru help request-uri active, nu acceptati evenimente.") or "If staff is low on active help requests, refrain from accepting events.",
+                    isRO and u8("Asigurati-va ca limbajul organizatorului pe /e este unul decent.") or "Ensure the organizer's language on /e is appropriate.",
+                    isRO and u8("Nu favorizati prietenii, colegii de clan sau factiune la acceptarea evenimentelor.") or "Do not show favoritism to friends, clan, or faction members.",
+                    isRO and u8("Prioritate acceptare: Staff -> Aprobate/sustinute de Staff -> Premii mari -> Amploare -> Simple.") or "Acceptance priority: Staff -> Staff approved/supported -> High prizes -> Large-scale -> Simple.",
+                    isRO and u8("Nu acceptati evenimente de amploare cu premiu mai mic de $20,000.") or "Do not accept large-scale events with prizes below $20,000.",
+                    isRO and u8("Opriti (/stopevent) evenimentele organizate incorect sau unde limbajul pe /e este inadecvat.") or "Stop (/stopevent) incorrectly organized events or those with inappropriate language.",
+                    isRO and u8("Se pot accepta si event-uri cu premiu in Gold. Cine nu ofera premiul primeste Blacklist. Verificarea se face de Admin 6.") or "Events with Gold prizes are allowed. Scammers get Blacklisted; verified by Admin 6.",
+                    isRO and u8("Inainte de acceptare, folositi /check si verificati daca jucatorul are banii necesari in banca.") or "Before accepting, use /check to ensure the player has sufficient bank funds.",
+                    isRO and u8("Campania electorala (Mayor) este permisa DOAR pe perioada in care aplicatiile sunt deschise (inclusiv pe /e).") or "Mayor campaign events are allowed ONLY while applications are open (including /e)."
+                }
+
+                for _, rule in ipairs(helper_rules) do
+                    imgui.TextColored(imgui.ImVec4(1.0, 0.5, 0.0, 1.0), "* ")
+                    imgui.SameLine()
+                    imgui.TextWrapped(rule)
+                    imgui.Spacing()
+                end
+
             imgui.EndChild()
    
 
