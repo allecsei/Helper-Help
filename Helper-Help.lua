@@ -9681,14 +9681,12 @@ end, function(player)
                 DrawCmdCard("/anmp / .mp", "Mission Points", "Mission Points")
                 DrawCmdCard("/angold / .gold", "Metode obtinere Gold", "Methods to get Gold")
                 DrawCmdCard("/cninfo / .info", "Salut! Nu detinem aceasta informatie", "Hello! We don't have this information")
-                DrawCmdCard("/anroata / .roata", "Cum obtii rotiri pentru Roata Norocului", "How to get spins for the Lucky Wheel")
             end
             imgui.Spacing()
 
              -- Header COMENZI & GENERALE
             if imgui.CollapsingHeader((iniData.settings.lang == 0) and u8("COMENZI GENERALE") or "GENERAL COMMANDS") then
                 imgui.Spacing()
-                DrawCmdCard("/anmester / .mester", "Informatii despre mester", "Info about mester")
                 DrawCmdCard("/naiurea / .naiurea", "N aiurea /n doar pentru intrebari!", "Don't ask random questions!, /n for help!")
                 imgui.Spacing()
             end
@@ -14686,51 +14684,6 @@ end
         local isRO = (iniData.settings.lang == 0)
         local msg = isRO and "{09ff00}Salut! {FFFFFF}Nu detinem aceasta informatie." 
                         or "{09ff00}Hi! {FFFFFF}We do not have this information."
-        sampAddChatMessage(msg, -1)
-    end)
-
-      -- Rotiri Wheel
-    sampRegisterChatCommand("anroata", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Poti face rost de rotiri pentru Roata Norocului din quest-uri, maraton sau evenimente speciale." 
-                        or "/an Hi! You can earn spins for the Wheel of Fortune through quests, marathons, or special events."
-        sampSendChat(msg)
-    end)
-
-    sampRegisterChatCommand(".roata", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti face rost de rotiri pentru Roata Norocului din quest-uri, maraton sau evenimente speciale.." 
-                        or "{09ff00}Hi! {FFFFFF}You can earn spins for the Wheel of Fortune through quests, marathons, or special events."
-        sampAddChatMessage(msg, -1)
-    end)
-
-      -- Comenzi Mester
-    sampRegisterChatCommand("anmester", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Pentru a inchiria instrumentele necesare la Mester trebuie sa mergi la bizul cu ID: 160." 
-                        or "/an Hi! To rent the necessary tools at Mester you need to go to business with ID: 160."
-        sampSendChat(msg)
-    end)
-
-    sampRegisterChatCommand(".mester", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a inchiria instrumentele necesare la Mester trebuie sa mergi la bizul cu ID: 160." 
-                        or "{09ff00}Hi! {FFFFFF}To rent the necessary tools at Mester you need to go to business with ID: 160."
-        sampAddChatMessage(msg, -1)
-    end)
-
-         -- Comenzi Paintball
-    sampRegisterChatCommand("anpaint", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Pentru a parasi arena de Paintball, foloseste comanda /leavepaintball." 
-                        or "/an Hi! To leave the Paintball arena, use the command /leavepaintball."
-        sampSendChat(msg)
-    end)
-
-    sampRegisterChatCommand(".paint", function()
-        local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Pentru a parasi arena de Paintball, foloseste comanda /leavepaintball." 
-                        or "{09ff00}Hi! {FFFFFF}To leave the Paintball arena, use the command /leavepaintball."
         sampAddChatMessage(msg, -1)
     end)
 
