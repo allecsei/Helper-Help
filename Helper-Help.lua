@@ -9679,7 +9679,7 @@ end, function(player)
                 DrawCmdCard("/anbani / .bani", "Cum faci bani rapid", "How to make money fast")
                 DrawCmdCard("/anrp / .rp", "Respect Points (Payday)", "Respect Points (Payday)")
                 DrawCmdCard("/anmp / .mp", "Mission Points", "Mission Points")
-                DrawCmdCard("/angold / .gold", "Metode obtinere Gold", "Methods to get Gold")  \
+                DrawCmdCard("/angold / .gold", "Metode obtinere Gold", "Methods to get Gold")
                 DrawCmdCard("/cninfo / .info", "Salut! Nu detinem aceasta informatie", "Hello! We don't have this information")
                 DrawCmdCard("/anroata / .roata", "Cum obtii rotiri pentru Roata Norocului", "How to get spins for the Lucky Wheel")
             end
