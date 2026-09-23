@@ -7710,11 +7710,11 @@ end, function(player)
                                 if iniData.settings.lang == 0 then
                                     imgui.BulletText(u8("Pret fix: $2.000 pe ora (maxim 24 de ore).")); 
                                     imgui.BulletText(u8("Gestiune: Vehiculul apare pe [/v], poate fi localizat sau tractat.")); 
-                                    imgui.BulletText(u8("Control: Poti incuia vehiculul folosind tasta 'L' sau [/lock]."))
+                                    imgui.BulletText(u8("Control: Poti incuia vehiculul folosind tasta 'N' sau [/lock]."))
                                 else
                                     imgui.BulletText("Fixed price: $2,000 per hour (max 24 hours)."); 
                                     imgui.BulletText("Management: Vehicle appears on [/v], can be located or towed."); 
-                                    imgui.BulletText("Control: You can lock the vehicle using 'L' or [/lock].")
+                                    imgui.BulletText("Control: You can lock the vehicle using 'N' or [/lock].")
                                 end
                             imgui.EndChild()
                             
@@ -12654,7 +12654,7 @@ end, function(player)
                         imgui.Separator()
                         imgui.BulletText(isRO and u8("Pret fix: $2.000 pe ora (maxim 24 de ore).") or "Fixed price: $2.000 per hour (max 24 hours).")
                         imgui.BulletText(isRO and u8("Gestiune: Vehiculul apare pe [/v], poate fi localizat sau tractat.") or "Management: Vehicle appears in [/v], can be located or towed.")
-                        imgui.BulletText(isRO and u8("Control: Poti incuia vehiculul folosind tasta 'L' sau [/lock].") or "Control: You can lock the vehicle using 'L' or [/lock].")
+                        imgui.BulletText(isRO and u8("Control: Poti incuia vehiculul folosind tasta 'N' sau [/lock].") or "Control: You can lock the vehicle using 'N' or [/lock].")
                     imgui.EndChild()
                     
                     imgui.Spacing()
