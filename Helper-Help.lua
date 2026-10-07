@@ -1,7 +1,7 @@
-script_name("Helper Help v3.0")
+script_name("Helper Help v3.1")
 script_author("[TLG] allecsei") 
 script_description("Inspirat dupa Tupi & Madalin") 
-script_version("v3.0")
+script_version("v3.1")
 
 local imgui = require 'mimgui'
 local sampevents = require 'samp.events'
@@ -18,7 +18,7 @@ local isHelperDuty = false
 local isFontScaleSet = false
 
 local footerText = "{FFFFFF}Created by {00ffff}[TLG]{aa3333}allecsei" 
-local headerText = "Helper Menu v3.0 - [TLG] allecsei" 
+local headerText = "Helper Menu v3.1 - [TLG] allecsei" 
 
 -- [ TAB NAMES ] --
 local tabs = {
@@ -390,6 +390,104 @@ local iniData = inicfg.load({
     }
 }, directIni)
 inicfg.save(iniData, directIni)
+
+-- [ HELPER POINTS ] --
+local helperPointsIni = inicfg.load({
+    main = {
+        score = 0.0,
+        goal = 100.0,
+        pos_x = 1431,
+        pos_y = 28,
+        locked = true,
+        overlay_enabled = true,
+    }
+}, 'HelperPoints')
+
+local helperPointsScoreBuf = imgui.new.float(helperPointsIni.main.score)
+local helperPointsGoalBuf = imgui.new.float(helperPointsIni.main.goal)
+local helperPointsLockedBuf = imgui.new.bool(helperPointsIni.main.locked)
+local helperPointsOverlayBuf = imgui.new.bool(helperPointsIni.main.overlay_enabled ~= false)
+
+local function helperPointsSave()
+    inicfg.save(helperPointsIni, 'HelperPoints')
+end
+
+local function helperPointsFormat(value)
+    return ('%.6g'):format(value)
+end
+
+local helperPointsShadowColor = imgui.ImVec4(0.0, 0.0, 0.0, 0.9)
+
+local function helperPointsTextWithShadow(color, text)
+    local cursorPos = imgui.GetCursorPos()
+    for _, offset in ipairs({
+        imgui.ImVec2(-1, 0), imgui.ImVec2(1, 0),
+        imgui.ImVec2(0, -1), imgui.ImVec2(0, 1)
+    }) do
+        imgui.SetCursorPos(cursorPos + offset)
+        imgui.TextColored(helperPointsShadowColor, text)
+    end
+    imgui.SetCursorPos(cursorPos)
+    imgui.TextColored(color, text)
+end
+
+local function helperPointsStripColors(text)
+    return (text or ''):gsub('{%x%x%x%x%x%x}', '')
+end
+
+local function helperPointsIsLocalPlayer(name)
+    local found, playerId = sampGetPlayerIdByCharHandle(PLAYER_PED)
+    return found and sampGetPlayerNickname(playerId) == name
+end
+
+local function helperPointsAdd(amount, colorHex)
+    helperPointsIni.main.score = helperPointsIni.main.score + amount
+    helperPointsScoreBuf[0] = helperPointsIni.main.score
+    helperPointsSave()
+    local isSingular = amount == 1
+    local pointsLabel = iniData.settings.lang == 0
+                      and (isSingular and 'punct' or 'puncte')
+                      or (isSingular and 'point' or 'points')
+    sampAddChatMessage(('[HelperPoints] {FFFFFF}+%s %s {%s}(total: %s)'):format(
+        helperPointsFormat(amount), pointsLabel, colorHex, helperPointsFormat(helperPointsIni.main.score)
+    ), -1)
+end
+
+local function helperPointsHandleMessage(text)
+    local cleanedText = helperPointsStripColors(text or '')
+
+    local createdConversation = cleanedText:match('[Aa]%s+fost%s+creata%s+o%s+conversatie%s+cu%s+.+%.%s+Foloseste%s+/hl%s+%[text%]%s+pentru%s+a%s+vorbi%.')
+                             or cleanedText:match('[Aa]%s+fost%s+creat[ăa]%s+o%s+conversa[tț]ie%s+cu%s+.+%.%s+Foloseste%s+/hl%s+%[text%]%s+pentru%s+a%s+vorbi%.')
+                             or cleanedText:match('[Aa]%s+conversation%s+with%s+.+%s+has%s+been%s+created%.%s+Use%s+/hl%s+%[text%]%s+to%s+talk%.')
+    if createdConversation then
+        helperPointsAdd(3, '00FF00')
+        return
+    end
+
+    local closedConversation = cleanedText:match('[Aa]i%s+inchis%s+conversatia%s+cu.-[Mm]otiv:')
+                             or cleanedText:match('[Yy]ou%s+have%s+closed%s+.-%s+conversation%.%s+[Rr]eason:')
+    if closedConversation then
+        helperPointsAdd(0.2, 'FF6347')
+        return
+    end
+
+    local answered = cleanedText:match('[Ii]%-ai%s+raspuns%s+lui')
+                  or cleanedText:match('[Ii]%-ai%s+r[ăa]spuns%s+lui')
+                  or cleanedText:match('[Yy]ou%s+answered%s+.-:')
+    if answered then
+        helperPointsAdd(1, 'FFFF00')
+        return
+    end
+
+    local acceptedHelper = cleanedText:match('HlpCmd:%s+Helper%s+(.+)%s+a%s+acceptat%s+evenimentul')
+                        or cleanedText:match('HlpCmd:%s+Helper%s+(.+)%s+accepted%s+event')
+    if acceptedHelper then
+        if helperPointsIsLocalPlayer(acceptedHelper) then
+            helperPointsAdd(3, '00FF00')
+        end
+        return false
+    end
+end
 
 -- [ WINDOW STATES ] --
 local WinState = imgui.new.bool(false)
@@ -3960,6 +4058,44 @@ local function renderThemeSettings()
     end
 
     imgui.Spacing()
+    imgui.Separator()
+    imgui.Spacing()
+    imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0),
+        iniData.settings.lang == 0 and 'Puncte Helper:' or 'Helper Points:')
+
+    imgui.Text(iniData.settings.lang == 0 and 'Puncte curente:' or 'Current points:')
+    imgui.PushItemWidth(150)
+    if imgui.InputFloat('##helperpoints_score', helperPointsScoreBuf, 0.5, 1.0, '%.6g') then
+        if helperPointsScoreBuf[0] < 0 then helperPointsScoreBuf[0] = 0 end
+        helperPointsIni.main.score = helperPointsScoreBuf[0]
+        helperPointsSave()
+    end
+    imgui.PopItemWidth()
+
+    imgui.Text(iniData.settings.lang == 0 and 'Tinta:' or 'Goal:')
+    imgui.PushItemWidth(150)
+    if imgui.InputFloat('##helperpoints_goal', helperPointsGoalBuf, 0.5, 1.0, '%.6g') then
+        if helperPointsGoalBuf[0] < 0 then helperPointsGoalBuf[0] = 0 end
+        helperPointsIni.main.goal = helperPointsGoalBuf[0]
+        helperPointsSave()
+    end
+    imgui.PopItemWidth()
+
+    if imgui.Checkbox(iniData.settings.lang == 0 and 'Blocheaza pozitia##helperpoints_lock' or 'Lock position##helperpoints_lock', helperPointsLockedBuf) then
+        helperPointsIni.main.locked = helperPointsLockedBuf[0]
+        helperPointsSave()
+    end
+    if imgui.Checkbox(iniData.settings.lang == 0 and 'Activeaza overlay-ul##helperpoints_enabled' or 'Enable overlay##helperpoints_enabled', helperPointsOverlayBuf) then
+        helperPointsIni.main.overlay_enabled = helperPointsOverlayBuf[0]
+        helperPointsSave()
+    end
+    if imgui.Button(iniData.settings.lang == 0 and 'Reseteaza punctele##helperpoints_reset' or 'Reset points##helperpoints_reset', imgui.ImVec2(150, 26)) then
+        helperPointsIni.main.score = 0
+        helperPointsScoreBuf[0] = 0
+        helperPointsSave()
+    end
+
+    imgui.Spacing()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
@@ -4023,31 +4159,29 @@ local function renderThemeSettings()
     imgui.Separator()
     imgui.Spacing()
     
+    local legacyThemeNames = {
+        "Cyber Purple", "Golden Amber", "Glacial Blue", "Ruby Velvet", "Forest Emerald",
+        "Toxic Lime", "Mystic Orchid", "Deep Sea Teal", "Iron Grey", "Magma",
+        "Cyberpunk Pink", "Neon Acid", "Royal Gold", "Void Space", "Blood Moon"
+    }
+    local legacyThemeCount = #legacyThemeNames
+    local totalThemeCount = legacyThemeCount + #HHThemeLib.list
+    local themesPerColumn = math.ceil(totalThemeCount / 3)
+
     imgui.Columns(3, "##themes_columns", false)
-    imgui.SetColumnWidth(0, 150)
-    imgui.SetColumnWidth(1, 150)
-
-    if radioButtonBoolWhite("Cyber Purple", iniData.settings.theme == 1) then iniData.settings.theme = 1; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Golden Amber", iniData.settings.theme == 2) then iniData.settings.theme = 2; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Glacial Blue", iniData.settings.theme == 3) then iniData.settings.theme = 3; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Ruby Velvet", iniData.settings.theme == 4) then iniData.settings.theme = 4; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Forest Emerald", iniData.settings.theme == 5) then iniData.settings.theme = 5; inicfg.save(iniData, directIni) end
-
-    imgui.NextColumn()  
-
-    if radioButtonBoolWhite("Toxic Lime", iniData.settings.theme == 6) then iniData.settings.theme = 6; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Mystic Orchid", iniData.settings.theme == 7) then iniData.settings.theme = 7; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Deep Sea Teal", iniData.settings.theme == 8) then iniData.settings.theme = 8; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Iron Grey", iniData.settings.theme == 9) then iniData.settings.theme = 9; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Magma", iniData.settings.theme == 10) then iniData.settings.theme = 10; inicfg.save(iniData, directIni) end
-
-    imgui.NextColumn()
-
-    if radioButtonBoolWhite("Cyberpunk Pink", iniData.settings.theme == 11) then iniData.settings.theme = 11; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Neon Acid", iniData.settings.theme == 12) then iniData.settings.theme = 12; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Royal Gold", iniData.settings.theme == 13) then iniData.settings.theme = 13; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Void Space", iniData.settings.theme == 14) then iniData.settings.theme = 14; inicfg.save(iniData, directIni) end
-    if radioButtonBoolWhite("Blood Moon", iniData.settings.theme == 15) then iniData.settings.theme = 15; inicfg.save(iniData, directIni) end
+    imgui.SetColumnWidth(0, 170)
+    imgui.SetColumnWidth(1, 170)
+    for i = 1, totalThemeCount do
+        if i > 1 and (i - 1) % themesPerColumn == 0 then
+            imgui.NextColumn()
+        end
+        local themeName = i <= legacyThemeCount and legacyThemeNames[i]
+                         or HHThemeLib.list[i - legacyThemeCount].name
+        if radioButtonBoolWhite(themeName .. "##theme" .. i, iniData.settings.theme == i) then
+            iniData.settings.theme = i
+            inicfg.save(iniData, directIni)
+        end
+    end
 
     imgui.Columns(1)  
     imgui.Spacing()
@@ -4261,11 +4395,206 @@ local function renderSingleCrateCard(crate)
     imgui.Spacing()
 end
 
+-- [ BIBLIOTECA DE TEME ] --
+HHThemeLib = {}
+HHThemeLib.list = {
+    {name = "Neon Nights",      bg = 0x0A0612, panel = 0x130B22, frame = 0x1E1233, accent = 0x18E0F0, border = 0x9B5CFF, text = 0xEAF6FF},
+    {name = "Honey Espresso",   bg = 0x140E08, panel = 0x1E150C, frame = 0x2E2214, accent = 0xF2B134, border = 0x8A5A2B, text = 0xFFF3D6},
+    {name = "Arctic Frost",     bg = 0x07131F, panel = 0x0D1E2E, frame = 0x16304A, accent = 0x7FD6FF, border = 0xDDF4FF, text = 0xF0FAFF},
+    {name = "Crimson Noir",     bg = 0x0C0708, panel = 0x160C0E, frame = 0x24141A, accent = 0xD61F3C, border = 0xC9A24B, text = 0xFBE9E9},
+    {name = "Jade Dragon",      bg = 0x06130F, panel = 0x0B1F18, frame = 0x133226, accent = 0x1FD18A, border = 0xD4AF37, text = 0xE6FFF4},
+    {name = "Acid Violet",      bg = 0x0E0A14, panel = 0x181022, frame = 0x2A1B3D, accent = 0xC6FF00, border = 0x8E44FF, text = 0xF4F0FF},
+    {name = "Lavender Dream",   bg = 0x14111F, panel = 0x1C1830, frame = 0x2A2545, accent = 0xB79CFF, border = 0xE8B4FF, text = 0xF1ECFF},
+    {name = "Ocean Abyss",      bg = 0x03101A, panel = 0x07192A, frame = 0x0D2A44, accent = 0x2AA6B8, border = 0x1E5F8C, text = 0xDFF7FA},
+    {name = "Graphite Steel",   bg = 0x101214, panel = 0x181B1F, frame = 0x252A31, accent = 0x8E9AAF, border = 0x5C6675, text = 0xE8ECF2},
+    {name = "Volcano",          bg = 0x140805, panel = 0x1F0E08, frame = 0x33170C, accent = 0xFF5A1F, border = 0xFFB000, text = 0xFFE9D6},
+    {name = "Cherry Blossom",   bg = 0x1A0E14, panel = 0x25141D, frame = 0x36202B, accent = 0xFF8FB8, border = 0xFFC2D9, text = 0xFFEFF5},
+    {name = "Toxic Waste",      bg = 0x0A1006, panel = 0x121C0B, frame = 0x1F3012, accent = 0x7CFC00, border = 0xB6FF3B, text = 0xEAFFD6},
+    {name = "Royal Sapphire",   bg = 0x070B1F, panel = 0x0D142E, frame = 0x172247, accent = 0x3D6BFF, border = 0xF2C14E, text = 0xEAF0FF},
+    {name = "Deep Space",       bg = 0x05050F, panel = 0x0B0B1E, frame = 0x151534, accent = 0x7B61FF, border = 0x00D4FF, text = 0xE8E8FF},
+    {name = "Blood Moon",       bg = 0x100405, panel = 0x1A0708, frame = 0x2E0F11, accent = 0xE02B2B, border = 0xFF7A59, text = 0xFFE1DE},
+    {name = "Sunset Coral",     bg = 0x0D171F, panel = 0x14212B, frame = 0x1F303D, accent = 0xF26B4F, border = 0xF28060, text = 0xFFF0DC},
+    {name = "Mint Chocolate",   bg = 0x140D0A, panel = 0x1E1410, frame = 0x30221B, accent = 0x5FE3B2, border = 0x8B5E3C, text = 0xE8FFF5},
+    {name = "Solar Flare",      bg = 0x110C02, panel = 0x1B1405, frame = 0x2D2108, accent = 0xFFD400, border = 0xFF6A00, text = 0xFFF8D6},
+    {name = "Slate Rose",       bg = 0x14181F, panel = 0x1C222B, frame = 0x2A323E, accent = 0xE8A0B4, border = 0xB87A8C, text = 0xF3E8EC},
+    {name = "Midnight Gold",    bg = 0x050505, panel = 0x0E0E0E, frame = 0x1A1A1A, accent = 0xD4AF37, border = 0xF0D060, text = 0xF5ECCB},
+    {name = "Cotton Candy",     bg = 0x17121F, panel = 0x211A2E, frame = 0x30264A, accent = 0x7FDBFF, border = 0xFF9ECF, text = 0xFFF4FB},
+    {name = "Desert Sand",      bg = 0x17120B, panel = 0x211A10, frame = 0x33291A, accent = 0xE07A4F, border = 0xD9B77E, text = 0xF6E7D3},
+    {name = "Monochrome Ink",   bg = 0x0A0A0A, panel = 0x131313, frame = 0x222222, accent = 0x8C8C8C, border = 0xE6E6E6, text = 0xFFFFFF},
+    {name = "Plum Wine",        bg = 0x120610, panel = 0x1D0B1A, frame = 0x321430, accent = 0xB5179E, border = 0xE0A458, text = 0xF8E6F4},
+}
+HHThemeLib.rgb = function(c)
+    return {math.floor(c / 65536) % 256 / 255, math.floor(c / 256) % 256 / 255, c % 256 / 255}
+end
+HHThemeLib.mix = function(a, b, t)
+    return {a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t, a[3] + (b[3] - a[3]) * t}
+end
+-- Keep accent colors dark enough for white text on buttons to stay readable.
+HHThemeLib.cap = function(c, maxL)
+    local l = 0.299 * c[1] + 0.587 * c[2] + 0.114 * c[3]
+    if l > maxL then local k = maxL / l; return {c[1] * k, c[2] * k, c[3] * k} end
+    return c
+end
+HHThemeLib.set = function(colors, name, c, a)
+    local idx = imgui.Col[name]
+    if idx ~= nil then colors[idx] = imgui.ImVec4(c[1], c[2], c[3], a or 1.0) end
+end
+HHThemeLib.apply = function(colors, t, alpha)
+    local L = HHThemeLib
+    local bg, panel, frame = L.rgb(t.bg), L.rgb(t.panel), L.rgb(t.frame)
+    local accent, border, text = L.rgb(t.accent), L.rgb(t.border or t.accent), L.rgb(t.text)
+    local btn = L.cap(L.mix(panel, accent, 0.50), 0.40)
+    local btnH = L.cap(L.mix(panel, accent, 0.72), 0.50)
+    local btnA = L.cap(accent, 0.58)
+    local hdr = L.cap(L.mix(panel, accent, 0.45), 0.38)
+    local hdrH = L.cap(L.mix(panel, accent, 0.65), 0.48)
+
+    L.set(colors, "WindowBg", bg, alpha)
+    L.set(colors, "ChildBg", panel, 1.0)
+    L.set(colors, "PopupBg", bg, 0.98)
+    L.set(colors, "Border", border, 0.50)
+    L.set(colors, "Separator", border, 0.45)
+    L.set(colors, "FrameBg", frame, 1.0)
+    L.set(colors, "FrameBgHovered", L.cap(L.mix(frame, accent, 0.25), 0.45), 1.0)
+    L.set(colors, "FrameBgActive", L.cap(L.mix(frame, accent, 0.45), 0.50), 1.0)
+    L.set(colors, "Button", btn, 0.85)
+    L.set(colors, "ButtonHovered", btnH, 0.95)
+    L.set(colors, "ButtonActive", btnA, 1.0)
+    L.set(colors, "Header", hdr, 0.80)
+    L.set(colors, "HeaderHovered", hdrH, 0.90)
+    L.set(colors, "HeaderActive", btnA, 1.0)
+    L.set(colors, "CheckMark", accent, 1.0)
+    L.set(colors, "SliderGrab", L.cap(accent, 0.62), 1.0)
+    L.set(colors, "SliderGrabActive", accent, 1.0)
+    L.set(colors, "ScrollbarBg", bg, 0.60)
+    L.set(colors, "ScrollbarGrab", btn, 1.0)
+    L.set(colors, "ScrollbarGrabHovered", btnH, 1.0)
+    L.set(colors, "ScrollbarGrabActive", btnA, 1.0)
+    L.set(colors, "Text", text, 1.0)
+end
+
+local applyTheme, applyStyle
+
+local function helperPointsBarColor(ratio, alpha)
+    if ratio >= 1.0 then
+        return imgui.ImVec4(0.133, 1.00, 0.00, alpha)
+    end
+    local stops = {
+        {0.00, 1.00, 0.15, 0.15},
+        {0.35, 1.00, 0.55, 0.10},
+        {0.65, 1.00, 0.90, 0.10},
+        {1.00, 0.00, 0.85, 1.00},
+    }
+    for i = 1, #stops - 1 do
+        local a, b = stops[i], stops[i + 1]
+        if ratio <= b[1] then
+            local t = (ratio - a[1]) / (b[1] - a[1])
+            return imgui.ImVec4(
+                a[2] + (b[2] - a[2]) * t,
+                a[3] + (b[3] - a[3]) * t,
+                a[4] + (b[4] - a[4]) * t,
+                alpha
+            )
+        end
+    end
+    local last = stops[#stops]
+    return imgui.ImVec4(last[2], last[3], last[4], alpha)
+end
+
+local function drawHelperPointsOverlay()
+    applyTheme(iniData.settings.theme)
+    applyStyle(iniData.settings.style)
+    local themeColors = imgui.GetStyle().Colors
+
+    local flags
+    local label
+    if helperPointsIni.main.locked then
+        flags = imgui.WindowFlags.NoTitleBar + imgui.WindowFlags.NoResize + imgui.WindowFlags.NoScrollbar
+              + imgui.WindowFlags.NoCollapse + imgui.WindowFlags.NoMove + imgui.WindowFlags.NoBackground
+              + imgui.WindowFlags.NoInputs + imgui.WindowFlags.AlwaysAutoResize
+        label = '##helperpoints_overlay'
+    else
+        flags = imgui.WindowFlags.NoResize + imgui.WindowFlags.NoScrollbar
+              + imgui.WindowFlags.NoCollapse + imgui.WindowFlags.AlwaysAutoResize
+        label = u8('Helper Points (trage)##helperpoints_overlay')
+    end
+
+    imgui.SetNextWindowPos(imgui.ImVec2(helperPointsIni.main.pos_x, helperPointsIni.main.pos_y),
+        helperPointsIni.main.locked and imgui.Cond.Always or imgui.Cond.FirstUseEver)
+    imgui.Begin(label, nil, flags)
+        local windowWidth = imgui.GetWindowWidth()
+        local title = u8('Helper Points')
+        local pointsLabel = u8('Puncte: ')
+        local scoreText = u8(helperPointsFormat(helperPointsIni.main.score))
+        local targetLabel = u8(' / Tinta: ')
+        local targetText = u8(helperPointsFormat(helperPointsIni.main.goal))
+
+        imgui.SetWindowFontScale(1.35)
+        local titleWidth = imgui.CalcTextSize(title).x
+        imgui.SetCursorPosX((windowWidth - titleWidth) * 0.5)
+        helperPointsTextWithShadow(imgui.ImVec4(1.0, 0.388, 0.278, 1.0), title)
+
+        imgui.SetWindowFontScale(1.1)
+        local pointsWidth = imgui.CalcTextSize(pointsLabel).x
+                          + imgui.CalcTextSize(scoreText).x
+                          + imgui.CalcTextSize(targetLabel).x
+                          + imgui.CalcTextSize(targetText).x
+        imgui.SetCursorPosX((windowWidth - pointsWidth) * 0.5)
+        helperPointsTextWithShadow(imgui.GetStyle().Colors[imgui.Col.Text], pointsLabel)
+        imgui.SameLine(0, 0)
+        helperPointsTextWithShadow(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), scoreText)
+        imgui.SameLine(0, 0)
+        helperPointsTextWithShadow(imgui.GetStyle().Colors[imgui.Col.Text], targetLabel)
+        imgui.SameLine(0, 0)
+        helperPointsTextWithShadow(imgui.ImVec4(1.0, 0.0, 0.0, 1.0), targetText)
+
+        imgui.SetWindowFontScale(1.0)
+        local ratio = helperPointsIni.main.goal > 0
+                  and math.min(helperPointsIni.main.score / helperPointsIni.main.goal, 1.0) or 0
+        imgui.SetCursorPosX((windowWidth - 150) * 0.5)
+        local progressText = ('%.0f%%'):format(ratio * 100)
+        imgui.PushStyleColor(imgui.Col.PlotHistogram, helperPointsBarColor(ratio, 0.95))
+        imgui.PushStyleColor(imgui.Col.FrameBg, themeColors[imgui.Col.FrameBg])
+        imgui.ProgressBar(ratio, imgui.ImVec2(150, 18), '')
+        imgui.PopStyleColor(2)
+
+        local progressMin = imgui.GetItemRectMin()
+        local progressMax = imgui.GetItemRectMax()
+        local progressTextSize = imgui.CalcTextSize(progressText)
+        local progressTextPos = imgui.ImVec2(
+            progressMin.x + (progressMax.x - progressMin.x - progressTextSize.x) * 0.5,
+            progressMin.y + (progressMax.y - progressMin.y - progressTextSize.y) * 0.5
+        )
+        local progressDrawList = imgui.GetWindowDrawList()
+        for _, offset in ipairs({
+            imgui.ImVec2(-1, 0), imgui.ImVec2(1, 0),
+            imgui.ImVec2(0, -1), imgui.ImVec2(0, 1)
+        }) do
+            progressDrawList:AddText(progressTextPos + offset, 0xFF000000, progressText)
+        end
+        progressDrawList:AddText(progressTextPos, 0xFFFFFF00, progressText)
+
+        if not helperPointsIni.main.locked then
+            local pos = imgui.GetWindowPos()
+            helperPointsIni.main.pos_x, helperPointsIni.main.pos_y = pos.x, pos.y
+            if imgui.IsMouseReleased(0) then
+                helperPointsSave()
+            end
+        end
+    imgui.End()
+end
+
 -- [ MAIN THEME & STYLES APPLIER ] --
-local function applyTheme(themeId)
+applyTheme = function(themeId)
     local style = imgui.GetStyle()
     local colors = style.Colors
     local alpha = iniData.settings.win_alpha
+    if themeId > 15 then
+        -- Preserve the existing IDs; the new palette themes start at 16.
+        local theme = HHThemeLib.list[themeId - 15] or HHThemeLib.list[1]
+        HHThemeLib.apply(colors, theme, alpha)
+        return
+    end
     
   if themeId == 1 then -- Cyber Purple
     colors[imgui.Col.WindowBg] = imgui.ImVec4(0.06, 0.04, 0.10, alpha)
@@ -4480,7 +4809,7 @@ elseif themeId == 15 then -- Blood Moon
 end
 end
 
-local function applyStyle(styleId)
+applyStyle = function(styleId)
     local style = imgui.GetStyle()
     local scale = iniData.settings.global_scale
     
@@ -14447,10 +14776,16 @@ end)
 function main()
     while not isSampAvailable() do wait(100) end
     render_font = renderCreateFont("Arial", 11, 13)
+    local helperPointsOverlayFrame = imgui.OnFrame(
+        function() return helperPointsOverlayBuf[0] and not isPauseMenuActive() end,
+        drawHelperPointsOverlay
+    )
+    helperPointsOverlayFrame.HideCursor = true
 
     -- [ HANDLER PENTRU HELPER DUTY ] --
 sampevents.onServerMessage = function(color, text)
-    local cleanText = text:gsub("{%x%x%x%x%x%x}", "")
+    local cleanText = helperPointsStripColors(text)
+    helperPointsHandleMessage(cleanText)
     
     -- --- ROMANA ---
     if cleanText:find("Acum esti la datorie ca Helper.") then
@@ -14780,11 +15115,11 @@ end
     local cGray  = "{B4B4B4}"
     sampAddChatMessage(cGray .. "______________________________________________________", -1)    
     if iniData.settings.lang == 0 then
-        sampAddChatMessage(string.format("%s>> %sScriptul %sHelper Help v3.0 %sa fost incarcat cu succes!", cMain, cWhite, cMain, cWhite), -1)
+        sampAddChatMessage(string.format("%s>> %sScriptul %sHelper Help v3.1 %sa fost incarcat cu succes!", cMain, cWhite, cMain, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sFoloseste comanda %s/%s %ssau tasta %s[%s] %spentru meniu.", cMain, cWhite, cMain, iniData.settings.cmd, cWhite, cMain, activeKeysStr, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sDiscord Support: %sallecsei %s| Inspirat de la %sTupi & Madalin", cMain, cWhite, cMain, cWhite, cWhite), -1)        
     else
-        sampAddChatMessage(string.format("%s>> %sScript %sHelper Help v3.0 %shas been successfully loaded!", cMain, cWhite, cMain, cWhite), -1)
+        sampAddChatMessage(string.format("%s>> %sScript %sHelper Help v3.1 %shas been successfully loaded!", cMain, cWhite, cMain, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sUse command %s/%s %sor key %s[%s] %sfor the menu.", cMain, cWhite, cMain, iniData.settings.cmd, cWhite, cMain, activeKeysStr, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sDiscord Support: %sallecsei %s| Inspired by %sTupi & Madalin", cMain, cWhite, cMain, cWhite, cWhite), -1)        
     end
