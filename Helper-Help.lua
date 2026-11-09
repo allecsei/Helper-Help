@@ -1,16 +1,236 @@
-script_name("Helper Help v3.1")
+script_name("Helper Help v1.0a")
 script_author("[TLG] allecsei") 
 script_description("Inspirat dupa Tupi & Madalin") 
-script_version("v3.1")
+script_version("v1.0a")
 
-local imgui = require 'mimgui'
+local WANT_FONT = true  -- fa-solid-900.ttf in resource\fonts (false daca scriptul nu foloseste Font Awesome)
+local WANT_FA6  = true  -- fAwesome6.lua in lib (false daca scriptul nu il foloseste)
+
+local ffi = require('ffi')
+pcall(ffi.cdef, 'int __stdcall ShellExecuteA(void*,const char*,const char*,const char*,const char*,int)')
+
+-- Descarca arhiva MoonLoader de pe GitHub (blocant, o singura data, doar daca lipsesc fisierele)
+-- full = true  -> extrage tot in folderul jocului | full = false -> copiaza doar fAwesome6.lua / fa-solid-900.ttf lipsa
+local function gitSync(full)
+    local g, ok = getGameDirectory(), os.getenv('TEMP') .. '\\gs.ok'
+    os.remove(ok)
+    local ps = [[-NoProfile -w hidden -c "[Net.ServicePointManager]::SecurityProtocol=3072;$g='%s';$full=%d;$z=$env:TEMP+'\gs.zip';$e=$env:TEMP+'\gs';try{iwr 'https://github.com/allecsei/MoonLoader/archive/refs/heads/main.zip' -OutFile $z}catch{iwr 'https://github.com/allecsei/MoonLoader/archive/refs/heads/master.zip' -OutFile $z};rm $e -r -fo -ea 0;Expand-Archive $z ($e+'\z') -Force;$q=(gci $e -r -filter *.rar|select -first 1).FullName;if($full){$t=$g}else{$t=$e+'\x';ni $t -ItemType Directory -Force|out-null};cd $t;$u=@('C:\Program Files\WinRAR\UnRAR.exe','C:\Program Files (x86)\WinRAR\UnRAR.exe','C:\Program Files\WinRAR\WinRAR.exe','C:\Program Files (x86)\WinRAR\WinRAR.exe','C:\Program Files\7-Zip\7z.exe')|?{Test-Path $_}|select -first 1;$a=@('x','-y');if($u -match 'WinRAR\.exe'){$a+='-ibck'};if($u){&$u @a $q}else{tar -xf $q};if(!$full){foreach($f in @(@('fAwesome6.lua','lib'),@('fa-solid-900.ttf','resource\fonts'))){$d=$g+'\moonloader\'+$f[1];ni $d -ItemType Directory -Force|out-null;if(!(Test-Path ($d+'\'+$f[0]))){gci $t -r -filter $f[0]|select -first 1|copy -Destination $d}}};rm $z,$e -r -fo;ni '%s' -Force"]]
+    ffi.load('shell32').ShellExecuteA(nil, 'open', 'powershell.exe', ps:format(g, full and 1 or 0, ok), nil, 0)
+    local t = os.clock()
+    repeat local f = io.open(ok); if f then f:close() break end until os.clock() - t > 90
+end
+
+local d = getGameDirectory() .. '\\moonloader\\'
+local full = not doesFileExist(d .. 'lib\\samp\\events.lua')
+if full
+    or (WANT_FONT and not doesFileExist(d .. 'resource\\fonts\\fa-solid-900.ttf'))
+    or (WANT_FA6 and not doesFileExist(d .. 'lib\\fAwesome6.lua')) then gitSync(full) end
+
 local sampevents = require 'samp.events'
 local inicfg = require 'inicfg'
 local vkeys = require 'vkeys'
 local encoding = require 'encoding'
-local ffi = require 'ffi'
 encoding.default = 'CP1251'
 local u8 = encoding.UTF8
+
+-- =====================================================================
+local HH_FONT_SIZE   = 15.0                       
+local HH_ICON_FILE   = "fa-solid-900.ttf"          
+local HH_FA = { ok = false }                     
+
+local HH_ICONS = {
+    home = 0xF015, briefcase = 0xF0B1, car = 0xF1B9, box = 0xF49E, layer = 0xF5FD,
+    building = 0xF1AD, cart = 0xF07A, hands = 0xF4C4, cog = 0xF013, times = 0xF00D,
+    search = 0xF002, check = 0xF00C, info = 0xF05A, warn = 0xF071, star = 0xF005,
+    user = 0xF007, users = 0xF0C0, coins = 0xF51E, dollar = 0xF155, gem = 0xF3A5,
+    trophy = 0xF091, key = 0xF084, pin = 0xF3C5, clock = 0xF017, bolt = 0xF0E7,
+    trash = 0xF1F8, copy = 0xF0C5, bell = 0xF0F3, list = 0xF03A, chevron = 0xF054,
+    terminal = 0xF120, book = 0xF02D, shield = 0xF3ED, truck = 0xF0D1, tools = 0xF7D9,
+    signout = 0xF2F5, lifering = 0xF1CD, save = 0xF0C7, undo = 0xF0E2, palette = 0xF53F,
+    sliders = 0xF1DE, language = 0xF1AB, gavel = 0xF0E3, hammer = 0xF6E3, tree = 0xF1BB,
+    bus = 0xF207, fish = 0xF578, seedling = 0xF4D8, flask = 0xF0C3, usersecret = 0xF21B,
+    dolly = 0xF472, pills = 0xF484, carcrash = 0xF5E1, wrench = 0xF0AD, crosshairs = 0xF05B,
+    monument = 0xF5A6, balance = 0xF24E, mask = 0xF6FA, fireext = 0xF134, calday = 0xF783,
+    fist = 0xF6DE, mountain = 0xF6FC, gift = 0xF06B, crown = 0xF521, headset = 0xF590,
+    bomb = 0xF1E2, map = 0xF279, plane = 0xF072, anchor = 0xF13D, cubes = 0xF1B3,
+    wallet = 0xF555, flag = 0xF024, bullhorn = 0xF0A1, comment = 0xF075, sync = 0xF021, paw = 0xF1B0,
+}
+local HH_ICON_STR = {}
+for name, cp in pairs(HH_ICONS) do
+    HH_ICON_STR[name] = string.char(0xE0 + math.floor(cp / 4096), 0x80 + math.floor(cp / 64) % 64, 0x80 + cp % 64)
+end
+local HH_TAB_ICONS = { "home", "briefcase", "car", "box", "layer", "building", "cart", "hands", "cog" }
+local HH_JOB_ICONS = {
+    "hammer", "tree", "mountain", "trash", "bus", "fish", "truck", "seedling", "flask", "usersecret",
+    "dolly", "pills", "carcrash", "wrench", "crosshairs", "monument", "bolt", "balance", "mask",
+    "tools", "paw", "fireext", "calday", "fist",
+}
+
+local HH_keep = {}   -- tine in viata range-urile de glifuri (altfel GC le sterge)
+local HH_baseFont = nil  -- fontul de baza (cu iconitele FA lipite in el)
+
+local imgui_real = require 'mimgui'
+local imgui = setmetatable({}, { __index = imgui_real })
+
+-- ---------- iconite ----------
+function imgui.ico(name)        -- doar iconita ("" daca fontul nu e incarcat)
+    return HH_FA.ok and HH_ICON_STR[name] or ""
+end
+function imgui.ict(name, text)  -- iconita + text
+    if HH_FA.ok and HH_ICON_STR[name] then return HH_ICON_STR[name] .. "  " .. text end
+    return text
+end
+function imgui.pre(name)
+    if HH_FA.ok and HH_ICON_STR[name] then return HH_ICON_STR[name] .. "  " end
+    return ""
+end
+function imgui.tabPre(i) return imgui.pre(HH_TAB_ICONS[i] or "list") end
+function imgui.jobPre(i) return imgui.pre(HH_JOB_ICONS[i] or "briefcase") end
+function imgui.tabIcon(i)  return imgui.ico(HH_TAB_ICONS[i] or "list") end
+function imgui.jobIcon(i)  return imgui.ico(HH_JOB_ICONS[i] or "briefcase") end
+
+-- ---------- incarcare fonturi (font de baza + Font Awesome) ----------
+imgui_real.OnInitialize(function()
+    local ok = pcall(function()
+        local io    = imgui_real.GetIO()
+        local atlas = io.Fonts
+        local wd    = getWorkingDirectory() .. "\\"
+        local baseRanges = imgui_real.new.ImWchar[9](0x0020, 0x00FF, 0x0100, 0x017F, 0x0218, 0x021B, 0x0400, 0x04FF, 0)
+        HH_keep[#HH_keep + 1] = baseRanges
+
+        -- font de baza: Segoe UI / Tahoma / Arial, altfel fontul implicit
+        local baseLoaded = false
+        local winFonts = (os.getenv("WINDIR") or "C:\\Windows") .. "\\Fonts\\"
+        for _, f in ipairs({ "segoeui.ttf", "tahoma.ttf", "arial.ttf" }) do
+            if doesFileExist(winFonts .. f) then
+                local fnt = atlas:AddFontFromFileTTF(winFonts .. f, HH_FONT_SIZE, nil, baseRanges)
+                if fnt ~= nil and fnt ~= ffi.NULL then HH_baseFont = fnt baseLoaded = true break end
+            end
+        end
+        if not baseLoaded then HH_baseFont = atlas:AddFontDefault() end
+
+        -- Font Awesome (merge in fontul de baza)
+        local cfg = imgui_real.ImFontConfig()
+        cfg.MergeMode = true
+        cfg.PixelSnapH = true
+        cfg.GlyphMinAdvanceX = HH_FONT_SIZE
+        local iconRanges = imgui_real.new.ImWchar[3](0xF000, 0xF8FF, 0)
+        HH_keep[#HH_keep + 1] = iconRanges
+        HH_keep[#HH_keep + 1] = cfg
+
+        local path = wd .. "resource\\fonts\\" .. HH_ICON_FILE
+        if doesFileExist(path) then
+            local fa = atlas:AddFontFromFileTTF(path, HH_FONT_SIZE - 1, cfg, iconRanges)
+            HH_FA.ok = (fa ~= nil and fa ~= ffi.NULL)
+            print("[HelperHelp] Font Awesome din fisier: " .. path .. " -> " .. tostring(HH_FA.ok))
+        else
+            -- fallback: biblioteca fAwesome6 / fAwesome5 daca e instalata
+            for _, lib in ipairs({ "fAwesome6", "fAwesome5" }) do
+                local okl, fa = pcall(require, lib)
+                if okl and type(fa) == "table" and fa.get_font_data_base85 then
+                    local okd, data = pcall(fa.get_font_data_base85, "solid")
+                    if not okd or not data then okd, data = pcall(fa.get_font_data_base85) end
+                    if okd and data then
+                        local fa2 = atlas:AddFontFromMemoryCompressedBase85TTF(data, HH_FONT_SIZE - 1, cfg, iconRanges)
+                        HH_FA.ok = (fa2 ~= nil and fa2 ~= ffi.NULL)
+                        print("[HelperHelp] Font Awesome din libraria " .. lib .. " -> " .. tostring(HH_FA.ok))
+                        if HH_FA.ok then break end
+                    end
+                end
+            end
+        end
+    end)
+    if not ok then HH_FA.ok = false end
+end)
+
+-- ---------- text care nu mai iese din Child (wrap automat) ----------
+function imgui.Text(...)
+    imgui_real.PushTextWrapPos(0.0)
+    imgui_real.Text(...)
+    imgui_real.PopTextWrapPos()
+end
+function imgui.TextColored(...)
+    imgui_real.PushTextWrapPos(0.0)
+    imgui_real.TextColored(...)
+    imgui_real.PopTextWrapPos()
+end
+function imgui.TextDisabled(...)
+    imgui_real.PushTextWrapPos(0.0)
+    imgui_real.TextDisabled(...)
+    imgui_real.PopTextWrapPos()
+end
+function imgui.BulletText(...)
+    imgui_real.Bullet()
+    imgui_real.PushTextWrapPos(0.0)
+    imgui_real.Text(...)
+    imgui_real.PopTextWrapPos()
+end
+
+-- ---------- OnFrame: forteaza fontul scriptului (altfel mimgui foloseste fontul altui script => iconite "?") ----------
+function imgui.OnFrame(cond, draw, ...)
+    local function wrapped(self, ...)
+        local usable = HH_baseFont ~= nil and HH_baseFont ~= ffi.NULL
+        if usable then imgui_real.PushFont(HH_baseFont) end
+        local ok, err = pcall(draw, self, ...)
+        if usable then imgui_real.PopFont() end
+        if not ok then error(err, 0) end
+    end
+    return imgui_real.OnFrame(cond, wrapped, ...)
+end
+
+-- ---------- PushStyleVar (mimgui are doar PushStyleVarFloat / PushStyleVarVec2) ----------
+function imgui.PushStyleVar(var, val)
+    if type(val) == "number" then
+        imgui_real.PushStyleVarFloat(var, val)
+    else
+        imgui_real.PushStyleVarVec2(var, val)
+    end
+end
+
+-- ---------- Child cu inaltime care creste daca textul nu incape ----------
+-- La EndChild masuram cat continut a fost desenat; in frame-ul urmator
+-- inaltimea ceruta de script devine max(ceruta, necesara). Nu micsoreaza
+-- niciodata sub inaltimea aleasa de tine.
+local HH_childH, HH_childPad, HH_childStack, HH_path = {}, {}, {}, {}
+function imgui.BeginChild(id, size, border, flags)
+    local key
+    if type(id) == "string" then
+        HH_path[#HH_path + 1] = id
+        if size ~= nil and size.y > 0 then
+            key = table.concat(HH_path, "/")
+            local need = HH_childH[key]
+            if need and need > size.y then
+                size = imgui_real.ImVec2(size.x, math.min(need, 2400))
+            end
+            HH_childPad[key] = border and imgui_real.GetStyle().WindowPadding.y or 0
+        end
+    else
+        HH_path[#HH_path + 1] = "?"
+    end
+    HH_childStack[#HH_childStack + 1] = key or false
+    return imgui_real.BeginChild(id, size, border, flags)
+end
+function imgui.EndChild()
+    local key = table.remove(HH_childStack)
+    table.remove(HH_path)
+    if key then
+        local st = imgui_real.GetStyle()
+        HH_childH[key] = imgui_real.GetCursorPosY() - st.ItemSpacing.y + (HH_childPad[key] or 0) * 1 + 2
+    end
+    imgui_real.EndChild()
+end
+
+-- bara de accent pentru tab-ul activ (apelat dupa buton)
+function imgui.navAccent(active)
+    if not active then return end
+    pcall(function()
+        local a = imgui_real.GetItemRectMin()
+        local b = imgui_real.GetItemRectMax()
+        local col = imgui_real.GetColorU32Vec4(imgui_real.ImVec4(0.30, 0.80, 1.00, 1.00))
+        imgui_real.GetWindowDrawList():AddRectFilled(a, imgui_real.ImVec2(a.x + 3, b.y), col)
+    end)
+end
+-- =====================================================================
 
 -- [ VARIABILE REZERVATE PENTRU HELPER DUTY ] --
 local render_font  
@@ -18,7 +238,7 @@ local isHelperDuty = false
 local isFontScaleSet = false
 
 local footerText = "{FFFFFF}Created by {00ffff}[TLG]{aa3333}allecsei" 
-local headerText = "Helper Menu v3.1 - [TLG] allecsei" 
+local headerText = "Helper Menu v1.0a - [TLG] allecsei" 
 
 -- [ TAB NAMES ] --
 local tabs = {
@@ -65,7 +285,10 @@ end
 
 local function getKeyNameById(id)
     for _, k in ipairs(bindableKeys) do if k.id == id then return k.name end end
-    return "None"
+    if not id or id == 0 then return "None" end
+    local ok, n = pcall(vkeys.id_to_name, id)
+    if ok and n then return (tostring(n):gsub("^VK_", "")) end
+    return "VK " .. tostring(id)
 end
 
 local function getKeyComboIndexById(id)
@@ -79,7 +302,7 @@ local jobs_list = {
     "Fisherman", "Trucker", "Farmer", "Chemist", "Detective", 
     "Transporter", "Drugs Dealer", "Car Jacker", "Car Mechanic", 
     "Arms Dealer", "Archeologist", "Electrician", "Lawyer", 
-    "Pocket Thief", "Craftsman", "Firefighter", "Daily Job", "Job Clash"
+    "Pocket Thief", "Craftsman", "Hunter", "Firefighter", "Daily Job", "Job Clash"
 }
 
 local selected_job = 0
@@ -87,6 +310,7 @@ local selected_job = 0
 -- [ SYSTEMS DATA ] --
 local selected_system = 0
 local selected_biz = 0
+local selected_shop = 0
 
 -- [ VEHICLES DATA ] --
 local vehiclesData = {
@@ -268,101 +492,101 @@ local selected_vehicle_name = ""
 -- [ CRATES DATA ] --
 local cratesData = {
     {name = "Red Crate", color = imgui.ImVec4(0.9, 0.2, 0.2, 1.0), priceGold = "70 Gold", priceMP = "60 MP", items = {
-        "Premium Account - 1 - Chance: 40'/.",
-        "3 days - Chance: 30'/.",
-        "1 week - Chance: 15'/.",        
-        "2 weeks - Chance: 10'/.",
-        "1 month - Chance: 5'/."
+        "Premium Account - 1 - Chance: 40%%",
+        "3 days - Chance: 30%%",
+        "1 week - Chance: 15%%",        
+        "2 weeks - Chance: 10%%",
+        "1 month - Chance: 5%%"
     }},
     {name = "Orange Crate", color = imgui.ImVec4(0.9, 0.5, 0.1, 1.0), priceGold = "200 Gold", priceMP = "150 MP", items = {
-        "Respect Points - 1 RP - Chance: 40'/.",
-        "5 RP - Chance: 30'/.",
-        "10 RP - Chance: 15'/.",
-        "13 RP - Chance: 10'/.",
-        "15 RP - Chance: 5'/."
+        "Respect Points - 1 RP - Chance: 40%%",
+        "5 RP - Chance: 30%%",
+        "10 RP - Chance: 15%%",
+        "13 RP - Chance: 10%%",
+        "15 RP - Chance: 5%%"
     }},
     {name = "Green Crate", color = imgui.ImVec4(0.2, 0.8, 0.2, 1.0), priceGold = "150 Gold", priceMP = "100 MP", items = {
-        "Drugs - 100 - Chance: 40'/.",
-        "200 - Chance: 30'/.",
-        "300 - Chance: 15'/.",
-        "500 - Chance: 10'/.",
-        "1000 - Chance: 5'/."
+        "Drugs - 100 - Chance: 40%%",
+        "200 - Chance: 30%%",
+        "300 - Chance: 15%%",
+        "500 - Chance: 10%%",
+        "1000 - Chance: 5%%"
     }},
     {name = "Cyan Crate", color = imgui.ImVec4(0.1, 0.8, 0.8, 1.0), priceGold = "200 Gold", priceMP = "150 MP", items = {
-        "Vehicles: Tampa - Chance: 40'/.",
-        "Landstalker - Chance: 30'/.",
-        "Tornado - Chance: 15'/.",
-        "Flash - Chance: 10'/.",
-        "Sultan - Chance: 5'/."
+        "Vehicles: Tampa - Chance: 40%%",
+        "Landstalker - Chance: 30%%",
+        "Tornado - Chance: 15%%",
+        "Flash - Chance: 10%%",
+        "Sultan - Chance: 5%%"
     }},
     {name = "Yellow Crate", color = imgui.ImVec4(0.9, 0.9, 0.1, 1.0), priceGold = "300 Gold", priceMP = "200 MP", items = {
-        "Vehicles: Stafford - Chance: 40'/.",
-        "Stretch - Chance: 30'/.",
-        "Merit - Chance: 15'/.",
-        "Jester - Chance: 10'/.",
-        "Cheetah - Chance: 5'/."
+        "Vehicles: Stafford - Chance: 40%%",
+        "Stretch - Chance: 30%%",
+        "Merit - Chance: 15%%",
+        "Jester - Chance: 10%%",
+        "Cheetah - Chance: 5%%"
     }},
     {name = "Purple Crate", color = imgui.ImVec4(0.6, 0.2, 0.8, 1.0), priceGold = "300 Gold", priceMP = "200 MP", items = {
-        "Vehicles: Premier - Chance: 40'/.",
-        "Mesa - Chance: 30'/.",
-        "Voodoo - Chance: 15'/.",
-        "NRG-500 - Chance: 10'/.",
-        "Turismo - Chance: 5'/."
+        "Vehicles: Premier - Chance: 40%%",
+        "Mesa - Chance: 30%%",
+        "Voodoo - Chance: 15%%",
+        "NRG-500 - Chance: 10%%",
+        "Turismo - Chance: 5%%"
     }},
     {name = "Silver Crate", color = imgui.ImVec4(0.7, 0.7, 0.7, 1.0), priceGold = "400 Gold", priceMP = "250 MP", items = {
-        "Vehicles: Stafford - Chance: 40'/.",
-        "Admiral - Chance: 30'/.",
-        "FCR-900 - Chance: 15'/.",
-        "Super GT - Chance: 10'/.",
-        "Banshee - Chance: 5'/."
+        "Vehicles: Stafford - Chance: 40%%",
+        "Admiral - Chance: 30%%",
+        "FCR-900 - Chance: 15%%",
+        "Super GT - Chance: 10%%",
+        "Banshee - Chance: 5%%"
     }},
     {name = "Blue Crate", color = imgui.ImVec4(0.2, 0.4, 0.9, 1.0), priceGold = "400 Gold", priceMP = "250 MP", items = {
-        "Vehicles: Tahoma - Chance: 40'/.",
-        "Freeway - Chance: 30'/.",
-        "Savanna - Chance: 15'/.",
-        "Comet - Chance: 10'/.",
-        "Bullet - Chance: 5'/."
+        "Vehicles: Tahoma - Chance: 40%%",
+        "Freeway - Chance: 30%%",
+        "Savanna - Chance: 15%%",
+        "Comet - Chance: 10%%",
+        "Bullet - Chance: 5%%"
     }},
     {name = "Brown Crate", color = imgui.ImVec4(0.5, 0.3, 0.2, 1.0), priceGold = "400 Gold", priceMP = "250 MP", items = {
-        "Vehicles: Greenwood - Chance: 40'/.",
-        "Hustler - Chance: 30'/.",
-        "Rancher - Chance: 15'/.",
-        "Elegy - Chance: 10'/.",
-        "Infernus - Chance: 5'/."
+        "Vehicles: Greenwood - Chance: 40%%",
+        "Hustler - Chance: 30%%",
+        "Rancher - Chance: 15%%",
+        "Elegy - Chance: 10%%",
+        "Infernus - Chance: 5%%"
     }},
     {name = "Magenta Crate", color = imgui.ImVec4(0.8, 0.2, 0.6, 1.0), priceGold = "600 Gold", priceMP = "350 MP", items = {
-        "Vehicles: Nebula - Chance: 40'/.",
-        "Stretch - Chance: 30'/.",
-        "Euros - Chance: 15'/.",
-        "ZR-350 - Chance: 10'/.",
-        "Packer - Chance: 5'/."
+        "Vehicles: Nebula - Chance: 40%%",
+        "Stretch - Chance: 30%%",
+        "Euros - Chance: 15%%",
+        "ZR-350 - Chance: 10%%",
+        "Packer - Chance: 5%%"
     }},
     {name = "Pink Crate", color = imgui.ImVec4(0.9, 0.5, 0.7, 1.0), priceGold = "700 Gold", priceMP = "400 MP", items = {
-        "Vehicles: Fortune - Chance: 40'/.",
-        "Hustler - Chance: 30'/.",
-        "Bloodring Banger - Chance: 15'/.",
-        "Buffalo - Chance: 10'/.",
-        "Stuntplane - Chance: 5'/."
+        "Vehicles: Fortune - Chance: 40%%",
+        "Hustler - Chance: 30%%",
+        "Bloodring Banger - Chance: 15%%",
+        "Buffalo - Chance: 10%%",
+        "Stuntplane - Chance: 5%%"
     }},
     {name = "White Crate", color = imgui.ImVec4(0.9, 0.9, 0.9, 1.0), priceGold = "250 Gold", priceMP = "150 MP", items = {
-        "Bronze Skin - Chance: 40'/.",
-        "Bronze Skin - Chance: 30'/.",
-        "Bronze Skin - Chance: 15'/.",
-        "Silver Skin - Chance: 10'/.",
-        "Silver Skin - Chance: 5'/."
+        "Bronze Skin - Chance: 40%%",
+        "Bronze Skin - Chance: 30%%",
+        "Bronze Skin - Chance: 15%%",
+        "Silver Skin - Chance: 10%%",
+        "Silver Skin - Chance: 5%%"
     }},
     {name = "Olive Crate", color = imgui.ImVec4(0.5, 0.6, 0.3, 1.0), priceGold = "450 Gold", priceMP = "250 MP", items = {
-        "Bronze Skin - Chance: 40'/.",
-        "Bronze Skin - Chance: 30'/.",
-        "Bronze Skin - Chance: 15'/.",
-        "Silver Skin - Chance: 10'/.",
-        "Platinum Skin - Chance: 5'/."
+        "Bronze Skin - Chance: 40%%",
+        "Bronze Skin - Chance: 30%%",
+        "Bronze Skin - Chance: 15%%",
+        "Silver Skin - Chance: 10%%",
+        "Platinum Skin - Chance: 5%%"
     }},
     {name = "Lime Crate", color = imgui.ImVec4(0.5, 0.9, 0.2, 1.0), priceGold = "350 Gold", priceMP = "350 MP", items = {
-        "Respect Points - 15 - Chance: 40'/.",
-        "150 Cotton Materials - Chance: 30'/.",
-        "$70,000 - Chance: 15'/.",
-        "Diamond, Onyx Fragment - Chance: 10'/.",
+        "Respect Points - 15 - Chance: 40%%",
+        "150 Cotton Materials - Chance: 30%%",
+        "$70,000 - Chance: 15%%",
+        "Diamond, Onyx Fragment - Chance: 10%%",
     }}
 }
 
@@ -387,13 +611,8 @@ local iniData = inicfg.load({
         hduty_x = 1650.0,
         hduty_y = 2.5,
         lang = 0 -- 0 = Romana, 1 = Engleza  
-    }
-}, directIni)
-inicfg.save(iniData, directIni)
-
--- [ HELPER POINTS ] --
-local helperPointsIni = inicfg.load({
-    main = {
+    },
+    points = {
         score = 0.0,
         goal = 100.0,
         pos_x = 1431,
@@ -401,7 +620,26 @@ local helperPointsIni = inicfg.load({
         locked = true,
         overlay_enabled = true,
     }
-}, 'HelperPoints')
+}, directIni)
+
+-- Migrare unica: daca exista vechiul HelperPoints.ini, preluam valorile in HelperHelp.ini si il stergem
+do
+    local oldPoints = inicfg.load(nil, 'HelperPoints')
+    if oldPoints and oldPoints.main then
+        for k, v in pairs(oldPoints.main) do
+            if iniData.points[k] ~= nil then iniData.points[k] = v end
+        end
+    end
+    if oldPoints then
+        pcall(os.remove, getWorkingDirectory() .. '\\config\\HelperPoints.ini')
+        pcall(os.remove, 'HelperPoints.ini')
+    end
+end
+inicfg.save(iniData, directIni)
+
+-- [ HELPER POINTS ] --
+-- Punctele sunt salvate direct in HelperHelp.ini, sectiunea [points]
+local helperPointsIni = { main = iniData.points }
 
 local helperPointsScoreBuf = imgui.new.float(helperPointsIni.main.score)
 local helperPointsGoalBuf = imgui.new.float(helperPointsIni.main.goal)
@@ -409,7 +647,7 @@ local helperPointsLockedBuf = imgui.new.bool(helperPointsIni.main.locked)
 local helperPointsOverlayBuf = imgui.new.bool(helperPointsIni.main.overlay_enabled ~= false)
 
 local function helperPointsSave()
-    inicfg.save(helperPointsIni, 'HelperPoints')
+    inicfg.save(iniData, directIni)
 end
 
 local function helperPointsFormat(value)
@@ -425,14 +663,14 @@ local function helperPointsTextWithShadow(color, text)
         imgui.ImVec2(0, -1), imgui.ImVec2(0, 1)
     }) do
         imgui.SetCursorPos(cursorPos + offset)
-        imgui.TextColored(helperPointsShadowColor, text)
+        imgui_real.TextColored(helperPointsShadowColor, text)
     end
     imgui.SetCursorPos(cursorPos)
-    imgui.TextColored(color, text)
+    imgui_real.TextColored(color, text)
 end
 
 local function helperPointsStripColors(text)
-    return (text or ''):gsub('{%x%x%x%x%x%x}', '')
+    return ((text or ''):gsub('{%x%x%x%x%x%x}', ''))
 end
 
 local function helperPointsIsLocalPlayer(name)
@@ -561,7 +799,7 @@ end
 -- [ DETALII FINE JOBURI EXACT CA IN HELPERHELP ] --
 local function renderQuarryDetails()
     imgui.Spacing()
-    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "Q U A R R Y - W O R K E R")
+    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(1) .. "Q U A R R Y - W O R K E R")
     imgui.Separator()
     imgui.Spacing()
 
@@ -655,14 +893,14 @@ local function renderQuarryDetails()
 end
 
 local function renderLumberjackDetails()
-    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "L U M B E R J A C K")
+    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(2) .. "L U M B E R J A C K")
     imgui.Separator()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "STATISTICI COMPLETE PE SKILL SI LOCATII")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("list") .. "STATISTICI COMPLETE PE SKILL SI LOCATII")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "COMPLETE STATISTICS BY SKILL AND LOCATIONS")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("list") .. "COMPLETE STATISTICS BY SKILL AND LOCATIONS")
     end
     
     imgui.BeginChild("LumberEarnings", imgui.ImVec2(0, 700), true)  
@@ -760,16 +998,16 @@ local function renderMinerDetails()
     imgui.Spacing()
     imgui.BeginChild("MinerTitleBox", imgui.ImVec2(0, 30), true)
         imgui.SetCursorPosY(5)
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "M I N E R") 
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(3) .. "M I N E R") 
     imgui.EndChild()  
     imgui.Spacing()
     imgui.Separator()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "  [ CASTIGURI CONT FARA CONT PREMIUM. | CU CONT PREMIUM. ]")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("coins") .. "  [ CASTIGURI CONT FARA CONT PREMIUM. | CU CONT PREMIUM. ]")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "  [ EARNINGS WITHOUT PREMIUM ACCOUNT | WITH PREMIUM ACCOUNT ]")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("coins") .. "  [ EARNINGS WITHOUT PREMIUM ACCOUNT | WITH PREMIUM ACCOUNT ]")
     end
 
     imgui.BeginChild("MinerEarningsBox", imgui.ImVec2(0, 200), true)  
@@ -796,14 +1034,14 @@ local function renderMinerDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "  [ VEHICULE SI VITEZA ]")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("car") .. "  [ VEHICULE SI VITEZA ]")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "  [ VEHICLES AND SPEED ]")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("car") .. "  [ VEHICLES AND SPEED ]")
     end
 
     imgui.BeginChild("MinerVehBox", imgui.ImVec2(0, 95), true)  
         imgui.Columns(2, "minVehCols", false)      
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "BOBCAT")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("car") .. "BOBCAT")
         imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), "Skill: 1-5")
         if iniData.settings.lang == 0 then
             imgui.Text("Viteza: 140 KM/h")      
@@ -811,7 +1049,7 @@ local function renderMinerDetails()
             imgui.Text("Speed: 140 KM/h")      
         end
         imgui.NextColumn()     
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "YOSEMITE")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("car") .. "YOSEMITE")
         imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), "Skill: 6-10")
         if iniData.settings.lang == 0 then
             imgui.Text("Viteza: 144 KM/h")     
@@ -823,9 +1061,9 @@ local function renderMinerDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "  [ AVANSARE IN SKILL ]")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "  [ AVANSARE IN SKILL ]")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "  [ SKILL LEVEL UP PROGRESS ]")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "  [ SKILL LEVEL UP PROGRESS ]")
     end
 
     imgui.BeginChild("MinerProgressBox", imgui.ImVec2(0, 260), true)  
@@ -873,19 +1111,19 @@ local function renderMinerDetails()
 end
 
 local function renderGarbageDetails()
-    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "G A R B A G E - M A N")
+    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(4) .. "G A R B A G E - M A N")
     imgui.Separator()
     imgui.Spacing()
 
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "GUNOIER (SKILL 1 - 10)")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "GUNOIER (SKILL 1 - 10)")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "GARBAGE-MAN (SKILL 1 - 10)")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "GARBAGE-MAN (SKILL 1 - 10)")
     end
 
     imgui.BeginChild("GarbageMainDetailsBox", imgui.ImVec2(0, 650), true)
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(1, 0.84, 0, 1), "[1] PROGRESIA CONTRACTELOR SI VEHICULELOR")
+            imgui.TextColored(imgui.ImVec4(1, 0.84, 0, 1), imgui.pre("car") .. "[1] PROGRESIA CONTRACTELOR SI VEHICULELOR")
             imgui.Separator()
             imgui.BulletText("Skill 1-2 | Sweeper: Curatarea strazilor (Viteza max. 35 km/h peste petele de pe asfalt).")
             imgui.BulletText("Skill 3-4 | Walton: Colectare saci de gunoi din cartiere folosind tasta Y.")
@@ -896,7 +1134,7 @@ local function renderGarbageDetails()
             imgui.Spacing()
             imgui.Spacing()
 
-            imgui.TextColored(imgui.ImVec4(0.4, 1.0, 0.4, 1), "[2] SALARII DE BAZA PE CONTRACTE")
+            imgui.TextColored(imgui.ImVec4(0.4, 1.0, 0.4, 1), imgui.pre("coins") .. "[2] SALARII DE BAZA PE CONTRACTE")
             imgui.Separator()
             imgui.BulletText("Skill 1 ($500) | Skill 2 ($550) - Curatarea strazilor")
             imgui.BulletText("Skill 3 ($680) | Skill 4 ($970) - Colectare rezidentiala")
@@ -927,7 +1165,7 @@ local function renderGarbageDetails()
             imgui.Spacing()
             imgui.Spacing()
 
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "[5] SKILL (CURSE):")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "[5] SKILL (CURSE):")
             imgui.Separator()
             imgui.Columns(2, "GarbageSkillRO", false)
             imgui.TextColored(imgui.ImVec4(0.4, 1, 0.4, 1), "Skill 2 necesita 30 Job Skill Points.")
@@ -942,7 +1180,7 @@ local function renderGarbageDetails()
             imgui.TextColored(imgui.ImVec4(0.4, 0.6, 1, 1), "Skill 10 necesita 1900 Job Skill Points.")
             imgui.Columns(1)
         else
-            imgui.TextColored(imgui.ImVec4(1, 0.84, 0, 1), "[1] CONTRACT AND VEHICLE PROGRESSION")
+            imgui.TextColored(imgui.ImVec4(1, 0.84, 0, 1), imgui.pre("car") .. "[1] CONTRACT AND VEHICLE PROGRESSION")
             imgui.Separator()
             imgui.BulletText("Skill 1-2 | Sweeper: Street cleaning (Max speed 35 km/h over road stains).")
             imgui.BulletText("Skill 3-4 | Walton: Collect trash bags from neighborhoods using the Y key.")
@@ -953,7 +1191,7 @@ local function renderGarbageDetails()
             imgui.Spacing()
             imgui.Spacing()
 
-            imgui.TextColored(imgui.ImVec4(0.4, 1.0, 0.4, 1), "[2] BASE EARNINGS BY CONTRACT")
+            imgui.TextColored(imgui.ImVec4(0.4, 1.0, 0.4, 1), imgui.pre("coins") .. "[2] BASE EARNINGS BY CONTRACT")
             imgui.Separator()
             imgui.BulletText("Skill 1 ($500) | Skill 2 ($550) - Street Cleaning")
             imgui.BulletText("Skill 3 ($680) | Skill 4 ($970) - Residential Waste")
@@ -984,7 +1222,7 @@ local function renderGarbageDetails()
             imgui.Spacing()
             imgui.Spacing()
 
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "[5] SKILL (REQUIREMENTS):")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "[5] SKILL (REQUIREMENTS):")
             imgui.Separator()
             imgui.Columns(2, "GarbageSkillEN", false)
             imgui.TextColored(imgui.ImVec4(0.4, 1, 0.4, 1), "Skill 2 requires 30 Job Skill Points.")
@@ -1004,14 +1242,14 @@ local function renderGarbageDetails()
 end
 
 local function renderBusDriverDetails()
-    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "B U S - D R I V E R")
+    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(5) .. "B U S - D R I V E R")
     imgui.Separator()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "VENITURI SI PLATA")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("coins") .. "VENITURI SI PLATA")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "EARNINGS AND PAYOUT")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("coins") .. "EARNINGS AND PAYOUT")
     end
 
     imgui.BeginChild("BusEarningsBox", imgui.ImVec2(0, 95), true)
@@ -1031,9 +1269,9 @@ local function renderBusDriverDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "VEHICUL DISPONIBIL")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("car") .. "VEHICUL DISPONIBIL")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "AVAILABLE VEHICLE")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("car") .. "AVAILABLE VEHICLE")
     end
 
     imgui.BeginChild("BusVehBox", imgui.ImVec2(0, 110), true)  
@@ -1055,9 +1293,9 @@ local function renderBusDriverDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "COMENZI SI MOD DE LUCRU")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("terminal") .. "COMENZI SI MOD DE LUCRU")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "COMMANDS AND GAMEPLAY")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("terminal") .. "COMMANDS AND GAMEPLAY")
     end
 
     imgui.BeginChild("BusCmdsBox", imgui.ImVec2(0, 200), true)  
@@ -1090,21 +1328,21 @@ local function renderBusDriverDetails()
     imgui.Separator()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), "Nota: Premium +5'/. | Poti lua pasageri pe tot parcursul traseului.")
+        imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), "Nota: Premium +5%% | Poti lua pasageri pe tot parcursul traseului.")
     else
-        imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), "Note: Premium +50'/. | You can pick up passengers along the entire route.")
+        imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), "Note: Premium +50%% | You can pick up passengers along the entire route.")
     end
 end
 
 local function renderFishermanDetails()
-    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "F I S H E R M A N")
+    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(6) .. "F I S H E R M A N")
     imgui.Separator()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "VENITURI PE TIP PESTE")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("coins") .. "VENITURI PE TIP PESTE")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "EARNINGS BY FISH TYPE")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("coins") .. "EARNINGS BY FISH TYPE")
     end
 
     imgui.BeginChild("FishEarningsBox", imgui.ImVec2(0, 120), true)  
@@ -1139,27 +1377,27 @@ local function renderFishermanDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "REGULI SI NECESAR")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("info") .. "REGULI SI NECESAR")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "RULES AND REQUIREMENTS")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("info") .. "RULES AND REQUIREMENTS")
     end
 
     imgui.BeginChild("FishInfoBox", imgui.ImVec2(0, 80), true)  
         imgui.Columns(2, "fishInfoCols", false)
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "ECHIPAMENT")
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("tools") .. "ECHIPAMENT")
             imgui.Text("Undita & Momeala (24/7)")
             imgui.Text("Durata Undita: 24h")
             imgui.NextColumn()
-            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "AVERTIZARE")
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("warn") .. "AVERTIZARE")
             imgui.Text("Fara licenta: Wanted 1")
             imgui.Text("Mecanica: 30s / 10 click")
         else
-            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "EQUIPMENT")
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("tools") .. "EQUIPMENT")
             imgui.Text("Fishing Rod & Bait (24/7)")
             imgui.Text("Rod Duration: 24h")
             imgui.NextColumn()
-            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "WARNING")
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("warn") .. "WARNING")
             imgui.Text("No license: Wanted 1")
             imgui.Text("Mechanics: 30s / 10 clicks")
         end
@@ -1168,9 +1406,9 @@ local function renderFishermanDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "PROGRES SKILL (PESTI PRINSI)")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "PROGRES SKILL (PESTI PRINSI)")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SKILL PROGRESS (FISH CAUGHT)")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "SKILL PROGRESS (FISH CAUGHT)")
     end
     imgui.Columns(2, "FishInfoColumns", true)
 
@@ -1221,12 +1459,12 @@ local function renderFishermanDetails()
   end
 
 local function renderTruckerDetails()
-    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "T R U C K E R") 
+    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(7) .. "T R U C K E R") 
     imgui.Separator()
     
     imgui.BeginChild("TruckerBase", imgui.ImVec2(0, 95), true)  
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "GENERAL:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("info") .. "GENERAL:")
             imgui.Separator()
             imgui.Spacing()
             imgui.Bullet() 
@@ -1235,7 +1473,7 @@ local function renderTruckerDetails()
             imgui.Bullet() 
             imgui.TextWrapped("Comanda Lucru: /work  |  Comanda Decuplare: /detach  |  Recuplare: 20 secunde")
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "GENERAL:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("info") .. "GENERAL:")
             imgui.Separator()
             imgui.Spacing()
             imgui.Bullet() 
@@ -1248,9 +1486,9 @@ local function renderTruckerDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "TIPURI DE INCARCATURI:")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("box") .. "TIPURI DE INCARCATURI:")
     else
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "CARGO TYPES:")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("box") .. "CARGO TYPES:")
     end
 
     imgui.BeginChild("CargoTypes", imgui.ImVec2(0, 120), true)  
@@ -1285,9 +1523,9 @@ local function renderTruckerDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "ANALIZA RUTE (S1 - S10):")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("list") .. "ANALIZA RUTE (S1 - S10):")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "ROUTE ANALYSIS (S1 - S10):")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("list") .. "ROUTE ANALYSIS (S1 - S10):")
     end
 
     imgui.BeginChild("RoutesList", imgui.ImVec2(0, 150), true)  
@@ -1321,7 +1559,7 @@ local function renderTruckerDetails()
     
     imgui.BeginChild("TruckerProg", imgui.ImVec2(0, 155), true)  
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "CURSE NECESARE PENTRU SKILL:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "CURSE NECESARE PENTRU SKILL:")
             imgui.Separator()
             imgui.Spacing()      
             imgui.Columns(2, "progCols", false) 
@@ -1337,7 +1575,7 @@ local function renderTruckerDetails()
             imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 9 -> 10:") imgui.SameLine() imgui.Text("350 curse")
             imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), "Total Skill 10: 1.900 Curse")  
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "RUNS REQUIRED FOR SKILL UPGRADE:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "RUNS REQUIRED FOR SKILL UPGRADE:")
             imgui.Separator()
             imgui.Spacing()      
             imgui.Columns(2, "progCols", false) 
@@ -1358,9 +1596,9 @@ local function renderTruckerDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "VEHICULE:")
+        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), imgui.pre("car") .. "VEHICULE:")
     else
-        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "VEHICLES:")
+        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), imgui.pre("car") .. "VEHICLES:")
     end
 
     imgui.BeginChild("TruckerFleet", imgui.ImVec2(0, 100), true)  
@@ -1399,23 +1637,23 @@ local function renderTruckerDetails()
 end
 
 local function renderFarmerDetails()
-    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "F A R M E R")
+    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(8) .. "F A R M E R")
     imgui.Separator()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "ADMINISTRARE PARCELE (24 ORE):")
+        imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("seedling") .. "ADMINISTRARE PARCELE (24 ORE):")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "PLOT MANAGEMENT (24 HOURS):")
+        imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("seedling") .. "PLOT MANAGEMENT (24 HOURS):")
     end
 
     imgui.BeginChild("FarmerPlots", imgui.ImVec2(0, 150), true)  
         imgui.Columns(2, "plotCols", false)
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "PARCELA PUBLICA")
+            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), imgui.pre("seedling") .. "PARCELA PUBLICA")
             imgui.Text("Pret: $1,000 / 24h")
             imgui.Text("ID-uri LS: 1-20 | SF: 29-48 | LV: 53-64")
             imgui.NextColumn()        
-            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "PARCELA PRIVATA")
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("seedling") .. "PARCELA PRIVATA")
             imgui.Text("Pret: 200 Gold / 24h")
             imgui.Text("ID-uri LS: 21-24 | SF: 25-28 | LV: 49-52")
             imgui.Columns(1)
@@ -1423,11 +1661,11 @@ local function renderFarmerDetails()
             imgui.TextWrapped("Poti detine simultan o parcela privata si una publica.")
             imgui.TextWrapped("Avantaj Privat: NU se usuca plantele si poti planta orice indiferent de skill.")
         else
-            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "PUBLIC PLOT")
+            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), imgui.pre("seedling") .. "PUBLIC PLOT")
             imgui.Text("Price: $1,000 / 24h")
             imgui.Text("IDs LS: 1-20 | SF: 29-48 | LV: 53-64")
             imgui.NextColumn()        
-            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "PRIVATE PLOT")
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("seedling") .. "PRIVATE PLOT")
             imgui.Text("Price: 200 Gold / 24h")
             imgui.Text("IDs LS: 21-24 | SF: 25-28 | LV: 49-52")
             imgui.Columns(1)
@@ -1439,9 +1677,9 @@ local function renderFarmerDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "PROCESUL DE LUCRU:")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("sync") .. "PROCESUL DE LUCRU:")
     else
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "WORK PROCESS:")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("sync") .. "WORK PROCESS:")
     end
 
     imgui.BeginChild("FarmerWork", imgui.ImVec2(0, 140), true)  
@@ -1464,9 +1702,9 @@ local function renderFarmerDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "ANALIZA PLANTE SI TIMPI:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("list") .. "ANALIZA PLANTE SI TIMPI:")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "CROP & TIME ANALYSIS:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("list") .. "CROP & TIME ANALYSIS:")
     end
 
     imgui.BeginChild("FarmerCrops", imgui.ImVec2(0, 170), true)  
@@ -1517,30 +1755,30 @@ local function renderFarmerDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "PROFIT SI AVANSARE SKILL:")
+        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), imgui.pre("star") .. "PROFIT SI AVANSARE SKILL:")
     else
-        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "PROFIT & SKILL UPGRADE:")
+        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), imgui.pre("star") .. "PROFIT & SKILL UPGRADE:")
     end
 
     imgui.BeginChild("FarmerProfit", imgui.ImVec2(0, 170), true)  
         imgui.Columns(2, "skillCols", false)       
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.5, 1), "PROFIT ESTIMAT / PLANTA:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.5, 1), imgui.pre("coins") .. "PROFIT ESTIMAT / PLANTA:")
             imgui.Text("Skill 1: ~$244 (Usturoi)\nSkill 2: ~$563 (Feriga)\nSkill 3: ~$1,050 (Trestie)")
             imgui.Text("Skill 4: ~$2,400 (Menta)\nSkill 5: ~$4,200 (Cactus)")     
             imgui.NextColumn()           
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.5, 1), "PRAGURI PUNCTE:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.5, 1), imgui.pre("star") .. "PRAGURI PUNCTE:")
             imgui.Text("S1 -> S2: 1,536 pct\nS2 -> S3: 6,144 pct\nS3 -> S4: 13,824 pct\nS4 -> S5: 23,040 pct")       
             imgui.Columns(1)
             imgui.Separator()
             imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), "Puncte/Planta: Usturoi(1) | Feriga(3) | Trestie(8) | Menta(32) | Cactus(64)")
             imgui.TextColored(imgui.ImVec4(0.4, 0.7, 1, 1), "Info: O parcela completa (16 plante) de Cactus ofera 1,024 puncte.")
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.5, 1), "ESTIMATED PROFIT / PLANT:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.5, 1), imgui.pre("coins") .. "ESTIMATED PROFIT / PLANT:")
             imgui.Text("Skill 1: ~$244 (Garlic)\nSkill 2: ~$563 (Fern)\nSkill 3: ~$1,050 (Sugar Cane)")
             imgui.Text("Skill 4: ~$2,400 (Mint)\nSkill 5: ~$4,200 (Cactus)")     
             imgui.NextColumn()           
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.5, 1), "POINT THRESHOLDS:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.5, 1), imgui.pre("star") .. "POINT THRESHOLDS:")
             imgui.Text("S1 -> S2: 1,536 pts\nS2 -> S3: 6,144 pts\nS3 -> S4: 13,824 pts\nS4 -> S5: 23,040 pts")       
             imgui.Columns(1)
             imgui.Separator()
@@ -1551,12 +1789,12 @@ local function renderFarmerDetails()
 end
 
 local function renderChemistDetails()
-    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "C H E M I S T")
+    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(9) .. "C H E M I S T")
     imgui.Separator()
     
     imgui.BeginChild("ChemistInfo", imgui.ImVec2(0, 120), true)  
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "INFORMATII SI COMENZI:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("terminal") .. "INFORMATII SI COMENZI:")
             imgui.Separator()
             imgui.Columns(2, "chemInfoCols", false)
             imgui.BulletText("Nivel: 1 (Job Legal)")
@@ -1567,7 +1805,7 @@ local function renderChemistDetails()
             imgui.BulletText("Oprire: /killcp")
             imgui.BulletText("Inventar Kit: /usekit")
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "INFORMATION AND COMMANDS:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("terminal") .. "INFORMATION AND COMMANDS:")
             imgui.Separator()
             imgui.Columns(2, "chemInfoCols", false)
             imgui.BulletText("Level: 1 (Legal Job)")
@@ -1583,9 +1821,9 @@ local function renderChemistDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "TABEL PLATI SI SANSE DROP:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("coins") .. "TABEL PLATI SI SANSE DROP:")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "PAYOUT TABLE AND DROP CHANCES:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("coins") .. "PAYOUT TABLE AND DROP CHANCES:")
     end
 
     imgui.BeginChild("ChemistFullTable", imgui.ImVec2(0, 280), true)  
@@ -1636,23 +1874,23 @@ local function renderChemistDetails()
             imgui.TextColored(imgui.ImVec4(d[5][1], d[5][2], d[5][3], d[5][4]), d[1]) imgui.NextColumn()           
             imgui.TextColored(imgui.ImVec4(0.7059, 0.2039, 0.9216, 1), d[2]) imgui.NextColumn()         
             if iniData.settings.lang == 0 then
-                imgui.TextColored(imgui.ImVec4(0.5608, 0.9216, 0.2039, 1), tostring(d[3]) .. "'/. sanse ")
+                imgui.TextColored(imgui.ImVec4(0.5608, 0.9216, 0.2039, 1), tostring(d[3]) .. "%% sanse ")
                 imgui.SameLine()
                 imgui.TextColored(imgui.ImVec4(0.2039, 0.7059, 0.9216, 1), "Kit Medical")
                 imgui.SameLine()
                 imgui.Text(", ")
                 imgui.SameLine()
-                imgui.TextColored(imgui.ImVec4(0.5608, 0.9216, 0.2039, 1), tostring(d[4]) .. "'/. sanse ")
+                imgui.TextColored(imgui.ImVec4(0.5608, 0.9216, 0.2039, 1), tostring(d[4]) .. "%% sanse ")
                 imgui.SameLine()
                 imgui.TextColored(imgui.ImVec4(0.2039, 0.7059, 0.9216, 1), "Kit de Dependenta")
             else
-                imgui.TextColored(imgui.ImVec4(0.5608, 0.9216, 0.2039, 1), tostring(d[3]) .. "'/. chance ")
+                imgui.TextColored(imgui.ImVec4(0.5608, 0.9216, 0.2039, 1), tostring(d[3]) .. "%% chance ")
                 imgui.SameLine()
                 imgui.TextColored(imgui.ImVec4(0.2039, 0.7059, 0.9216, 1), "Medical Kit")
                 imgui.SameLine()
                 imgui.Text(", ")
                 imgui.SameLine()
-                imgui.TextColored(imgui.ImVec4(0.5608, 0.9216, 0.2039, 1), tostring(d[4]) .. "'/. chance ")
+                imgui.TextColored(imgui.ImVec4(0.5608, 0.9216, 0.2039, 1), tostring(d[4]) .. "%% chance ")
                 imgui.SameLine()
                 imgui.TextColored(imgui.ImVec4(0.2039, 0.7059, 0.9216, 1), "Addiction Kit")
             end
@@ -1671,7 +1909,7 @@ local function renderChemistDetails()
     
     imgui.Columns(2, "chemFooter", false)    
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "PROGRESIE (PRAGURI):")
+        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), imgui.pre("star") .. "PROGRESIE (PRAGURI):")
         imgui.BeginChild("ProgInfo", imgui.ImVec2(0, 200), true)
             imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 1") imgui.SameLine()
             imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
@@ -1711,7 +1949,7 @@ local function renderChemistDetails()
             imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 350 de curse. (1900 total)")
         imgui.EndChild()    
         imgui.NextColumn()    
-        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "SISTEM KIT-URI:")
+        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), imgui.pre("box") .. "SISTEM KIT-URI:")
         imgui.BeginChild("KitInfo", imgui.ImVec2(0, 200), true)
             imgui.BulletText("Kit Medical: 100 HP")
             imgui.BulletText("Kit Dependenta: -30 unit.")
@@ -1719,7 +1957,7 @@ local function renderChemistDetails()
             imgui.TextDisabled("Ex: Skill 5 = 5 kit-uri total.")
         imgui.EndChild()   
     else
-        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "PROGRESSION (THRESHOLDS):")
+        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), imgui.pre("star") .. "PROGRESSION (THRESHOLDS):")
         imgui.BeginChild("ProgInfo", imgui.ImVec2(0, 200), true)
             imgui.TextColored(imgui.ImVec4(0.2039, 0.9216, 0.6824, 1), "Skill 1") imgui.SameLine()
             imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), " >> ") imgui.SameLine()
@@ -1759,7 +1997,7 @@ local function renderChemistDetails()
             imgui.TextColored(imgui.ImVec4(0.9216, 0.2039, 0.3490, 1), ": 350 runs. (1900 total)")
         imgui.EndChild()    
         imgui.NextColumn()    
-        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "KIT SYSTEM:")
+        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), imgui.pre("box") .. "KIT SYSTEM:")
         imgui.BeginChild("KitInfo", imgui.ImVec2(0, 200), true)
             imgui.BulletText("Medical Kit: 100 HP")
             imgui.BulletText("Addiction Kit: -30 units")
@@ -1772,12 +2010,12 @@ end
 
 local function renderDetectiveDetails()
     imgui.BeginChild("DetectiveFullDetails", imgui.ImVec2(0, 0), true)
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "D E T E C T I V E") 
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(10) .. "D E T E C T I V E") 
         imgui.Separator()
 
         if iniData.settings.lang == 0 then
             imgui.Spacing()
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "INFORMATII GENERALE:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("info") .. "INFORMATII GENERALE:")
             imgui.Spacing()
             imgui.Separator()
             imgui.Spacing()
@@ -1785,7 +2023,7 @@ local function renderDetectiveDetails()
             imgui.TextWrapped("Scop: Investigarea scenelor de crima, rezolvarea cazurilor speciale si localizarea jucatorilor pe harta.")
         else
             imgui.Spacing()
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "GENERAL INFORMATION:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("info") .. "GENERAL INFORMATION:")
             imgui.Spacing()
             imgui.Separator()
             imgui.Spacing()
@@ -1798,7 +2036,7 @@ local function renderDetectiveDetails()
         imgui.Spacing()
 
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "SISTEM LOCALIZARE (/FIND):")
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("search") .. "SISTEM LOCALIZARE (/FIND):")
             imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Comenzi: /find [ID/Name] | /cancel find")
             imgui.BulletText("Fiecare tinta primeste un marker unic pe mini-map: Rosu, Verde, Albastru, Galben.")
             imgui.BulletText("Comanda /cancel find pe o singura tinta o opreste direct. Daca sunt mai multe, deschide meniu UI.")
@@ -1818,7 +2056,7 @@ local function renderDetectiveDetails()
             imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "4 jucatori (Permanent)") imgui.NextColumn()
             imgui.Columns(1)
         else
-            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "TRACKING SYSTEM (/FIND):")
+            imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("search") .. "TRACKING SYSTEM (/FIND):")
             imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Commands: /find [ID/Name] | /cancel find")
             imgui.BulletText("Each target gets a unique mini-map marker color: Red, Green, Blue, Yellow.")
             imgui.BulletText("Using /cancel find with 1 target stops it directly. Multiple targets open an interaction menu.")
@@ -1844,7 +2082,7 @@ local function renderDetectiveDetails()
         imgui.Spacing()
 
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "TIPURI DE INVESTIGATII:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("search") .. "TIPURI DE INVESTIGATII:")
             imgui.Spacing()
             imgui.Separator()
             
@@ -1875,7 +2113,7 @@ local function renderDetectiveDetails()
             imgui.BulletText("Posibilitatea de a efectua munca de detectiv cu vehiculul personal.")
             
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "INVESTIGATION TYPES:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("search") .. "INVESTIGATION TYPES:")
             imgui.Spacing()
             imgui.Separator()
             imgui.Spacing()
@@ -1912,7 +2150,7 @@ local function renderDetectiveDetails()
         imgui.Spacing()
 
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "VEHICULE SI SALARII BAZA PER SKILL:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("car") .. "VEHICULE SI SALARII BAZA PER SKILL:")
             imgui.Spacing()
             imgui.Separator()
             imgui.Spacing()
@@ -1936,7 +2174,7 @@ local function renderDetectiveDetails()
             imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "$3,900") imgui.NextColumn()    
             imgui.Columns(1)
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "VEHICLES AND BASE SALARY PER SKILL:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("car") .. "VEHICLES AND BASE SALARY PER SKILL:")
             imgui.Spacing()
             imgui.Separator()
             imgui.Spacing()
@@ -1966,7 +2204,7 @@ local function renderDetectiveDetails()
         imgui.Spacing()
 
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "PUNCTE SKILL PRIMITE PER CHECKPOINT:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "PUNCTE SKILL PRIMITE PER CHECKPOINT:")
             imgui.Spacing()
             imgui.Separator()
             imgui.Spacing()
@@ -1990,7 +2228,7 @@ local function renderDetectiveDetails()
             imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "+64 pct (Mentorat)") imgui.NextColumn()
             imgui.Columns(1)
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SKILL POINTS EARNED PER CHECKPOINT:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "SKILL POINTS EARNED PER CHECKPOINT:")
             imgui.Spacing()
             imgui.Separator()
             imgui.Spacing()
@@ -2020,7 +2258,7 @@ local function renderDetectiveDetails()
         imgui.Spacing()
 
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SISTEM CO-OP & MENTORAT:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("users") .. "SISTEM CO-OP & MENTORAT:")
             imgui.Spacing()
             imgui.Separator()
             imgui.Spacing()
@@ -2031,7 +2269,7 @@ local function renderDetectiveDetails()
             imgui.BulletText("Mentorat: Partenerul cu skill mic primeste progres de skill bazat pe nivelul investigatiei Liderului.")
             imgui.BulletText("Daca partenerul iese din joc, Liderul poate continua si termina singur investigatia.")
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "CO-OP & MENTORSHIP SYSTEM:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("users") .. "CO-OP & MENTORSHIP SYSTEM:")
             imgui.Spacing()
             imgui.Separator()
             imgui.Spacing()
@@ -2049,7 +2287,7 @@ end
 local function renderTransporterDetails()
     imgui.BeginChild("TransporterMainChild", imgui.ImVec2(0, 0), true)
         
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "T R A N S P O R T E R") 
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(11) .. "T R A N S P O R T E R") 
         imgui.Separator()
         imgui.Spacing()
 
@@ -2235,7 +2473,7 @@ end
 local function renderDrugsDealerDetails()
     imgui.BeginChild("DrugsDealerMainChild", imgui.ImVec2(0, 0), true)
 
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "D R U G S - D E A L E R") 
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(12) .. "D R U G S - D E A L E R") 
         imgui.Separator()
         imgui.Spacing()
 
@@ -2350,12 +2588,11 @@ local function renderDrugsDealerDetails()
 
             -- Traducere pentru lista drogurilor
             imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("Informatii Droguri:") or "Drugs Information:")      
-            imgui.Text(isRO and u8("Marijuana: +10 HP, 1 '/. dependenta, cooldown scurt (12g)") or "Marijuana: +10 HP, 1 '/. addiction, short cooldown (12g)")
-            imgui.Text(isRO and u8("Cocaina: +30 HP, 3 '/. dependenta, recuperare rapida (18g)") or "Cocaine: +30 HP, 3 '/. addiction, fast recovery (18g)")
-            imgui.Text(isRO and u8("Ecstasy: +70 HP, 8 '/. dependenta, imobilizare scurta (26g)") or "Ecstasy: +70 HP, 8 '/. addiction, short immobilization (26g)")
-            imgui.Text(isRO and u8("Metamfetamina: Sanatate completa, 15 '/. dependenta, 15s imob. (38g)") or "Methamphetamine: Full health, 15 '/. addiction, 15s imob. (38g)")
+            imgui.Text(isRO and u8("Marijuana: +10 HP, 1 %% dependenta, cooldown scurt (12g)") or "Marijuana: +10 HP, 1 %% addiction, short cooldown (12g)")
+            imgui.Text(isRO and u8("Cocaina: +30 HP, 3 %% dependenta, recuperare rapida (18g)") or "Cocaine: +30 HP, 3 %% addiction, fast recovery (18g)")
+            imgui.Text(isRO and u8("Ecstasy: +70 HP, 8 %% dependenta, imobilizare scurta (26g)") or "Ecstasy: +70 HP, 8 %% addiction, short immobilization (26g)")
+            imgui.Text(isRO and u8("Metamfetamina: Sanatate completa, 15 %% dependenta, 15s imob. (38g)") or "Methamphetamine: Full health, 15 %% addiction, 15s imob. (38g)")
 
-        imgui.EndChild()
             
             if iniData.settings.lang == 0 then
                 imgui.BulletText("Skill 1 - Nu poate cumpara droguri de la un sediu (crack house).")
@@ -2385,7 +2622,7 @@ end
 local function renderCarJackerDetails()
     imgui.BeginChild("CarJackerMainChild", imgui.ImVec2(0, 0), true)
 
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "C A R - J A C K E R") 
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(13) .. "C A R - J A C K E R") 
         imgui.Separator()
         imgui.Spacing()
 
@@ -2541,7 +2778,7 @@ end
 local function renderMecanicDetails()
     imgui.BeginChild("MecanicMainChild", imgui.ImVec2(0, 0), true)
 
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "M E C A N I C") 
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(14) .. "M E C A N I C") 
         imgui.Separator()
         imgui.Spacing()
 
@@ -2567,15 +2804,15 @@ local function renderMecanicDetails()
             imgui.Separator()
             imgui.TextColored(imgui.ImVec4(0.1, 0.8, 0.1, 1), "Change Vehicle Color (Skill 6+): Schimba culoarea permanenta (Hidden/NonHidden). Bani redirectionati in biz.")
             imgui.TextColored(imgui.ImVec4(0.1, 0.6, 0.9, 1), "Tune The Vehicle (Skill 7+): Tuneaza vehiculul fara biz. Bani redirectionati la cel mai apropiat Tuning. Discounturi:")
-            imgui.BulletText("S7: Front/Rear Bumper, Sideskirts, Hydraulics (Discount 5 '/.) | S8: Roof, Front Bullbar, Hood, Lamps, Vents (Discount 10 '/.)")
-            imgui.BulletText("S9: Spoiler, Wheels, Exhaust (Discount 15 '/.) | S10: NOS, Paintjob, Neons (Discount 20 '/.)")
+            imgui.BulletText("S7: Front/Rear Bumper, Sideskirts, Hydraulics (Discount 5 %%) | S8: Roof, Front Bullbar, Hood, Lamps, Vents (Discount 10 %%)")
+            imgui.BulletText("S9: Spoiler, Wheels, Exhaust (Discount 15 %%) | S10: NOS, Paintjob, Neons (Discount 20 %%)")
         else
             imgui.TextColored(imgui.ImVec4(1, 0.5, 1, 1), "Job Perks (High Skill)")
             imgui.Separator()
             imgui.TextColored(imgui.ImVec4(0.1, 0.8, 0.1, 1), "Change Vehicle Color (Skill 6+): Change the permanent color (Hidden/NonHidden). Money redirected to business.")
             imgui.TextColored(imgui.ImVec4(0.1, 0.6, 0.9, 1), "Tune The Vehicle (Skill 7+): Tune the vehicle without a business. Money redirected to the nearest Tuning shop. Discounts:")
-            imgui.BulletText("S7: Front/Rear Bumper, Sideskirts, Hydraulics (5 '/. Discount) | S8: Roof, Front Bullbar, Hood, Lamps, Vents (10 '/. Discount)")
-            imgui.BulletText("S9: Spoiler, Wheels, Exhaust (15 '/. Discount) | S10: NOS, Paintjob, Neons (20 '/. Discount)")
+            imgui.BulletText("S7: Front/Rear Bumper, Sideskirts, Hydraulics (5 %% Discount) | S8: Roof, Front Bullbar, Hood, Lamps, Vents (10 %% Discount)")
+            imgui.BulletText("S9: Spoiler, Wheels, Exhaust (15 %% Discount) | S10: NOS, Paintjob, Neons (20 %% Discount)")
         end
         imgui.Spacing()
 
@@ -2598,16 +2835,16 @@ local function renderMecanicDetails()
             imgui.Separator()
             
             local mecStats = {
-                {"Skill 1", "100 HP", "55 '/. / 83 '/.", "$90 - $650 / $135 - $975"},
-                {"Skill 2", "200 HP", "60 '/. / 90 '/.", "$102 - $718 / $153 - $1,077"},
-                {"Skill 3", "300 HP", "65 '/. / 98 '/.", "$120 - $840 / $180 - $1,260"},
-                {"Skill 4", "400 HP", "70 '/. / 105 '/.", "$145 - $1025 / $217 - $1,537"},
-                {"Skill 5", "500 HP", "75 '/. / 113 '/.", "$185 - $1305 / $277 - $1,957"},
-                {"Skill 6", "600 HP", "80 '/. / 120 '/.", "$225 - $1585 / $337 - $2,377"},
-                {"Skill 7", "700 HP", "85 '/. / 128 '/.", "$280 - $1960 / $420 - $2,940"},
-                {"Skill 8", "800 HP", "90 '/. / 135 '/.", "$335 - $2415 / $502 - $3,622"},
-                {"Skill 9", "900 HP", "95 '/. / 143 '/.", "$415 - $2935 / $622 - $4,402"},
-                {"Skill 10", "1000 HP", "100 '/. / 150 '/.", "$510 - $3390 / $765 - $5,085"}
+                {"Skill 1", "100 HP", "55 %% / 83 %%", "$90 - $650 / $135 - $975"},
+                {"Skill 2", "200 HP", "60 %% / 90 %%", "$102 - $718 / $153 - $1,077"},
+                {"Skill 3", "300 HP", "65 %% / 98 %%", "$120 - $840 / $180 - $1,260"},
+                {"Skill 4", "400 HP", "70 %% / 105 %%", "$145 - $1025 / $217 - $1,537"},
+                {"Skill 5", "500 HP", "75 %% / 113 %%", "$185 - $1305 / $277 - $1,957"},
+                {"Skill 6", "600 HP", "80 %% / 120 %%", "$225 - $1585 / $337 - $2,377"},
+                {"Skill 7", "700 HP", "85 %% / 128 %%", "$280 - $1960 / $420 - $2,940"},
+                {"Skill 8", "800 HP", "90 %% / 135 %%", "$335 - $2415 / $502 - $3,622"},
+                {"Skill 9", "900 HP", "95 %% / 143 %%", "$415 - $2935 / $622 - $4,402"},
+                {"Skill 10", "1000 HP", "100 %% / 150 %%", "$510 - $3390 / $765 - $5,085"}
             }
             for _, stat in ipairs(mecStats) do
                 imgui.Text(stat[1]) imgui.NextColumn()
@@ -2623,16 +2860,16 @@ local function renderMecanicDetails()
             imgui.Separator()
             
             local mecStats = {
-                {"Skill 1", "100 HP", "55 '/. / 83 '/.", "$90 - $650 / $135 - $975"},
-                {"Skill 2", "200 HP", "60 '/. / 90 '/.", "$102 - $718 / $153 - $1,077"},
-                {"Skill 3", "300 HP", "65 '/. / 98 '/.", "$120 - $840 / $180 - $1,260"},
-                {"Skill 4", "400 HP", "70 '/. / 105 '/.", "$145 - $1025 / $217 - $1,537"},
-                {"Skill 5", "500 HP", "75 '/. / 113 '/.", "$185 - $1305 / $277 - $1,957"},
-                {"Skill 6", "600 HP", "80 '/. / 120 '/.", "$225 - $1585 / $337 - $2,377"},
-                {"Skill 7", "700 HP", "85 '/. / 128 '/.", "$280 - $1960 / $420 - $2,940"},
-                {"Skill 8", "800 HP", "90 '/. / 135 '/.", "$335 - $2415 / $502 - $3,622"},
-                {"Skill 9", "900 HP", "95 '/. / 143 '/.", "$415 - $2935 / $622 - $4,402"},
-                {"Skill 10", "1000 HP", "100 '/. / 150 '/.", "$510 - $3390 / $765 - $5,085"}
+                {"Skill 1", "100 HP", "55 %% / 83 %%", "$90 - $650 / $135 - $975"},
+                {"Skill 2", "200 HP", "60 %% / 90 %%", "$102 - $718 / $153 - $1,077"},
+                {"Skill 3", "300 HP", "65 %% / 98 %%", "$120 - $840 / $180 - $1,260"},
+                {"Skill 4", "400 HP", "70 %% / 105 %%", "$145 - $1025 / $217 - $1,537"},
+                {"Skill 5", "500 HP", "75 %% / 113 %%", "$185 - $1305 / $277 - $1,957"},
+                {"Skill 6", "600 HP", "80 %% / 120 %%", "$225 - $1585 / $337 - $2,377"},
+                {"Skill 7", "700 HP", "85 %% / 128 %%", "$280 - $1960 / $420 - $2,940"},
+                {"Skill 8", "800 HP", "90 %% / 135 %%", "$335 - $2415 / $502 - $3,622"},
+                {"Skill 9", "900 HP", "95 %% / 143 %%", "$415 - $2935 / $622 - $4,402"},
+                {"Skill 10", "1000 HP", "100 %% / 150 %%", "$510 - $3390 / $765 - $5,085"}
             }
             for _, stat in ipairs(mecStats) do
                 imgui.Text(stat[1]) imgui.NextColumn()
@@ -2659,14 +2896,14 @@ local function renderMecanicDetails()
             imgui.Separator()
             
             local kitStats = {
-                {"Skill 3", "$15.000 | 12 '/.", "$25.000 | 13 '/."},
-                {"Skill 4", "$12.000 | 11 '/.", "$20.000 | 12 '/."},
-                {"Skill 5", "$12.000 | 10 '/.", "$20.000 | 11 '/."},
-                {"Skill 6", "$12.000 | 9 '/.",  "$20.000 | 10 '/."},
-                {"Skill 7", "$12.000 | 8 '/.",  "$20.000 | 9 '/."},
-                {"Skill 8", "$10.000 | 7 '/.",  "$15.000 | 8 '/."},
-                {"Skill 9", "$10.000 | 6 '/.",  "$15.000 | 7 '/."},
-                {"Skill 10", "$10.000 | 5 '/.", "$15.000 | 6 '/."}
+                {"Skill 3", "$15.000 | 12 %%", "$25.000 | 13 %%"},
+                {"Skill 4", "$12.000 | 11 %%", "$20.000 | 12 %%"},
+                {"Skill 5", "$12.000 | 10 %%", "$20.000 | 11 %%"},
+                {"Skill 6", "$12.000 | 9 %%",  "$20.000 | 10 %%"},
+                {"Skill 7", "$12.000 | 8 %%",  "$20.000 | 9 %%"},
+                {"Skill 8", "$10.000 | 7 %%",  "$15.000 | 8 %%"},
+                {"Skill 9", "$10.000 | 6 %%",  "$15.000 | 7 %%"},
+                {"Skill 10", "$10.000 | 5 %%", "$15.000 | 6 %%"}
             }
             for _, kit in ipairs(kitStats) do
                 imgui.Text(kit[1]) imgui.NextColumn()
@@ -2680,14 +2917,14 @@ local function renderMecanicDetails()
             imgui.Separator()
             
             local kitStats = {
-                {"Skill 3", "$15.000 | 12 '/.", "$25.000 | 13 '/."},
-                {"Skill 4", "$12.000 | 11 '/.", "$20.000 | 12 '/."},
-                {"Skill 5", "$12.000 | 10 '/.", "$20.000 | 11 '/."},
-                {"Skill 6", "$12.000 | 9 '/.",  "$20.000 | 10 '/."},
-                {"Skill 7", "$12.000 | 8 '/.",  "$20.000 | 9 '/."},
-                {"Skill 8", "$10.000 | 7 '/.",  "$15.000 | 8 '/."},
-                {"Skill 9", "$10.000 | 6 '/.",  "$15.000 | 7 '/."},
-                {"Skill 10", "$10.000 | 5 '/.", "$15.000 | 6 '/."}
+                {"Skill 3", "$15.000 | 12 %%", "$25.000 | 13 %%"},
+                {"Skill 4", "$12.000 | 11 %%", "$20.000 | 12 %%"},
+                {"Skill 5", "$12.000 | 10 %%", "$20.000 | 11 %%"},
+                {"Skill 6", "$12.000 | 9 %%",  "$20.000 | 10 %%"},
+                {"Skill 7", "$12.000 | 8 %%",  "$20.000 | 9 %%"},
+                {"Skill 8", "$10.000 | 7 %%",  "$15.000 | 8 %%"},
+                {"Skill 9", "$10.000 | 6 %%",  "$15.000 | 7 %%"},
+                {"Skill 10", "$10.000 | 5 %%", "$15.000 | 6 %%"}
             }
             for _, kit in ipairs(kitStats) do
                 imgui.Text(kit[1]) imgui.NextColumn()
@@ -2742,12 +2979,12 @@ local function renderMecanicDetails()
 end
 
 local function renderArmsDealerDetails()
-    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "A R M S - D E A L E R") 
+    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(15) .. "A R M S - D E A L E R") 
     imgui.Separator()
     
     imgui.BeginChild("ArmsDealerBase", imgui.ImVec2(0, 125), true)  
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "INFORMATII SI RISCURI:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("warn") .. "INFORMATII SI RISCURI:")
             imgui.Separator()
             imgui.Columns(2, "armsBaseCols", false)
             imgui.BulletText("Depozite: LS, LV, SF | Pret: 10 mat. / $1 | Multiplu de 10.")
@@ -2757,7 +2994,7 @@ local function renderArmsDealerDetails()
             imgui.Spacing()
             imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Nota: Capacitatea maxima stoc creste de la 100k (S1) la 2.1B materiale (S5).")
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "INFORMATION AND RISKS:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("warn") .. "INFORMATION AND RISKS:")
             imgui.Separator()
             imgui.Columns(2, "armsBaseCols", false)
             imgui.BulletText("Warehouses: LS, LV, SF | Price: 10 mats / $1 | Multiples of 10.")
@@ -2771,9 +3008,9 @@ local function renderArmsDealerDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "PROFIT BIROU SI EFICIENTA:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("coins") .. "PROFIT BIROU SI EFICIENTA:")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "OFFICE PROFIT AND EFFICIENCY:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("coins") .. "OFFICE PROFIT AND EFFICIENCY:")
     end
     imgui.Spacing()
     
@@ -2864,26 +3101,26 @@ local function renderArmsDealerDetails()
     imgui.BeginChild("ArmsVehProg", imgui.ImVec2(0, 170), true)  
         imgui.Columns(2, "armsFinalCols", false)
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "VEHICULE FLOTA:") 
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("car") .. "VEHICULE FLOTA:") 
             imgui.Text("Benson - Skill necesar: 1, 2")
             imgui.Text("Berkley's RC Van - Skill necesar: 3, 4")
             imgui.Text("Orice vehicul personal - Skill 5")
             imgui.NextColumn()
             
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "PRAGURI SKILL (CURSE):") 
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "PRAGURI SKILL (CURSE):") 
             imgui.Separator()
             imgui.Text("Skill 1 la skill 2, ai nevoie de 50 de curse.")
             imgui.Text("Skill 2 la skill 3, ai nevoie de 200 de curse.(total: 250)")
             imgui.Text("Skill 3 la skill 4, ai nevoie de 250 de curse.(total: 500)")
             imgui.Text("Skill 4 la skill 5, ai nevoie de 500 de curse.(total: 1000)")
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "FLEET VEHICLES:") 
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("car") .. "FLEET VEHICLES:") 
             imgui.Text("Benson - Required Skill: 1, 2")
             imgui.Text("Berkley's RC Van - Required Skill: 3, 4")
             imgui.Text("Any personal vehicle - Skill 5")
             imgui.NextColumn()
             
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SKILL THRESHOLDS (RUNS):") 
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "SKILL THRESHOLDS (RUNS):") 
             imgui.Separator()
             imgui.Text("Skill 1 to skill 2, you need 50 runs.")
             imgui.Text("Skill 2 to skill 3, you need 200 runs.(total: 250)")
@@ -2896,14 +3133,14 @@ end
 
 local function renderArcheologistDetails()
     imgui.Spacing()
-    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "A R C H E O L O G")
+    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(16) .. "A R C H E O L O G")
     imgui.Separator()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "VALOARE ARTEFACTE SI TIMP LOCALIZARE")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("gem") .. "VALOARE ARTEFACTE SI TIMP LOCALIZARE")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "ARTIFACT VALUE AND LOCATION TIME")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("gem") .. "ARTIFACT VALUE AND LOCATION TIME")
     end
 
     imgui.BeginChild("ArcheoArtifacts", imgui.ImVec2(0, 280), true)
@@ -2961,7 +3198,7 @@ local function renderArcheologistDetails()
     imgui.Columns(2, "archInfo", false)    
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "PROGRES SKILL")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "PROGRES SKILL")
         imgui.BeginChild("ArcheoProgress", imgui.ImVec2(0, 220), true)
             imgui.Text(u8("Skill 1 > 2: 50 puncte (50 total)"))
             imgui.Text(u8("Skill 2 > 3: 100 puncte (150 total)"))
@@ -2975,7 +3212,7 @@ local function renderArcheologistDetails()
         imgui.EndChild()
         
         imgui.NextColumn()    
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "BONUSURI SI REGULI")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("gift") .. "BONUSURI SI REGULI")
         imgui.BeginChild("ArcheoBonus", imgui.ImVec2(0, 220), true)
             imgui.Text(u8("Skill 1 - este o incercare disponibila, altfel va fi distrus artefactul."))
             imgui.Text(u8("Skill 2 - sunt 2 incercari disponibile, altfel va fi distrus artefactul."))
@@ -2989,7 +3226,7 @@ local function renderArcheologistDetails()
             imgui.Text(u8("Skill 10 - sunt 10 incercari disponibile, altfel va fi distrus artefactul."))
         imgui.EndChild()
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SKILL PROGRESSION")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "SKILL PROGRESSION")
         imgui.BeginChild("ArcheoProgress", imgui.ImVec2(0, 220), true)
             imgui.Text(u8("Skill 1 > 2: 50 points (50 total)"))
             imgui.Text(u8("Skill 2 > 3: 100 points (150 total)"))
@@ -3003,7 +3240,7 @@ local function renderArcheologistDetails()
         imgui.EndChild()
         
         imgui.NextColumn()    
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "BONUSES AND RULES")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("gift") .. "BONUSES AND RULES")
         imgui.BeginChild("ArcheoBonus", imgui.ImVec2(0, 220), true)
             imgui.Text(u8("Skill 1 - 1 attempt available, otherwise the artifact will be destroyed."))
             imgui.Text(u8("Skill 2 - 2 attempts available, otherwise the artifact will be destroyed."))
@@ -3023,29 +3260,29 @@ end
 local function renderElectricianDetails()
     local lang = iniData.settings.lang
     
-    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "E L E C T R I C I A N") 
+    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(17) .. "E L E C T R I C I A N") 
     imgui.Separator()
     
     -- Un singur child pentru toate informatiile
     imgui.BeginChild("ElecFullDetails", imgui.ImVec2(0, 0), true)
         
         -- 1. Date Tehnice
-        imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), lang == 0 and "DATE TEHNICE INTERFATA:" or "INTERFACE TECHNICAL DATA:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("info") .. (lang == 0 and "DATE TEHNICE INTERFATA:" or "INTERFACE TECHNICAL DATA:"))
         imgui.BulletText(lang == 0 and "Nivel Minim: 3 | Locatie: Ocean Docks (LS) | Comanda: /work" or "Minimum Level: 3 | Location: Ocean Docks (LS) | Command: /work")
-        imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), lang == 0 and "AVERTIZARE SIGURANTA:" or "SAFETY WARNING:")
+        imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), imgui.pre("warn") .. (lang == 0 and "AVERTIZARE SIGURANTA:" or "SAFETY WARNING:"))
         imgui.TextWrapped(lang == 0 and "Eroarea in minigame provoaca EXPLOZIE si esuarea instanta a misiunii." or "Failing the minigame causes an EXPLOSION and instant mission failure.")
         imgui.TextDisabled(lang == 0 and "Oprire CP curent: /killcp" or "Stop current CP: /killcp")
         imgui.Separator()
 
         -- 2. Vehicule necesare
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), lang == 0 and "VEHICULE NECESARE:" or "REQUIRED VEHICLES:")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("car") .. (lang == 0 and "VEHICULE NECESARE:" or "REQUIRED VEHICLES:"))
         imgui.Text(lang == 0 and "Sadler - Skillul necesar: 1, 2" or "Sadler - Required skill: 1, 2")
         imgui.Text(lang == 0 and "Picador - Skillul necesar: 3, 4, 5, 6" or "Picador - Required skill: 3, 4, 5, 6")
         imgui.Text(lang == 0 and "Rancher - Skillul necesar: 7, 8, 9, 10" or "Rancher - Required skill: 7, 8, 9, 10")
         imgui.Separator()
 
         -- 3. Plati
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), lang == 0 and "PLATI (DOAR PLATA):" or "PAYMENTS:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("coins") .. (lang == 0 and "PLATI (DOAR PLATA):" or "PAYMENTS:"))
         
         imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), lang == 0 and "Taierea firelor:" or "Cutting wires:")
         imgui.Text("Skill 1: $90 - $650 (Sadler) | Skill 2: $102 - $718 (Sadler)")
@@ -3066,7 +3303,7 @@ local function renderElectricianDetails()
         imgui.Separator()
 
         -- 4. Praguri Skill
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), lang == 0 and "PRAGURI SKILL (CURSE TOTAL):" or "SKILL THRESHOLDS (TOTAL RUNS):")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. (lang == 0 and "PRAGURI SKILL (CURSE TOTAL):" or "SKILL THRESHOLDS (TOTAL RUNS):"))
         if lang == 0 then
             imgui.Text("Skill 1 >> Skill 2: 30 de curse. (30 total)")
             imgui.Text("Skill 2 >> Skill 3: 60 de curse. (90 total)")
@@ -3096,19 +3333,19 @@ local function renderElectricianDetails()
 end
 
 local function renderLawyerDetails()
-    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "L A W Y E R") 
+    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(18) .. "L A W Y E R") 
     imgui.Separator()
     
     imgui.BeginChild("LawyerBase", imgui.ImVec2(0, 145), true)  
         imgui.Columns(2, "lawBaseCols", false)
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "CERINTE SI LOCATIE:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("info") .. "CERINTE SI LOCATIE:")
             imgui.Separator()
             imgui.BulletText("Nivel: 5 | Tip: Legal | HQ: Primaria LS.\nActivitate: Eliberari & Divorturi asigurate.")
             imgui.NextColumn()
             imgui.BulletText("Limitare: Fara detinuti in AJail.\nCooldown general /free: 30 minute.")
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "REQUIREMENTS AND LOCATION:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("info") .. "REQUIREMENTS AND LOCATION:")
             imgui.Separator()
             imgui.BulletText("Level: 5 | Type: Legal | HQ: LS City Hall.\nActivity: Releases & Divorces provided.")
             imgui.NextColumn()
@@ -3119,9 +3356,9 @@ local function renderLawyerDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "GESTIONARE MANDATE (ACCEPT LAWYER):")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("gavel") .. "GESTIONARE MANDATE (ACCEPT LAWYER):")
     else
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "MANAGING WARRANTS (ACCEPT LAWYER):")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("gavel") .. "MANAGING WARRANTS (ACCEPT LAWYER):")
     end
     
     imgui.BeginChild("LawyerPoints", imgui.ImVec2(0, 125), true)  
@@ -3142,9 +3379,9 @@ local function renderLawyerDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SERVICII SI LIMITE TARIFE:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("coins") .. "SERVICII SI LIMITE TARIFE:")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SERVICES AND PRICE LIMITS:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("coins") .. "SERVICES AND PRICE LIMITS:")
     end
     
     imgui.BeginChild("LawyerServices", imgui.ImVec2(0, 110), true)  
@@ -3173,7 +3410,7 @@ local function renderLawyerDetails()
     imgui.BeginChild("LawyerProg", imgui.ImVec2(0, 170), true)  
         imgui.Columns(2, "lawFinalCols", false)
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "COMENZI SPECIFICE:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("terminal") .. "COMENZI SPECIFICE:")
             imgui.Text("Comanda /jaillist (In interior Jail)")
             imgui.Text("Comanda /free [id] [pret] (In interior Jail / afara)")
             imgui.Text("Comanda /ldivorce [id] [pret] ii va fi trimisa oferta de divort")
@@ -3181,13 +3418,13 @@ local function renderLawyerDetails()
             imgui.Text("Comanda /getlawyer - mandat de eliberare in suma de $40,000.")
             imgui.NextColumn()
             
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "PRAGURI SKILL (ELIBERARI):")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "PRAGURI SKILL (ELIBERARI):")
             imgui.Text("Skill 1 la skill 2, trebuie sa eliberati 50 de detinuti.")
             imgui.Text("Skill 2 la skill 3, trebuie sa eliberati alti 50 de detinuti. (total: 100)")
             imgui.Text("Skill 3 la skill 4, trebuie sa eliberati alti 100 de detinuti. (total: 200)")
             imgui.Text("Skill 4 la skill 5, trebuie sa eliberati alti 200 de detinuti. (total: 400)")
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SPECIFIC COMMANDS:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("terminal") .. "SPECIFIC COMMANDS:")
             imgui.Text("Command /jaillist (Inside Jail)")
             imgui.Text("Command /free [id] [price] (Inside Jail / outside)")
             imgui.Text("Command /ldivorce [id] [price] sends the divorce offer")
@@ -3195,7 +3432,7 @@ local function renderLawyerDetails()
             imgui.Text("Command /getlawyer - purchase release warrant for $40,000.")
             imgui.NextColumn()
             
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SKILL THRESHOLDS (RELEASES):")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "SKILL THRESHOLDS (RELEASES):")
             imgui.Text("Skill 1 to skill 2, you must release 50 inmates.")
             imgui.Text("Skill 2 to skill 3, you must release another 50 inmates. (total: 100)")
             imgui.Text("Skill 3 to skill 4, you must release another 100 inmates. (total: 200)")
@@ -3214,22 +3451,22 @@ end
 
 local function renderPocketThiefDetails()
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "H O T - D E - B U Z U N A R E") 
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(19) .. "H O T - D E - B U Z U N A R E") 
     else
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "P I C K P O C K E T") 
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(19) .. "P I C K P O C K E T") 
     end
     imgui.Separator()
     
     imgui.BeginChild("PickBase", imgui.ImVec2(0, 160), true)  
         imgui.Columns(2, "pickBaseCols", false)
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "REGULI SI RESTRICTII:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("warn") .. "REGULI SI RESTRICTII:")
             imgui.Separator()
             imgui.BulletText("Nivel: 5 | Ilegal | Victima: Minim Lv 15.\nMaxim: 2 ori/PD per aceeasi victima.")
             imgui.NextColumn()
             imgui.BulletText("Interzis: Safezone / AFK / Interioare / Auto.\nComanda: /pickpocket [ID] | Recompensa: 10 Gold/S")
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "RULES AND RESTRICTIONS:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("warn") .. "RULES AND RESTRICTIONS:")
             imgui.Separator()
             imgui.BulletText("Level: 5 | Illegal | Victim: Minimum Lv 15.\nMaximum: 2 times/PD per same victim.")
             imgui.NextColumn()
@@ -3241,13 +3478,13 @@ local function renderPocketThiefDetails()
     
     imgui.BeginChild("PickRisks", imgui.ImVec2(0, 115), true)  
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), "CONSECINTE JURIDICE:")
+            imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), imgui.pre("warn") .. "CONSECINTE JURIDICE:")
             imgui.Separator()
             imgui.BulletText("Victima poate folosi [/emergency] pentru Wanted 1 (cu drept de predare).")
             imgui.BulletText("Daca victima reuseste sa te omoare, isi primeste toti banii furati inapoi.")
             imgui.BulletText("Jafuirea unui politist la datorie aduce instant Wanted 3 (Jefuire).")
         else
-            imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), "LEGAL CONSEQUENCES:")
+            imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), imgui.pre("warn") .. "LEGAL CONSEQUENCES:")
             imgui.Separator()
             imgui.BulletText("The victim can use [/emergency] for Wanted 1 (with right to surrender).")
             imgui.BulletText("If the victim manages to kill you, they get all their stolen money back.")
@@ -3257,9 +3494,9 @@ local function renderPocketThiefDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "RATA DE SUCCES SI PROFIT ESTIMATIV:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("coins") .. "RATA DE SUCCES SI PROFIT ESTIMATIV:")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SUCCESS RATE AND ESTIMATED PROFIT:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("coins") .. "SUCCESS RATE AND ESTIMATED PROFIT:")
     end
     
     imgui.BeginChild("PickStats", imgui.ImVec2(0, 175), true)  
@@ -3271,9 +3508,9 @@ local function renderPocketThiefDetails()
             imgui.Separator()
             
             local pickData = {
-                {"Skill 1", "25 '/.", "$598"},   {"Skill 3", "32.5 '/.", "$874"},
-                {"Skill 5", "50 '/.", "$1150"},  {"Skill 7", "75 '/.", "$3638"},
-                {"Skill 10", "100 '/.", "$5000"}
+                {"Skill 1", "25 %%", "$598"},   {"Skill 3", "32.5 %%", "$874"},
+                {"Skill 5", "50 %%", "$1150"},  {"Skill 7", "75 %%", "$3638"},
+                {"Skill 10", "100 %%", "$5000"}
             }
             for _, d in ipairs(pickData) do
                 imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), d[1]) imgui.NextColumn()
@@ -3287,9 +3524,9 @@ local function renderPocketThiefDetails()
             imgui.Separator()
             
             local pickData = {
-                {"Skill 1", "25 '/.", "$598"},   {"Skill 3", "32.5 '/.", "$874"},
-                {"Skill 5", "50 '/.", "$1150"},  {"Skill 7", "75 '/.", "$3638"},
-                {"Skill 10", "100 '/.", "$5000"}
+                {"Skill 1", "25 %%", "$598"},   {"Skill 3", "32.5 %%", "$874"},
+                {"Skill 5", "50 %%", "$1150"},  {"Skill 7", "75 %%", "$3638"},
+                {"Skill 10", "100 %%", "$5000"}
             }
             for _, d in ipairs(pickData) do
                 imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), d[1]) imgui.NextColumn()
@@ -3304,7 +3541,7 @@ local function renderPocketThiefDetails()
     imgui.BeginChild("PickProg", imgui.ImVec2(0, 220), true)  
         imgui.Columns(1) 
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "PRAGURI FURTURI SKILL:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "PRAGURI FURTURI SKILL:")
             imgui.Separator()
             imgui.Text("Skill 1 la skill 2 ai nevoie de 60 de incercari de furt.")
             imgui.Text("Skill 2 la skill 3 ai nevoie de alte 60 de incercari de furt.(total: 120)")
@@ -3316,7 +3553,7 @@ local function renderPocketThiefDetails()
             imgui.Text("Skill 8 la skill 9 ai nevoie de 350 de incercari de furt.(total: 1580)")
             imgui.Text("Skill 9 la skill 10 ai nevoie de 350 de incercari de furt.(total: 1930)")
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SKILL THEFT THRESHOLDS:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "SKILL THEFT THRESHOLDS:")
             imgui.Separator()
             imgui.Text("Skill 1 to skill 2 you need 60 theft attempts.")
             imgui.Text("Skill 2 to skill 3 you need another 60 theft attempts.(total: 120)")
@@ -3332,18 +3569,18 @@ local function renderPocketThiefDetails()
 end
 
 local function renderCraftsmanDetails()
-    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "C R A F T S M A N")
+    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(20) .. "C R A F T S M A N")
     imgui.Separator()
     
     imgui.BeginChild("MesterBase", imgui.ImVec2(0, 80), true)  
         imgui.Columns(2, "logisticaCols", false)
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "ADMINISTRATIV & CHIRIE (24H):")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("key") .. "ADMINISTRATIV & CHIRIE (24H):")
             imgui.BulletText("HQ: King's, SF (ID 160) | Nivel: 5 | Livrare: Upgrade Case.\nChirie: Dulgher ($1.000) | Drujba ($500) | Masca ($500)")
             imgui.NextColumn()
             imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "RECOMPENSE TURA:\n+20 XP Maraton/Clan\nSkill: 3-11 pct/tura\nStoc maxim: 999 (S10: 1999)")
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "ADMINISTRATIVE & RENT (24H):")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("key") .. "ADMINISTRATIVE & RENT (24H):")
             imgui.BulletText("HQ: King's, SF (ID 160) | Level: 5 | Delivery: House Upgrades.\nRent: Carpenter ($1,000) | Chainsaw ($500) | Mask ($500)")
             imgui.NextColumn()
             imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "RUN REWARDS:\n+20 Marathon/Clan XP\nSkill: 3-11 pts/run\nMax Stock: 999 (S10: 1999)")
@@ -3353,9 +3590,9 @@ local function renderCraftsmanDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0.1, 0.8, 0.1, 1), "CATALOG PRODUCTIE SI VENITURI SYSTEM:")   
+        imgui.TextColored(imgui.ImVec4(0.1, 0.8, 0.1, 1), imgui.pre("coins") .. "CATALOG PRODUCTIE SI VENITURI SYSTEM:")   
     else
-        imgui.TextColored(imgui.ImVec4(0.1, 0.8, 0.1, 1), "PRODUCTION CATALOG AND SYSTEM INCOME:")   
+        imgui.TextColored(imgui.ImVec4(0.1, 0.8, 0.1, 1), imgui.pre("coins") .. "PRODUCTION CATALOG AND SYSTEM INCOME:")   
     end
     
     imgui.BeginChild("MesterFullCatalog", imgui.ImVec2(0, 500), true)  
@@ -3478,24 +3715,24 @@ local function renderCraftsmanDetails()
         imgui.BeginChild("ResurseJobs", imgui.ImVec2(0, 330), true)
         local isRo = (iniData.settings.lang == 0)
 
-        imgui.TextColored(imgui.ImVec4(0.6, 0.4, 0.2, 1), isRo and "LEMN (Taietor de Lemne):" or "WOOD (Lumberjack):")
+        imgui.TextColored(imgui.ImVec4(0.6, 0.4, 0.2, 1), imgui.pre("tree") .. (isRo and "LEMN (Taietor de Lemne):" or "WOOD (Lumberjack):"))
         imgui.Text("Skill 5: 10 + random(9) | Skill 6: 15 + random(9)")
         imgui.Text("Skill 7: 20 + random(9) | Skill 8: 25 + random(9)")
         imgui.Text("Skill 9: 30 + random(9) | Skill 10: 35 + random(9)")
         imgui.Separator()
 
-        imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), isRo and "BUMBAC (Farmer):" or "COTTON (Farmer):")
+        imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), imgui.pre("seedling") .. (isRo and "BUMBAC (Farmer):" or "COTTON (Farmer):"))
         imgui.Text(isRo and "1 + random(9) per cactus cules." or "1 + random(9) per harvested cactus.")
         imgui.TextWrapped(isRo and "Nota: 16 cactusi per parcela = 16 * (1 + random(9))." or "Note: 16 cacti per plot = 16 * (1 + random(9)).")
         imgui.Separator()
 
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), isRo and "AUR (Miner):" or "GOLD (Miner):")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("gem") .. (isRo and "AUR (Miner):" or "GOLD (Miner):"))
         imgui.Text("Skill 5: 10 + random(9) | Skill 6: 15 + random(9)")
         imgui.Text("Skill 7: 20 + random(9) | Skill 8: 25 + random(9)")
         imgui.Text("Skill 9: 30 + random(9) | Skill 10: 35 + random(9)")
         imgui.Separator()
 
-        imgui.TextColored(imgui.ImVec4(0.7, 0.7, 0.7, 1), isRo and "ARGINT (Muncitor la Cariera):" or "SILVER (Quarry):")
+        imgui.TextColored(imgui.ImVec4(0.7, 0.7, 0.7, 1), imgui.pre("mountain") .. (isRo and "ARGINT (Muncitor la Cariera):" or "SILVER (Quarry):"))
         imgui.Text("Skill 5: 10 + random(9) | Skill 6: 15 + random(9)")
         imgui.Text("Skill 7: 20 + random(9) | Skill 8: 25 + random(9)")
         imgui.Text("Skill 9: 30 + random(9) | Skill 10: 35 + random(9)")
@@ -3505,17 +3742,17 @@ local function renderCraftsmanDetails()
     imgui.BeginChild("MesterProgFinal", imgui.ImVec2(0, 345), true)
         local isRo = (iniData.settings.lang == 0)
 
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRo and "VEHICULE:" or "VEHICLES:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("car") .. (isRo and "VEHICULE:" or "VEHICLES:"))
         imgui.Text(isRo and "Pony - Skillul necesar: 1, 2, 3, 4" or "Pony - Required Skill: 1, 2, 3, 4")
         imgui.Text(isRo and "Vehicul Personal - Skillul necesar: 5, 6, 7, 8, 9, 10" or "Personal Vehicle - Required Skill: 5, 6, 7, 8, 9, 10")
         imgui.Separator()
 
-        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), isRo and "Aeronavele permise pentru transport sunt:" or "Allowed aircrafts for transport are:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), imgui.pre("plane") .. (isRo and "Aeronavele permise pentru transport sunt:" or "Allowed aircrafts for transport are:"))
         imgui.Text(isRo and "Elicoptere: Leviathan, Sparrow, Maverick, Cargobob, Raindance." or "Helicopters: Leviathan, Sparrow, Maverick, Cargobob, Raindance.")
         imgui.Text(isRo and "Avioane: Skimmer, Beagle, Cropduster, Stuntplane, Shamal, Nevada, Dodo." or "Planes: Skimmer, Beagle, Cropduster, Stuntplane, Shamal, Nevada, Dodo.")
         imgui.Separator()
 
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), isRo and "PRAGURI PUNCTE SKILL:" or "SKILL POINT THRESHOLDS:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. (isRo and "PRAGURI PUNCTE SKILL:" or "SKILL POINT THRESHOLDS:"))
         
         local thresholds = {
             {color = imgui.ImVec4(1, 1, 0, 1), ro = "Skill 1 la 2, trebuie 30 de puncte.", en = "Skill 1 to 2, you need 30 points."},
@@ -3536,18 +3773,552 @@ local function renderCraftsmanDetails()
     imgui.EndChild()
     end
 
+local function renderHunterDetails()
+    local isRo = (iniData.settings.lang == 0)
+    local function L(ro, en) if isRo then return ro else return en end end
+
+    local cBrown  = imgui.ImVec4(0.6, 0.4, 0.2, 1)
+    local cHead   = imgui.ImVec4(0, 1, 0.95, 1)
+    local cLabel  = imgui.ImVec4(1, 1, 0, 1)
+    local cMoney  = imgui.ImVec4(0, 1, 0, 1)
+    local cDim    = imgui.ImVec4(1, 1, 1, 0.6)
+    local cNote   = imgui.ImVec4(1, 0.65, 0.2, 1)
+    local cWhite  = imgui.ImVec4(1, 1, 1, 1)
+
+    local skillColors = {
+        imgui.ImVec4(1, 1, 0, 1),       imgui.ImVec4(1, 0.75, 0, 1),   imgui.ImVec4(1, 0.5, 0, 1),
+        imgui.ImVec4(0.4, 1, 0.4, 1),   imgui.ImVec4(0, 1, 0.6, 1),    imgui.ImVec4(0, 0.8, 1, 1),
+        imgui.ImVec4(0.5, 0.5, 1, 1),   imgui.ImVec4(0.8, 0.4, 1, 1),  imgui.ImVec4(1, 0.4, 0.6, 1),
+        imgui.ImVec4(1, 0.3, 0.3, 1)
+    }
+
+    -- ---------- helpere locale ----------
+    local function Head(icon, ro, en)
+        imgui.Spacing()
+        imgui.TextColored(cHead, imgui.pre(icon) .. L(ro, en))
+        imgui.Separator()
+    end
+    local function Sub(ro, en)
+        imgui.Spacing()
+        imgui.TextColored(cLabel, L(ro, en))
+    end
+    local function Item(ro, en)
+        imgui.Bullet() imgui.TextWrapped(L(ro, en))
+    end
+    local function Item2(ro, en)
+        imgui.Indent(18)
+        imgui.Bullet() imgui.TextWrapped(L(ro, en))
+        imgui.Unindent(18)
+    end
+    local function Para(ro, en)
+        imgui.TextWrapped(L(ro, en))
+    end
+    local function Note(ro, en)
+        imgui.PushStyleColor(imgui.Col.Text, cNote)
+        imgui.TextWrapped(L(ro, en))
+        imgui.PopStyleColor()
+    end
+
+    -- ---------- titlu ----------
+    imgui.TextColored(cBrown, imgui.pre("paw") .. L("V A N A T O R", "H U N T E R"))
+    imgui.Separator()
+
+    -- =========================================================
+    -- 1. CARACTERISTICI GENERALE
+    -- =========================================================
+    Head("info", "CARACTERISTICI GENERALE", "GENERAL FEATURES")
+    Item("Vanatorul este un job nou, adaugat pe server, care ofera o experienta de vanatoare in lumea deschisa.",
+         "Hunter is a new job added to the server, offering an open-world hunting experience.")
+    Sub("Pasii unui vanator:", "A hunter's steps:")
+    Item2("Exploreaza zonele de vanatoare.", "Explore the hunting zones.")
+    Item2("Se apropie de animalele care se deplaseaza liber.", "Approach the freely roaming animals.")
+    Item2("Colecteaza resurse de la animalele vanate.", "Collect resources from the hunted animals.")
+    Item2("Alege intre vanzarea resurselor si completarea contractelor zilnice de aprovizionare.",
+          "Choose between selling the resources and completing daily supply contracts.")
+    Sub("Succesul depinde de precizie si pozitionare:", "Success depends on precision and positioning:")
+    Item2("Loviturile precise pastreaza calitatea carcasei.", "Precise shots preserve carcass quality.")
+    Item2("Impuscaturile de la distanta ofera resurse suplimentare si cresc sansele de a obtine resurse speciale.",
+          "Long-range shots provide extra resources and increase the chances of obtaining special resources.")
+    Item("Jobul este construit in jurul a 10 niveluri de skill. Nivelurile mai mari cresc daunele armei, capacitatea de munitie si preturile de vanzare ale resurselor.",
+         "The job is built around 10 skill levels. Higher levels increase weapon damage, ammo capacity and resource selling prices.")
+    Item("Jobul Vanator a fost adaugat si in rotatia sistemului Jobul Zilei (Daily Job).",
+         "The Hunter job has also been added to the Daily Job rotation.")
+
+    -- =========================================================
+    -- 2. AVANSAREA IN SKILL
+    -- =========================================================
+    Head("star", "AVANSAREA IN SKILL", "SKILL PROGRESSION")
+    Para("Cerintele reprezinta totalul Punctelor de Skill la Vanator acumulate pentru atingerea fiecarui nivel.",
+         "These requirements represent the total Hunter Skill Points accumulated to reach each level.")
+    imgui.Spacing()
+
+    local skillRows = {
+        {"0",     "25", "-"},
+        {"30",    "30", "+3%%"},
+        {"90",    "35", "+6%%"},
+        {"210",   "40", "+10%%"},
+        {"450",   "45", "+13%%"},
+        {"650",   "50", "+16%%"},
+        {"900",   "55", "+20%%"},
+        {"1.200", "60", "+23%%"},
+        {"1.550", "65", "+26%%"},
+        {"1.900", "70", "+30%%"},
+    }
+    local skillRowsEn = {}
+    for i, r in ipairs(skillRows) do
+        skillRowsEn[i] = { (r[1]:gsub("%.", ",")), r[2], r[3] }
+    end
+
+    imgui.Columns(4, "hunterSkillCols", false)
+    imgui.TextColored(cDim, "Skill") imgui.NextColumn()
+    imgui.TextColored(cDim, L("Puncte Skill (total)", "Skill Points (total)")) imgui.NextColumn()
+    imgui.TextColored(cDim, L("Munitie start", "Starting ammo")) imgui.NextColumn()
+    imgui.TextColored(cDim, L("Bonus vanzare", "Selling bonus")) imgui.NextColumn()
+    imgui.Separator()
+    for i = 1, 10 do
+        local r = isRo and skillRows[i] or skillRowsEn[i]
+        local bonus = r[3]
+        if bonus == "-" then bonus = L("Pret de baza", "Base price") end
+        imgui.TextColored(skillColors[i], "Skill " .. i) imgui.NextColumn()
+        imgui.Text(r[1]) imgui.NextColumn()
+        imgui.Text(r[2] .. L(" gloante", " bullets")) imgui.NextColumn()
+        imgui.TextColored(cMoney, bonus) imgui.NextColumn()
+    end
+    imgui.Columns(1)
+    imgui.Separator()
+
+    Sub("Prezentarea progresiei:", "Progression overview:")
+    Item("Skill 1 - 5: jucatorii pot vana si jupui vaci.", "Skill 1 - 5: players can hunt and skin cows.")
+    Item("Skill 6: devin disponibile vanarea si jupuirea cerbilor.", "Skill 6: hunting and skinning deer becomes available.")
+    Item("Skill 1 - 10: sunt disponibile contractele zilnice de aprovizionare, cu comenzi selectate in functie de skillul jucatorului.",
+         "Skill 1 - 10: daily supply contracts are available, with orders selected based on the player's skill.")
+    Item("Nivelurile mai mari ofera daune crescute ale armei, mai multa munitie si preturi de vanzare mai bune.",
+         "Higher levels provide increased weapon damage, more ammo and better selling prices.")
+    Item("Recompensele de progresie obtinute din vanzari cresc la skill 5 si skill 7.",
+         "Progression rewards obtained from sales increase at skill 5 and skill 7.")
+
+    -- =========================================================
+    -- 3. ZONE DE VANATOARE SI COMPORTAMENTUL ANIMALELOR
+    -- =========================================================
+    Head("map", "ZONE DE VANATOARE SI COMPORTAMENTUL ANIMALELOR", "HUNTING ZONES AND ANIMAL BEHAVIOR")
+    Sub("Zonele de vanatoare:", "Hunting zones:")
+    Item("Zonele active de vanatoare sunt marcate pe harta jucatorului la inceperea lucrului.",
+         "Active hunting zones are marked on the player's map when work begins.")
+    Item("Sistemul selecteaza aleatoriu 5-7 zone active de vanatoare.",
+         "The system randomly selects 5-7 active hunting zones.")
+    Sub("Comportamentul animalelor:", "Animal behavior:")
+    Item("Animalele se deplaseaza prin imprejurimi.", "Animals roam through the surroundings.")
+    Item("Animalele detecteaza amenintarile din apropiere si reactioneaza la focurile de arma.",
+         "Animals detect nearby threats and react to gunfire.")
+    Item("Animalele amenintate pot: deveni vigilente, fugi sau face miscari de evitare.",
+         "Threatened animals can: become alert, flee or make evasive movements.")
+    Item("Panica se poate raspandi la animalele din apropiere.", "Panic can spread to nearby animals.")
+    Item("Comportament de turma: se pot urma intre ele, se imprastie cand sunt amenintate si se regrupeaza ulterior.",
+         "Herd behavior: they can follow each other, scatter when threatened and regroup afterwards.")
+    Item("Deplasarea lor tine cont de teren si obstacole.", "Their movement takes terrain and obstacles into account.")
+
+    -- =========================================================
+    -- 4. VARIETATI SI RARITATE
+    -- =========================================================
+    Head("gem", "VARIETATI SI RARITATE", "VARIETIES AND RARITY")
+    Para("Atat vacile, cat si cerbii au varietati vizuale si niveluri de raritate diferite. Caracteristicile animalelor si cantitatile de resurse obtinute difera in functie de rasa sau varietate.",
+         "Both cows and deer have different visual varieties and rarity levels. Animal characteristics and the amounts of resources obtained differ depending on the breed or variety.")
+    Sub("Nivelurile de raritate:", "Rarity levels:")
+    imgui.TextColored(imgui.ImVec4(1, 1, 1, 1),       "   " .. L("Comuna", "Common"))
+    imgui.TextColored(imgui.ImVec4(0.3, 1, 0.3, 1),   "   " .. L("Neobisnuita", "Uncommon"))
+    imgui.TextColored(imgui.ImVec4(0.3, 0.6, 1, 1),   "   " .. L("Rara", "Rare"))
+    imgui.TextColored(imgui.ImVec4(0.75, 0.4, 1, 1),  "   " .. L("Epica", "Epic"))
+    imgui.TextColored(imgui.ImVec4(1, 0.65, 0, 1),    "   " .. L("Legendara", "Legendary"))
+    Sub("Resurse speciale:", "Special resources:")
+    Para("Anumite animale pot oferi resurse speciale, inclusiv:", "Certain animals can provide special resources, including:")
+    imgui.Columns(2, "hunterSpecialCols", false)
+    local specialNames = {
+        {"Piele de calitate", "Quality Leather"}, {"Piele rara", "Rare Leather"},
+        {"Piele exotica", "Exotic Leather"},      {"Corn de trofeu", "Trophy Horn"},
+        {"Piele fina de cerb", "Fine Deer Leather"}, {"Corn auriu", "Golden Horn"},
+        {"Blana de albinos", "Albino Fur"},       {"Corn spiritual", "Spirit Horn"},
+    }
+    for _, n in ipairs(specialNames) do
+        imgui.Bullet() imgui.Text(L(n[1], n[2])) imgui.NextColumn()
+    end
+    imgui.Columns(1)
+
+    -- =========================================================
+    -- 5. ECHIPAMENTUL DE VANATOARE
+    -- =========================================================
+    Head("crosshairs", "ECHIPAMENTUL DE VANATOARE", "HUNTING EQUIPMENT")
+    Sub("Arma:", "Weapon:")
+    Item("Vanatorii primesc o pusca cu luneta la inceperea lucrului.", "Hunters receive a scoped rifle when work begins.")
+    Item("Daunele pustii cresc in functie de skillul la Vanator.", "Rifle damage increases with the Hunter skill.")
+    Item("Zona in care este lovit animalul influenteaza daunele:", "The area where the animal is hit affects the damage:")
+    imgui.Indent(18)
+    imgui.TextColored(imgui.ImVec4(0.4, 1, 0.4, 1), L("Cap: daune crescute", "Head: increased damage"))
+    imgui.TextColored(cWhite,                       L("Corp: daune normale", "Body: normal damage"))
+    imgui.TextColored(imgui.ImVec4(1, 0.45, 0.3, 1), L("Picioare: daune reduse", "Legs: reduced damage"))
+    imgui.Unindent(18)
+    Sub("Munitia:", "Ammo:")
+    Para("Munitia primita la inceput creste in functie de skill: de la 25 de gloante (Skill 1) pana la 70 de gloante (Skill 10), cate +5 la fiecare nivel (vezi tabelul de skill de mai sus).",
+         "The ammo received at the start increases with skill: from 25 bullets (Skill 1) up to 70 bullets (Skill 10), +5 per level (see the skill table above).")
+    Sub("Reaprovizionarea:", "Resupply:")
+    Item("Jucatorii primesc un avertisment cand mai au 1 glont.", "Players receive a warning when they have 1 bullet left.")
+    Item("Intoarce-te la furnizorul de munitie si apasa Y pentru reaprovizionare cand mai ai exact 1 glont.",
+         "Return to the ammo supplier and press Y to resupply when you have exactly 1 bullet left.")
+    Note("Atentie: folosirea ultimului glont incheie sesiunea curenta de lucru la Vanator.",
+         "Warning: using the last bullet ends the current Hunter work session.")
+
+    -- =========================================================
+    -- 6. CALITATEA CARCASEI SI JUPUIREA
+    -- =========================================================
+    Head("tools", "CALITATEA CARCASEI SI JUPUIREA", "CARCASS QUALITY AND SKINNING")
+    Sub("Scorul calitatii carcasei:", "Carcass quality score:")
+    Item("Fiecare animal ucis primeste un scor al calitatii carcasei intre 0 si 100.",
+         "Every killed animal receives a carcass quality score between 0 and 100.")
+    Item("Scorul depinde de numarul de impuscaturi si de zonele in care animalul a fost lovit.",
+         "The score depends on the number of shots and the areas where the animal was hit.")
+    Item("Loviturile precise in cap pastreaza calitatea. Loviturile repetate si cele in corp sau picioare o reduc.",
+         "Precise head shots preserve quality. Repeated shots and body or leg shots reduce it.")
+
+    Sub("Clasificarea calitatii:", "Quality classification:")
+    imgui.Columns(2, "hunterQualCols", false)
+    local qualRows = {
+        {"Impecabila", "Flawless",  "90 - 100",   imgui.ImVec4(0, 1, 0.85, 1)},
+        {"Excelenta",  "Excellent", "75 - 89",    imgui.ImVec4(0.3, 1, 0.3, 1)},
+        {"Buna",       "Good",      "60 - 74",    imgui.ImVec4(0.8, 1, 0.2, 1)},
+        {"Deteriorata","Damaged",   "40 - 59",    imgui.ImVec4(1, 0.8, 0, 1)},
+        {"Slaba",      "Poor",      "20 - 39",    imgui.ImVec4(1, 0.5, 0.2, 1)},
+        {"Distrusa",   "Ruined",    L("sub 20", "below 20"), imgui.ImVec4(1, 0.25, 0.25, 1)},
+    }
+    for _, q in ipairs(qualRows) do
+        imgui.TextColored(q[4], L(q[1], q[2])) imgui.NextColumn()
+        imgui.Text(q[3]) imgui.NextColumn()
+    end
+    imgui.Columns(1)
+
+    Sub("Efectele calitatii:", "Quality effects:")
+    Item("Calitatea influenteaza cantitatea de resurse si sansa de a obtine resurse speciale.",
+         "Quality influences the amount of resources and the chance of obtaining special resources.")
+    Note("Carcasele cu o calitate sub 20 nu ofera piele obisnuita.",
+         "Carcasses with a quality below 20 do not provide regular leather.")
+
+    Sub("Jupuirea:", "Skinning:")
+    Item("Apropie-te de o carcasa si apasa ALT pentru a o jupui.", "Approach a carcass and press ALT to skin it.")
+    Item("Jucatorii de pe mobil pot folosi comanda /skin.", "Mobile players can use the command /skin.")
+    Item("Jupuirea include o animatie si un indicator de progres.", "Skinning includes an animation and a progress indicator.")
+
+    Sub("Resurse obtinute la jupuire:", "Resources obtained from skinning:")
+    imgui.Columns(2, "hunterSkinCols", false)
+    imgui.TextColored(cDim, L("Animal", "Animal")) imgui.NextColumn()
+    imgui.TextColored(cDim, L("Resurse", "Resources")) imgui.NextColumn()
+    imgui.Separator()
+    imgui.TextColored(cLabel, L("Vaci", "Cows")) imgui.NextColumn()
+    imgui.Text(L("carne, piele, grasime si oase", "meat, leather, fat and bones")) imgui.NextColumn()
+    imgui.TextColored(cLabel, L("Cerbi", "Deer")) imgui.NextColumn()
+    imgui.Text(L("carne de cerb, piele, coarne si oase", "venison, leather, antlers and bones")) imgui.NextColumn()
+    imgui.Columns(1)
+
+    Sub("Disponibilitatea carcaselor:", "Carcass availability:")
+    Item("Carcasele raman disponibile timp de 4-5 minute.", "Carcasses remain available for 4-5 minutes.")
+    Item("In primele 2 minute, carcasa este rezervata jucatorului care a ucis animalul. Dupa aceea, alti Vanatori eligibili o pot jupui.",
+         "During the first 2 minutes, the carcass is reserved for the player who killed the animal. After that, other eligible Hunters can skin it.")
+    Item("O carcasa poate fi jupuita de un singur jucator la un moment dat.",
+         "A carcass can be skinned by only one player at a time.")
+
+    Sub("Rezumatul jupuirii:", "Skinning summary:")
+    Para("Dupa jupuire, jucatorii primesc un rezumat cu:", "After skinning, players receive a summary with:")
+    Item2("resursele colectate;", "the resources collected;")
+    Item2("calitatea carcasei;", "the carcass quality;")
+    Item2("distanta loviturii care a ucis animalul;", "the distance of the shot that killed the animal;")
+    Item2("statisticile loviturilor.", "the shot statistics.")
+
+    -- =========================================================
+    -- 7. BONUSURI PENTRU VANATOAREA DE LA DISTANTA
+    -- =========================================================
+    Head("bullhorn", "BONUSURILE PENTRU VANATOAREA DE LA DISTANTA", "LONG-RANGE HUNTING BONUSES")
+    Para("Distanta loviturii care ucide animalul creste cantitatea de resurse si sansa de a obtine resursele speciale eligibile.",
+         "The distance of the shot that kills the animal increases the amount of resources and the chance of obtaining eligible special resources.")
+    imgui.Spacing()
+    imgui.Columns(3, "hunterRangeCols", false)
+    imgui.TextColored(cDim, L("Distanta", "Distance")) imgui.NextColumn()
+    imgui.TextColored(cDim, L("Bonus cantitate resurse", "Resource amount bonus")) imgui.NextColumn()
+    imgui.TextColored(cDim, L("Bonus sansa resurse speciale", "Special resource chance bonus")) imgui.NextColumn()
+    imgui.Separator()
+    local rangeRows = {
+        {L("25 - 49 metri", "25 - 49 meters"),     "+3%%",  "-"},
+        {L("50 - 74 metri", "50 - 74 meters"),     "+7%%",  L("+1 punct procentual", "+1 percentage point")},
+        {L("75 - 99 metri", "75 - 99 meters"),     "+12%%", L("+2 puncte procentuale", "+2 percentage points")},
+        {L("100 - 149 metri", "100 - 149 meters"), "+18%%", L("+4 puncte procentuale", "+4 percentage points")},
+        {L("150 metri sau mai mult", "150 meters or more"), "+25%%", L("+6 puncte procentuale", "+6 percentage points")},
+    }
+    for _, r in ipairs(rangeRows) do
+        imgui.TextColored(cLabel, r[1]) imgui.NextColumn()
+        imgui.TextColored(cMoney, r[2]) imgui.NextColumn()
+        imgui.TextColored(cMoney, r[3]) imgui.NextColumn()
+    end
+    imgui.Columns(1)
+    imgui.Separator()
+    Note("Nota: Aceste bonusuri recompenseaza impuscaturile precise de la distanta. Calitatea carcasei continua sa influenteze resursele obtinute.",
+         "Note: These bonuses reward precise long-range shots. Carcass quality still affects the resources obtained.")
+
+    -- =========================================================
+    -- 8. COMERCIANTUL DE VANATOARE SI PLATILE
+    -- =========================================================
+    Head("coins", "COMERCIANTUL DE VANATOARE SI PLATILE", "HUNTING MERCHANT AND PAYMENTS")
+    Sub("Vanzarea resurselor:", "Selling resources:")
+    Item("Jucatorii pot vinde resursele colectate la Comerciantul de Vanatoare, apasand Y.",
+         "Players can sell the collected resources to the Hunting Merchant by pressing Y.")
+    Item("Interfata afiseaza cantitatile detinute si preturile curente pe unitate.",
+         "The interface shows the owned amounts and the current prices per unit.")
+    Item("Optiuni de vanzare: vanzarea unei cantitati alese sau Vinde tot. Ambele optiuni necesita confirmare inainte de finalizarea vanzarii.",
+         "Selling options: selling a chosen amount or Sell all. Both options require confirmation before the sale is finalized.")
+
+    Sub("Preturi de baza pe unitate:", "Base prices per unit:")
+    Para("Valorile reprezinta preturile de baza pe unitate, inainte de bonusurile de vanzare oferite de skillul la Vanator si de celelalte bonusuri banesti ale jobului.",
+         "The values are the base prices per unit, before the selling bonuses provided by the Hunter skill and the other money bonuses of the job.")
+    imgui.Spacing()
+
+    local commonRes = {
+        {"Carne de vaca", "Cow meat", "$16"}, {"Carne de cerb", "Venison", "$21"},
+        {"Piele", "Leather", "$28"},          {"Grasime", "Fat", "$9"},
+        {"Oase", "Bones", "$7"},              {"Coarne", "Antlers", "$50"},
+        {"Lapte", "Milk", "$7"},
+    }
+    local specialRes = {
+        {"Piele de calitate", "Quality Leather", "$90"},   {"Piele rara", "Rare Leather", "$180"},
+        {"Piele exotica", "Exotic Leather", "$330"},       {"Corn de trofeu", "Trophy Horn", "$450"},
+        {"Piele fina de cerb", "Fine Deer Leather", "$100"}, {"Corn auriu", "Golden Horn", "$280"},
+        {"Blana de albinos", "Albino Fur", "$500"},        {"Corn spiritual", "Spirit Horn", "$675"},
+    }
+    imgui.Columns(4, "hunterPriceCols", false)
+    imgui.TextColored(cDim, L("Resurse obisnuite", "Common resources")) imgui.NextColumn()
+    imgui.TextColored(cDim, L("Pret", "Price")) imgui.NextColumn()
+    imgui.TextColored(cDim, L("Resurse speciale", "Special resources")) imgui.NextColumn()
+    imgui.TextColored(cDim, L("Pret", "Price")) imgui.NextColumn()
+    imgui.Separator()
+    for i = 1, #specialRes do
+        local c = commonRes[i]
+        local s = specialRes[i]
+        if c then
+            imgui.Text(L(c[1], c[2])) imgui.NextColumn()
+            imgui.TextColored(cMoney, c[3]) imgui.NextColumn()
+        else
+            imgui.Text("") imgui.NextColumn()
+            imgui.Text("") imgui.NextColumn()
+        end
+        imgui.TextColored(cLabel, L(s[1], s[2])) imgui.NextColumn()
+        imgui.TextColored(cMoney, s[3]) imgui.NextColumn()
+    end
+    imgui.Columns(1)
+    imgui.Separator()
+
+    Sub("Bonus de vanzare in functie de skill:", "Selling bonus by skill:")
+    Para("Skillul la Vanator creste pretul de vanzare pe unitate: de la pretul de baza (Skill 1) pana la +30%% (Skill 10). Vezi coloana Bonus vanzare din tabelul de skill.",
+         "The Hunter skill increases the selling price per unit: from the base price (Skill 1) up to +30%% (Skill 10). See the Selling bonus column in the skill table.")
+
+    Sub("Calculul platii:", "Payment calculation:")
+    Item("Preturile pe unitate sunt calculate in dolari intregi. Valorile fractionare sunt rotunjite in jos.",
+         "Prices per unit are calculated in whole dollars. Fractional values are rounded down.")
+    Item("Pretul pe unitate ajustat in functie de skill este inmultit cu numarul de resurse vandute pentru calcularea platii de baza.",
+         "The skill-adjusted price per unit is multiplied by the number of resources sold to calculate the base payment.")
+    Item("Bonusurile banesti aplicabile jobului sunt adaugate ulterior, pentru calcularea platii totale.",
+         "The money bonuses applicable to the job are added afterwards, to calculate the total payment.")
+
+    Sub("Statistici si obiective:", "Statistics and goals:")
+    Item("Vanzarile sunt inregistrate in statisticile jobului.", "Sales are recorded in the job statistics.")
+    Item("Vanzarile contribuie la Obiectivul Joburilor (Job Goal) si la progresul sarcinilor aplicabile.",
+         "Sales contribute to the Job Goal and to the progress of applicable tasks.")
+
+    -- =========================================================
+    -- 9. RECOMPENSELE SI PROGRESIA LA VANATOR
+    -- =========================================================
+    Head("trophy", "RECOMPENSELE SI PROGRESIA LA VANATOR", "HUNTER REWARDS AND PROGRESSION")
+    Sub("Cum functioneaza ciclurile de recompense:", "How reward cycles work:")
+    Item("Vanzarea resurselor de vanatoare acumuleaza progres in functie de valoarea lor standard de baza, inainte de bonusurile de vanzare si cele banesti.",
+         "Selling hunting resources accumulates progress based on their standard base value, before the selling and money bonuses.")
+    Item("Fiecare 1.500$ din valoarea de baza acumulata completeaza un ciclu de recompense.",
+         "Every $1,500 of accumulated base value completes a reward cycle.")
+    Item("Progresul se pastreaza intre vanzari, astfel incat jucatorii pot vinde cantitati mai mici fara sa piarda progresul acumulat.",
+         "Progress is kept between sales, so players can sell smaller amounts without losing the accumulated progress.")
+    Item("O vanzare mai mare poate completa mai multe cicluri simultan.", "A larger sale can complete multiple cycles at once.")
+    Item("Atat vanzarile individuale, cat si optiunea Vinde tot urmeaza aceleasi reguli.",
+         "Both individual sales and the Sell all option follow the same rules.")
+
+    Sub("Recompense pentru fiecare ciclu de 1.500$:", "Rewards for each $1,500 cycle:")
+    imgui.Columns(4, "hunterRewardCols", false)
+    imgui.TextColored(cDim, "Skill") imgui.NextColumn()
+    imgui.TextColored(cDim, L("Puncte Skill", "Skill Points")) imgui.NextColumn()
+    imgui.TextColored(cDim, "Clan XP") imgui.NextColumn()
+    imgui.TextColored(cDim, L("Puncte Maraton", "Marathon Points")) imgui.NextColumn()
+    imgui.Separator()
+    local rewardRows = {
+        {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1},
+        {2, 2, 2}, {2, 2, 2},
+        {3, 4, 4}, {3, 4, 4}, {3, 4, 4}, {3, 4, 4},
+    }
+    for i, r in ipairs(rewardRows) do
+        imgui.TextColored(skillColors[i], "Skill " .. i) imgui.NextColumn()
+        imgui.Text(tostring(r[1])) imgui.NextColumn()
+        imgui.Text(tostring(r[2])) imgui.NextColumn()
+        imgui.Text(tostring(r[3])) imgui.NextColumn()
+    end
+    imgui.Columns(1)
+    imgui.Separator()
+
+    Sub("Observatii importante:", "Important notes:")
+    Item("Recompensele de skill enumerate sunt inainte de aplicarea bonusurilor skinului.",
+         "The listed skill rewards are before the skin bonuses are applied.")
+    Item("Fiecare ciclu completat conteaza drept o cursa reusita pentru Job Clash.",
+         "Every completed cycle counts as a successful run for Job Clash.")
+    Item("Bonusurile banesti cresc plata, dar nu cresc valoarea de baza folosita pentru progresie.",
+         "Money bonuses increase the payment, but they do not increase the base value used for progression.")
+
+    Sub("Exemplu:", "Example:")
+    Para("Un Vanator cu skill 7 vinde resurse cu o valoare de baza de 3.400$. Completeaza doua cicluri si primeste: 6 Puncte de Skill, 8 Clan XP si 8 Puncte de Maraton. Cei 400$ ramasi se pastreaza pentru urmatorul ciclu.",
+         "A skill 7 Hunter sells resources with a base value of $3,400. They complete two cycles and receive: 6 Skill Points, 8 Clan XP and 8 Marathon Points. The remaining $400 is kept for the next cycle.")
+
+    Sub("Exceptia pentru lapte:", "Milk exception:")
+    Note("Laptele nu contribuie la ciclurile de progresie ale Vanatorului. Regula se aplica si atunci cand laptele este vandut prin optiunea Vinde tot.",
+         "Milk does not contribute to the Hunter progression cycles. This rule also applies when milk is sold through the Sell all option.")
+
+    -- =========================================================
+    -- 10. CONTRACTELE ZILNICE DE APROVIZIONARE
+    -- =========================================================
+    Head("box", "CONTRACTELE ZILNICE DE APROVIZIONARE", "DAILY SUPPLY CONTRACTS")
+    Sub("Reguli generale:", "General rules:")
+    Item("Vanatorii pot accesa contractele zilnice de aprovizionare incepand de la skill 1.",
+         "Hunters can access the daily supply contracts starting from skill 1.")
+    Item("Fiecare jucator primeste o comanda aleatorie potrivita skillului sau la Vanator.",
+         "Each player receives a random order suited to their Hunter skill.")
+    Item("Nivelurile mai mari de skill deblocheaza comenzi mai mari si cereri care includ resurse de la cerbi.",
+         "Higher skill levels unlock larger orders and requests that include resources from deer.")
+    Item("Interfata contractului afiseaza cantitatile necesare, resursele detinute si starea livrarii.",
+         "The contract interface shows the required amounts, the resources owned and the delivery status.")
+    Item("Jucatorii trebuie sa colecteze toate materialele cerute inainte de completarea contractului.",
+         "Players must collect all the required materials before completing the contract.")
+    Item("Resursele vandute la Comerciant nu mai sunt disponibile pentru livrare.",
+         "Resources sold to the Merchant are no longer available for delivery.")
+    Note("Fiecare jucator poate completa un singur contract pe zi.", "Each player can complete only one contract per day.")
+
+    Sub("Pachetele de recompense (se alege 1 din 8, inainte de livrare):",
+        "Reward packages (choose 1 of 8, before delivery):")
+    imgui.Spacing()
+    imgui.Columns(3, "hunterPackCols", false)
+    imgui.TextColored(cDim, L("Pachet", "Package")) imgui.NextColumn()
+    imgui.TextColored(cDim, L("Valoare de baza piata", "Base market value")) imgui.NextColumn()
+    imgui.TextColored(cDim, L("Plus", "Plus")) imgui.NextColumn()
+    imgui.Separator()
+    local packs = {
+        {"Plata Premium", "Premium Payment", "220%%",
+         "-", "-"},
+        {"Antrenament pentru Vanator", "Hunter Training", "110%%",
+         "15-30 Puncte de Skill la Vanator", "15-30 Hunter Skill Points"},
+        {"Pachet de Respect", "Respect Package", "125%%",
+         "Puncte de Respect = skillul la Vanator", "Respect Points = Hunter skill"},
+        {"Pachet de Misiune", "Mission Package", "125%%",
+         "10 + skillul la Vanator Puncte de Misiune", "10 + Hunter skill Mission Points"},
+        {"Lemn pentru Mestesugar", "Wood for Craftsman", "100%%",
+         "20 + 5 x skill Materiale de Lemn", "20 + 5 x skill Wood Materials"},
+        {"Bumbac pentru Mestesugar", "Cotton for Craftsman", "100%%",
+         "20 + 5 x skill Materiale de Bumbac", "20 + 5 x skill Cotton Materials"},
+        {"Argint pentru Mestesugar", "Silver for Craftsman", "100%%",
+         "30 + 6 x skill Materiale de Argint", "30 + 6 x skill Silver Materials"},
+        {"Aur pentru Mestesugar", "Gold for Craftsman", "100%%",
+         "20 + 5 x skill Materiale de Aur", "20 + 5 x skill Gold Materials"},
+    }
+    for _, p in ipairs(packs) do
+        imgui.TextColored(cLabel, L(p[1], p[2])) imgui.NextColumn()
+        imgui.TextColored(cMoney, p[3]) imgui.NextColumn()
+        imgui.TextWrapped(L(p[4], p[5])) imgui.NextColumn()
+    end
+    imgui.Columns(1)
+    imgui.Separator()
+
+    Sub("Observatii importante:", "Important notes:")
+    Item("Recompensele pentru Mestesugar respecta limitele aplicabile de depozitare a materialelor.",
+         "Craftsman rewards respect the applicable material storage limits.")
+    Item("Aurul pentru Mestesugar reprezinta materiale de crafting, nu moneda premium Gold.",
+         "Gold for Craftsman represents crafting materials, not the premium Gold currency.")
+    Item("Platile contractelor folosesc preturile standard ale resurselor si sunt separate de bonusurile obisnuite de vanzare la Comerciant.",
+         "Contract payments use the standard resource prices and are separate from the regular selling bonuses at the Merchant.")
+    Item("Livrarile contractelor nu declanseaza ciclurile obisnuite de progresie din vanzari.",
+         "Contract deliveries do not trigger the regular sales progression cycles.")
+    Item("Pachetul Antrenament pentru Vanator ofera propria recompensa de skill.",
+         "The Hunter Training package provides its own skill reward.")
+    Sub("Exemplu (Plata Premium):", "Example (Premium Payment):")
+    Para("O comanda care cere resurse in valoare de 10.000$ la preturile de baza ofera 22.000$ daca este ales pachetul Plata Premium.",
+         "An order requiring resources worth $10,000 at base prices gives $22,000 if the Premium Payment package is chosen.")
+
+    -- =========================================================
+    -- 11. MULSUL
+    -- =========================================================
+    Head("seedling", "MULSUL", "MILKING")
+    Sub("Conditii:", "Conditions:")
+    Item("Vacile Rare, Epice si Legendare pot fi mulse atunci cand sunt calme si eligibile.",
+         "Rare, Epic and Legendary cows can be milked when they are calm and eligible.")
+    Item("O vaca nu poate fi mulsa din nou pana cand disponibilitatea laptelui nu se reseteaza.",
+         "A cow cannot be milked again until the milk availability resets.")
+    Sub("Cum se mulge:", "How to milk:")
+    Item("Foloseste tasta pentru ghemuire langa vaca.", "Use the crouch key next to the cow.")
+    Item("Jucatorii de pe mobil folosesc comanda /milk.", "Mobile players use the /milk command.")
+    Item("Mulsul dureaza aproximativ 4,5 secunde.", "Milking takes approximately 4.5 seconds.")
+    Sub("Cantitatea de lapte in functie de raritate:", "Milk amount by rarity:")
+    imgui.Columns(2, "hunterMilkCols", false)
+    imgui.TextColored(imgui.ImVec4(0.3, 0.6, 1, 1),  L("Vaci Rare", "Rare Cows")) imgui.NextColumn()
+    imgui.Text(L("1 - 2 unitati", "1 - 2 units")) imgui.NextColumn()
+    imgui.TextColored(imgui.ImVec4(0.75, 0.4, 1, 1), L("Vaci Epice", "Epic Cows")) imgui.NextColumn()
+    imgui.Text(L("2 - 3 unitati", "2 - 3 units")) imgui.NextColumn()
+    imgui.TextColored(imgui.ImVec4(1, 0.65, 0, 1),   L("Vaci Legendare", "Legendary Cows")) imgui.NextColumn()
+    imgui.Text(L("3 - 5 unitati", "3 - 5 units")) imgui.NextColumn()
+    imgui.Columns(1)
+    Sub("Recompense:", "Rewards:")
+    Item("Fiecare unitate de lapte colectata ofera 10 Puncte de Skill la Fermier.",
+         "Each collected unit of milk gives 10 Farmer Skill Points.")
+    Sub("Vanzarea laptelui:", "Selling milk:")
+    Item("Laptele poate fi vandut la Comerciant si beneficiaza de bonusurile de vanzare si cele banesti aplicabile.",
+         "Milk can be sold to the Merchant and benefits from the applicable selling and money bonuses.")
+    Item("Vanzarea laptelui nu ofera:", "Selling milk does not provide:")
+    Item2("cicluri de progresie la Vanator;", "Hunter progression cycles;")
+    Item2("Puncte de Skill la Vanator;", "Hunter Skill Points;")
+    Item2("Puncte de Maraton;", "Marathon Points;")
+    Item2("Clan XP din aceste cicluri.", "Clan XP from these cycles.")
+
+    -- =========================================================
+    -- 12. CALARIREA ANIMALELOR
+    -- =========================================================
+    Head("paw", "CALARIREA ANIMALELOR", "RIDING ANIMALS")
+    Item("Calarirea unui animal declanseaza un efect audio specific animalului.",
+         "Riding an animal triggers an animal-specific audio effect.")
+    Item("Acumularea orelor jucate este intrerupta cat timp calaresti un animal si se reia dupa descalecare.",
+         "Playtime accumulation is paused while you ride an animal and resumes after dismounting.")
+
+    -- =========================================================
+    -- 13. COMENZI SPECIFICE
+    -- =========================================================
+    Head("terminal", "COMENZI SPECIFICE", "SPECIFIC COMMANDS")
+    imgui.TextColored(cLabel, "/skin")
+    imgui.SameLine()
+    imgui.TextWrapped(L("- alternativa pentru jucatorii de pe mobil la tasta ALT; se foloseste pentru jupuirea carcaselor.",
+                        "- alternative to the ALT key for mobile players; used for skinning carcasses."))
+    imgui.TextColored(cLabel, "/milk")
+    imgui.SameLine()
+    imgui.TextWrapped(L("- alternativa pentru jucatorii de pe mobil la tasta de ghemuire; se foloseste pentru mulsul vacilor.",
+                        "- alternative to the crouch key for mobile players; used for milking cows."))
+    Note("Nota: Ambele comenzi respecta aceleasi verificari de eligibilitate si reguli de interactiune ca variantele lor de pe tastatura.",
+         "Note: Both commands follow the same eligibility checks and interaction rules as their keyboard counterparts.")
+    imgui.Spacing()
+end
+
 local function renderFirefighterDetails()
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "P O M P I E R")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(22) .. "P O M P I E R")
     else
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "F I R E F I G H T E R")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(22) .. "F I R E F I G H T E R")
     end
     imgui.Separator()
     
     imgui.BeginChild("FireBase", imgui.ImVec2(0, 80), true)  
         imgui.Columns(2, "fireBaseCols", false)
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "INTERVENTIE & OPERARE FURTUN:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("fireext") .. "INTERVENTIE & OPERARE FURTUN:")
             imgui.Separator()
             imgui.Bullet() imgui.TextWrapped("Activitate: Dispecerat plata pe DISTANTA.")
             imgui.Bullet() imgui.TextWrapped("Comanda Ajutor rapid dedicat: /jobhelp")
@@ -3555,7 +4326,7 @@ local function renderFirefighterDetails()
             imgui.Bullet() imgui.TextWrapped("PC: ALT / FIRE (On/Off) | ALT (Langa Hidrant - Refill)")
             imgui.Bullet() imgui.TextWrapped("Mobil: Comenzi rapide /hose | /refillhose")
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "INTERVENTION & HOSE OPERATION:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("fireext") .. "INTERVENTION & HOSE OPERATION:")
             imgui.Separator()
             imgui.Bullet() imgui.TextWrapped("Activity: Dispatch payout based on DISTANCE.")
             imgui.Bullet() imgui.TextWrapped("Dedicated job help command: /jobhelp")
@@ -3568,9 +4339,9 @@ local function renderFirefighterDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "VENITURI ESTIMATIVE (MIN - MAX):")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("coins") .. "VENITURI ESTIMATIVE (MIN - MAX):")
     else
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "ESTIMATED INCOME (MIN - MAX):")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("coins") .. "ESTIMATED INCOME (MIN - MAX):")
     end
     
     imgui.BeginChild("FireScenarios", imgui.ImVec2(0, 240), true) 
@@ -3636,7 +4407,7 @@ local function renderFirefighterDetails()
     imgui.BeginChild("FireFooter", imgui.ImVec2(0, 220), true)   
         imgui.Columns(2, "fireFCols", false)
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "RECOMPENSE:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("trophy") .. "RECOMPENSE:")
             imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 1 - Firefighter Moonbeam")
             imgui.TextColored(imgui.ImVec4(1, 0.7, 0, 1), "Skill 2 - 3 - Firefighter Rumpo")
             imgui.TextColored(imgui.ImVec4(1, 0.4, 0, 1), "Skill 4 - 5 - Firefighter BF Injection")
@@ -3646,7 +4417,7 @@ local function renderFirefighterDetails()
             imgui.TextColored(imgui.ImVec4(0.8, 0.4, 1, 1), "Skill 10 - Firefighter Elite Fire Ladder")
             imgui.NextColumn()
             
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SKILL (CURSE):")  
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "SKILL (CURSE):")  
             imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 2 necesita 30 Job Skill Points.")
             imgui.TextColored(imgui.ImVec4(1, 0.7, 0, 1), "Skill 3 necesita 90 Job Skill Points.")
             imgui.TextColored(imgui.ImVec4(1, 0.4, 0, 1), "Skill 4 necesita 210 Job Skill Points.")
@@ -3657,7 +4428,7 @@ local function renderFirefighterDetails()
             imgui.TextColored(imgui.ImVec4(1, 0.4, 0.6, 1), "Skill 9 necesita 1550 Job Skill Points.")
             imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1), "Skill 10 necesita 1900 Job Skill Points.")     
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "VEHICLE REWARDS:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("car") .. "VEHICLE REWARDS:")
             imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 1 - Firefighter Moonbeam")
             imgui.TextColored(imgui.ImVec4(1, 0.7, 0, 1), "Skill 2 - 3 - Firefighter Rumpo")
             imgui.TextColored(imgui.ImVec4(1, 0.4, 0, 1), "Skill 4 - 5 - Firefighter BF Injection")
@@ -3667,7 +4438,7 @@ local function renderFirefighterDetails()
             imgui.TextColored(imgui.ImVec4(0.8, 0.4, 1, 1), "Skill 10 - Firefighter Elite Fire Ladder")
             imgui.NextColumn()
             
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SKILL (RUNS):")  
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "SKILL (RUNS):")  
             imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 2 requires 30 Job Skill Points.")
             imgui.TextColored(imgui.ImVec4(1, 0.7, 0, 1), "Skill 3 requires 90 Job Skill Points.")
             imgui.TextColored(imgui.ImVec4(1, 0.4, 0, 1), "Skill 4 requires 210 Job Skill Points.")
@@ -3683,9 +4454,9 @@ local function renderFirefighterDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "SPECIFICATII REZERVOR APA:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("info") .. "SPECIFICATII REZERVOR APA:")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "WATER TANK SPECIFICATIONS:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("info") .. "WATER TANK SPECIFICATIONS:")
     end
     
     imgui.BeginChild("FireWater", imgui.ImVec2(0, 150), true)  
@@ -3707,21 +4478,21 @@ end
 
 local function renderDailyJobDetails()
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "J O B U L - Z I L E I")
+        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), imgui.jobPre(23) .. "J O B U L - Z I L E I")
     else
-        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "J O B - O F - T H E - D A Y")
+        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), imgui.jobPre(23) .. "J O B - O F - T H E - D A Y")
     end
     imgui.Separator()
     
     imgui.BeginChild("JZBase", imgui.ImVec2(0, 120), true)
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "DESCRIERE SISTEM:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("info") .. "DESCRIERE SISTEM:")
             imgui.Separator()
             imgui.BulletText("Obiectiv: Dublarea castigurilor cash pentru un job specific selectat.")
             imgui.BulletText("Durata: 24 de ore (se reseteaza complet la ora exacta 00:00).")
             imgui.BulletText("Identificare: Marcat stabil cu text special in lista sistemului [/jobs].")
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "SYSTEM DESCRIPTION:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("info") .. "SYSTEM DESCRIPTION:")
             imgui.Separator()
             imgui.BulletText("Objective: Double cash earnings for a specific selected job.")
             imgui.BulletText("Duration: 24 hours (resets completely at exactly 00:00).")
@@ -3731,19 +4502,19 @@ local function renderDailyJobDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "CALCULUL CASTIGURILOR STACKABLE:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), imgui.pre("coins") .. "CALCULUL CASTIGURILOR STACKABLE:")
     else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "STACKABLE EARNINGS CALCULATION:")
+        imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), imgui.pre("coins") .. "STACKABLE EARNINGS CALCULATION:")
     end
     
     imgui.BeginChild("JZCalcul", imgui.ImVec2(0, 140), true)
         if iniData.settings.lang == 0 then
             imgui.BulletText("1. Plata Baza x 2 (Bonusul nativ de Zi active)")
-            imgui.BulletText("2. + 50 '/. din noua valoare (Daca detii in paralel Cont Premium)")
+            imgui.BulletText("2. + 50 %% din noua valoare (Daca detii in paralel Cont Premium)")
             imgui.BulletText("3. + Toate bonusurile active simultan (Maraton, Gold, Evenimente).")
         else
             imgui.BulletText("1. Base Payout x 2 (Native active Daily bonus)")
-            imgui.BulletText("2. + 50 '/. of the new value (If you also hold a Premium Account)")
+            imgui.BulletText("2. + 50 %% of the new value (If you also hold a Premium Account)")
             imgui.BulletText("3. + All simultaneously active bonuses (Marathon, Gold, Events).")
         end
     imgui.EndChild()
@@ -3751,26 +4522,26 @@ local function renderDailyJobDetails()
     
     imgui.BeginChild("JZExclusions", imgui.ImVec2(0, 120), true)
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), "RESTRICTII EXCLUSE:")
+            imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), imgui.pre("warn") .. "RESTRICTII EXCLUSE:")
             imgui.TextWrapped("Urmatoarele joburi NU pot fi selectate: Hot buzunare, Detectiv, Avocat, Fermier, Autobuz, Mester.")
         else
-            imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), "EXCLUDED RESTRICTIONS:")
+            imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), imgui.pre("warn") .. "EXCLUDED RESTRICTIONS:")
             imgui.TextWrapped("The following jobs CANNOT be selected: Pickpocket, Detective, Lawyer, Farmer, Bus Driver, Craftsman.")
         end
     imgui.EndChild()
 end
 
 local function renderJobClashDetails()
-    imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "J O B - C L A S H")
+    imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), imgui.jobPre(24) .. "J O B - C L A S H")
     imgui.Separator()
     
     imgui.BeginChild("ClashBase", imgui.ImVec2(0, 130), true)
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "CUM PARTICI:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("flag") .. "CUM PARTICI:")
             imgui.Separator()
             imgui.TextWrapped("Zilnic, un job este ales aleatoriu ca 'Clash Job'. Fiecare cursa completata aduce +1 punct in clasament. Comanda verificare: [/jobclash]")
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "HOW TO PARTICIPATE:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("flag") .. "HOW TO PARTICIPATE:")
             imgui.Separator()
             imgui.TextWrapped("Daily, a job is randomly selected as the 'Clash Job'. Each completed run grants +1 point in the leaderboard. Check command: [/jobclash]")
         end
@@ -3778,9 +4549,9 @@ local function renderJobClashDetails()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "RECOMPENSE MIEZUL NOPTII (00:00):")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("trophy") .. "RECOMPENSE MIEZUL NOPTII (00:00):")
     else
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), "MIDNIGHT REWARDS (00:00):")
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("trophy") .. "MIDNIGHT REWARDS (00:00):")
     end
     
     imgui.BeginChild("ClashRewards", imgui.ImVec2(0, 105), true)
@@ -3810,16 +4581,260 @@ local function renderJobClashDetails()
      imgui.Spacing()    
      imgui.BeginChild("ClashVehicles", imgui.ImVec2(0, 120), true)
         if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), "RESTRICTII EXCLUSE:")
+            imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), imgui.pre("warn") .. "RESTRICTII EXCLUSE:")
             imgui.TextWrapped("Urmatoarele joburi NU pot fi selectate: Hot buzunare, Detectiv, Avocat, Fermier, Autobuz, Mester, Pompier.")
         else
-            imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), "EXCLUDED RESTRICTIONS:")
+            imgui.TextColored(imgui.ImVec4(1, 0.2, 0.2, 1), imgui.pre("warn") .. "EXCLUDED RESTRICTIONS:")
             imgui.TextWrapped("The following jobs CANNOT be selected: Pickpocket, Detective, Lawyer, Farmer, Bus Driver, Craftsman, Firefighter.")
         end
     imgui.EndChild()
 end
 
 -- [ RENDERING INFORMATII VEHICUL INTEGRAT ] --
+local function renderLicensesDetails()
+    local isRo = (iniData.settings.lang == 0)
+    local function L(ro, en) if isRo then return ro else return en end end
+
+    local cTitle = imgui.ImVec4(0.0, 0.8, 1.0, 1.0)
+    local cHead  = imgui.ImVec4(0, 1, 0.95, 1)
+    local cLabel = imgui.ImVec4(1, 1, 0, 1)
+    local cMoney = imgui.ImVec4(0, 1, 0, 1)
+    local cDim   = imgui.ImVec4(1, 1, 1, 0.6)
+    local cNote  = imgui.ImVec4(1, 0.65, 0.2, 1)
+    local cRed   = imgui.ImVec4(1, 0.4, 0.4, 1)
+
+    local function Head(icon, ro, en)
+        imgui.Spacing()
+        imgui.TextColored(cHead, imgui.pre(icon) .. L(ro, en))
+        imgui.Separator()
+    end
+    local function Sub(ro, en, color)
+        imgui.Spacing()
+        imgui.TextColored(color or cLabel, L(ro, en))
+    end
+    local function Item(ro, en)
+        imgui.Bullet() imgui.TextWrapped(L(ro, en))
+    end
+    local function Item2(ro, en)
+        imgui.Indent(18)
+        imgui.Bullet() imgui.TextWrapped(L(ro, en))
+        imgui.Unindent(18)
+    end
+    local function Para(ro, en) imgui.TextWrapped(L(ro, en)) end
+    local function Note(ro, en)
+        imgui.PushStyleColor(imgui.Col.Text, cNote)
+        imgui.TextWrapped(L(ro, en))
+        imgui.PopStyleColor()
+    end
+    local function Tbl(id, hdr, rows)
+        imgui.Columns(#hdr, id, false)
+        for _, h in ipairs(hdr) do imgui.TextColored(cDim, h) imgui.NextColumn() end
+        imgui.Separator()
+        for _, r in ipairs(rows) do
+            for c = 1, #hdr do
+                local v = r[c] or ""
+                if c == 1 then
+                    imgui.TextColored(cLabel, v)
+                elseif v:sub(1, 1) == "$" then
+                    imgui.TextColored(cMoney, v)
+                else
+                    imgui.TextWrapped(v)
+                end
+                imgui.NextColumn()
+            end
+        end
+        imgui.Columns(1)
+        imgui.Separator()
+    end
+
+    -- ---------- titlu ----------
+    imgui.TextColored(cTitle, imgui.pre("shield") .. L("--- SISTEMUL DE LICENTE ---", "--- LICENSE SYSTEM ---"))
+    imgui.Separator()
+
+    -- 1. CE SUNT LICENTELE
+    Head("info", "CE SUNT LICENTELE?", "WHAT ARE LICENSES?")
+    Para("Licentele sunt autorizatii pe care jucatorii din factiunile de tip School Instructors vi le pot acorda pentru a avea acces la anumite lucruri sau pentru a nu primi eventuale contraventii pe server.",
+         "Licenses are authorizations that players from School Instructors factions can grant you, to give you access to certain things or to avoid getting fines on the server.")
+
+    -- 2. CATE LICENTE EXISTA
+    Head("list", "CATE LICENTE EXISTA?", "HOW MANY LICENSES ARE THERE?")
+    Para("Exista 6 licente pe care le puteti obtine de la un anumit nivel: Zbor, Navigatie, Pescar, Port-Arma, Materiale si Vanator. In plus, Permisul de Conducere se obtine la tutorialul de inregistrare.",
+         "There are 6 licenses you can obtain from a certain level: Flying, Sailing, Fishing, Gun, Materials and Hunter. In addition, the Driver's License is obtained from the registration tutorial.")
+    imgui.Spacing()
+    Tbl("licSummaryCols",
+        {L("Licenta", "License"), L("Nivel minim", "Minimum level"), L("Valabilitate", "Validity")},
+        {
+            {L("Permis de Conducere", "Driver's License"), L("tutorial", "tutorial"), "-"},
+            {L("Zbor", "Flying"),           "1", L("100 ore", "100 hours")},
+            {L("Navigatie", "Sailing"),     "1", L("100 ore", "100 hours")},
+            {L("Pescar", "Fishing"),        "1", L("100 ore", "100 hours")},
+            {L("Port-Arma", "Gun"),         "5", L("100 ore", "100 hours")},
+            {L("Materiale", "Materials"),   "1", L("100 ore", "100 hours")},
+            {L("Vanator", "Hunter"),        "5", L("100 ore", "100 hours")},
+        })
+
+    -- 3. CU CE AJUTA FIECARE LICENTA
+    Head("shield", "CU CE AJUTA FIECARE LICENTA?", "WHAT DOES EACH LICENSE DO?")
+
+    Sub("Permisul de Conducere:", "Driver's License:")
+    Item("Il obtineti cand faceti tutorialul la inregistrarea pe server.", "You get it when you do the tutorial at registration.")
+    Item("Daca nu-l aveti, nu va puteti urca in nicio masina.", "Without it, you cannot get into any car.")
+    Item("Membrii Police Department din echipa ROADS va pot confisca permisul de conducere (1 ora) atunci cand sunteti surprinsi:",
+         "Police Department members from the ROADS team can confiscate your driver's license (1 hour) when you are caught:")
+    Item2("folosind NOS;", "using NOS;")
+    Item2("folosind hidraulice;", "using hydraulics;")
+    Item2("conducand pe contr-sens;", "driving the wrong way;")
+    Item2("cu o alcoolemie de 3.0;", "with an alcohol level of 3.0;")
+    Item2("parcati neregulamentar sau blocand traficul.", "parked illegally or blocking traffic.")
+    imgui.Spacing()
+    imgui.TextColored(cRed, L("Confiscare dupa viteza:", "Confiscation by speeding:"))
+    Tbl("licSpeedCols",
+        {L("Zona (limita legala)", "Zone (legal limit)"), L("Viteza", "Speed"), L("Confiscare", "Confiscation")},
+        {
+            {L("In oras (100 KM/h)", "In city (100 KM/h)"),                 "150 - 199 KM/h", L("1 ora", "1 hour")},
+            {"",                                                           "200+ KM/h",      L("2 ore", "2 hours")},
+            {L("In afara orasului (130 KM/h)", "Outside city (130 KM/h)"), "180 - 229 KM/h", L("1 ora", "1 hour")},
+            {L("Pe autostrada (160 KM/h)", "On highway (160 KM/h)"),       "210+ KM/h",      L("1 ora", "1 hour")},
+        })
+    Note("Daca ti-a fost confiscat permisul si incalci din nou limita de viteza intr-un interval de 15 minute, ti se confisca permisul pentru 3 ore.",
+         "If your license was confiscated and you break the speed limit again within 15 minutes, your license is confiscated for 3 hours.")
+
+    Sub("Licenta de Zbor:", "Flying License:")
+    Item("Va ajuta sa puteti pilota avioanele si elicopterele.", "Lets you pilot airplanes and helicopters.")
+    Item("Fara ea nu va puteti urca ca sofer intr-un vehicul aerian.", "Without it you cannot get in as the driver of an aerial vehicle.")
+    Item("Se obtine de la nivel 1 si este valabila 100 ore.", "Available from level 1 and valid for 100 hours.")
+
+    Sub("Licenta de Navigatie:", "Sailing License:")
+    Item("Va ajuta sa puteti conduce barci.", "Lets you drive boats.")
+    Item("Fara ea nu va puteti urca ca sofer intr-o barca.", "Without it you cannot get in as the driver of a boat.")
+    Item("Se obtine de la nivel 1 si este valabila 100 ore.", "Available from level 1 and valid for 100 hours.")
+
+    Sub("Licenta de Pescuit:", "Fishing License:")
+    Item("Va ajuta sa nu primiti wanted la jobul de Pescar.", "Helps you avoid getting wanted at the Fisherman job.")
+    Item("Fara ea primiti wanted +1 pentru fiecare peste prins.", "Without it you get wanted +1 for every fish you catch.")
+    Item("Se obtine de la nivel 1 si este valabila 100 ore.", "Available from level 1 and valid for 100 hours.")
+
+    Sub("Licenta de Port-Arma:", "Gun License:")
+    Item("Va ajuta sa va puteti achizitiona arme din magazinele de arme, sa intrati in diferite arene sau misiuni etc.",
+         "Lets you buy weapons from gun shops, enter various arenas or missions, etc.")
+    Item("Fara ea nu puteti folosi arme.", "Without it you cannot use weapons.")
+    Item("Se obtine de la nivel 5 si este valabila 100 ore.", "Available from level 5 and valid for 100 hours.")
+    Item("Numarul de ore ramase este important, pentru ca exista statistici speciale pentru jucator:",
+         "The number of hours left matters, because there are special player stats:")
+    imgui.Spacing()
+    Tbl("licGunStatsCols",
+        {L("Statistici", "Stats"), L("Ore ramase", "Hours left")},
+        {
+            {L("Slabe", "Weak"),          L("20 sau mai putine", "20 or fewer")},
+            {L("Gangster", "Gangster"),   L("21 - 50", "21 - 50")},
+            {L("Asasin", "Assassin"),     L("51 sau mai multe", "51 or more")},
+        })
+    imgui.TextColored(imgui.ImVec4(1, 0.45, 0.3, 1), L("Statistici slabe:", "Weak stats:"))
+    Item2("Nu puteti trage si va misca in acelasi timp.", "You cannot shoot and move at the same time.")
+    Item2("Toate armele pentru doua maini devin arme de o singura mana.", "All two-handed weapons become one-handed weapons.")
+    Item2("Raza de fixare, precizia, rata de foc si viteza de strafe sunt scazute si imprecise.",
+          "Lock-on range, accuracy, fire rate and strafe speed are reduced and imprecise.")
+    Item2("Damage-ul cauzat de arme este injumatatit.", "Weapon damage is halved.")
+    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), L("Statistici gangster:", "Gangster stats:"))
+    Item2("Puteti trage si va misca in acelasi timp.", "You can shoot and move at the same time.")
+    Item2("Raza de fixare, precizia, rata de foc si viteza de strafe sunt imbunatatite.",
+          "Lock-on range, accuracy, fire rate and strafe speed are improved.")
+    Item2("Armele pentru doua maini raman arme de o singura mana.", "Two-handed weapons remain one-handed weapons.")
+    imgui.TextColored(imgui.ImVec4(0.4, 1, 0.4, 1), L("Statistici asasin:", "Assassin stats:"))
+    Item2("Armele pentru doua maini pot fi folosite simultan.", "Two-handed weapons can be used simultaneously.")
+    Item2("Puteti trage si va misca in acelasi timp.", "You can shoot and move at the same time.")
+    Item2("Raza de fixare, precizia, rata de foc si viteza de strafe sunt la capacitatea maxima admisa de joc.",
+          "Lock-on range, accuracy, fire rate and strafe speed are all at the maximum allowed by the game.")
+
+    Sub("Licenta de Materiale:", "Materials License:")
+    Item("Va ajuta sa nu mai primiti wanted de la skill 3 la jobul de Arms Dealer si sa nu va poata confisca membrii departamentelor materialele.",
+         "Helps you avoid wanted from skill 3 at the Arms Dealer job and stops department members from confiscating your materials.")
+    Item("Fara ea primiti wanted +1 la skill 3 si wanted +3 la skill 5, iar departamentele va pot confisca toate materialele din control.",
+         "Without it you get wanted +1 at skill 3 and wanted +3 at skill 5, and departments can confiscate all the materials you carry during a search.")
+    Item("Se obtine de la nivel 1 si este valabila 100 ore.", "Available from level 1 and valid for 100 hours.")
+
+    Sub("Licenta de Vanator:", "Hunter License:")
+    Item("Va ajuta sa nu primiti wanted la jobul de Vanator cand ucideti sau jupuiti un animal.",
+         "Helps you avoid wanted at the Hunter job when you kill or skin an animal.")
+    Item("Fara ea primiti wanted 1 cand ucideti un animal si wanted 1 cand il jupuiti, deci wanted 2 pentru cele doua actiuni.",
+         "Without it you get wanted 1 when you kill an animal and wanted 1 when you skin it, so wanted 2 for the two actions.")
+    Item("Se obtine de la nivel 5 si este valabila 100 ore.", "Available from level 5 and valid for 100 hours.")
+
+    -- 4. CUM OBTIN LICENTELE
+    Head("key", "CUM OBTIN LICENTELE DORITE?", "HOW DO I GET THE LICENSES?")
+    Item("Foloseste comanda /needlicense pentru a solicita un instructor, apoi sustine un test teoretic sau practic pentru licenta dorita.",
+         "Use the /needlicense command to request an instructor, then take a theoretical or practical test for the license you want.")
+    Item("Daca nu ti se raspunde la /needlicense in 5 minute, poti lua licenta de la un NPC aflat la un HQ de School Instructors.",
+         "If your /needlicense request is not answered within 5 minutes, you can get the license from an NPC at a School Instructors HQ.")
+    Item("Iti poti reinnoi licenta de la NPC-uri folosind comanda /renewlicense.",
+         "You can renew your license from NPCs using the /renewlicense command.")
+    Note("Nota: Jucatorii cu nivel 50+, liderii, helperii si adminii primesc direct licenta dorita, fara test. La licentele luate de la un NPC, reinnoirea se face fara test indiferent de nivel.",
+         "Note: Players with level 50+, leaders, helpers and admins get the license directly, without a test. For licenses taken from an NPC, renewal is done without a test regardless of level.")
+
+    -- 5. VALABILITATEA
+    Head("clock", "VALABILITATEA LICENTELOR", "LICENSE VALIDITY")
+    Item("Numarul de ore la licente scade cu 1 la fiecare PayDay primit, indiferent daca stai pe sleep sau esti online.",
+         "The hours on licenses decrease by 1 at every PayDay you receive, whether you are on sleep or online.")
+    Item("Cand ajungi sub 50 de ore, iti poti reinnoi licenta sustinand din nou testul (daca nu ai nivel 50+, nu esti lider, helper sau admin si nu iei licenta de la un NPC).",
+         "Once you drop below 50 hours, you can renew your license by taking the test again (if you are not level 50+, a leader, helper or admin, and are not taking the license from an NPC).")
+
+    -- 6. PRET INSTRUCTORI
+    Head("coins", "PRETUL LICENTELOR LUATE DE LA INSTRUCTORI", "PRICE OF LICENSES TAKEN FROM INSTRUCTORS")
+    Para("Pretul tuturor licentelor este stabilit automat de server in functie de nivelul jucatorului. Se plateste jumatate la inceputul lectiei si jumatate la acceptarea licentei; la nivel 50+ se plateste direct la acceptare.",
+         "The price of all licenses is set automatically by the server based on the player's level. Half is paid at the start of the lesson and half at license acceptance; at level 50+ it is paid directly at acceptance.")
+    imgui.Spacing()
+    local dash = "-"
+    local ins = {
+        {L("Zbor", "Flying"), {
+            {"1-9", "$450", "$450", "$900"}, {"10-49", "$900", "$900", L("$1.800", "$1,800")}, {"50+", dash, L("$3.600", "$3,600"), L("$3.600", "$3,600")}}},
+        {L("Navigatie", "Sailing"), {
+            {"1-9", "$425", "$425", "$850"}, {"10-49", "$850", "$850", L("$1.700", "$1,700")}, {"50+", dash, L("$3.400", "$3,400"), L("$3.400", "$3,400")}}},
+        {L("Pescar", "Fishing"), {
+            {"1-9", "$125", "$125", "$250"}, {"10-49", "$250", "$250", "$500"}, {"50+", dash, L("$1.000", "$1,000"), L("$1.000", "$1,000")}}},
+        {L("Port-Arma", "Gun"), {
+            {"5-9", "$500", "$500", L("$1.000", "$1,000")}, {"10-49", L("$1.000", "$1,000"), L("$1.000", "$1,000"), L("$2.000", "$2,000")}, {"50+", dash, L("$4.000", "$4,000"), L("$4.000", "$4,000")}}},
+        {L("Materiale", "Materials"), {
+            {"1-9", "$400", "$400", "$800"}, {"10-49", "$800", "$800", L("$1.600", "$1,600")}, {"50+", dash, L("$3.200", "$3,200"), L("$3.200", "$3,200")}}},
+        {L("Vanator", "Hunter"), {
+            {"5-9", "$975", "$975", L("$1.950", "$1,950")}, {"10-49", L("$1.950", "$1,950"), L("$1.950", "$1,950"), L("$3.900", "$3,900")}, {"50+", dash, L("$5.200", "$5,200"), L("$5.200", "$5,200")}}},
+    }
+    local insRows = {}
+    for _, lic in ipairs(ins) do
+        for k, r in ipairs(lic[2]) do
+            insRows[#insRows + 1] = { (k == 1) and lic[1] or "", L("Nivel ", "Level ") .. r[1], r[2], r[3], r[4] }
+        end
+    end
+    Tbl("licInstrCols",
+        {L("Licenta", "License"), L("Nivel", "Level"), L("La inceputul lectiei", "Lesson start"), L("La acceptare", "At acceptance"), "Total"},
+        insRows)
+    Note("Nota: pe site, totalul pentru Pescar la nivel 10-49 apare ca $300, dar 2 x $250 = $500, deci am pus $500.",
+         "Note: on the website, the Fishing total for level 10-49 is listed as $300, but 2 x $250 = $500, so $500 is shown.")
+
+    -- 7. PRET NPC
+    Head("coins", "PRETUL LICENTELOR LUATE DE LA NPC-URI", "PRICE OF LICENSES TAKEN FROM NPCs")
+    Para("Pretul tuturor licentelor este stabilit automat de server in functie de nivelul jucatorului. Se plateste o singura data, la primirea licentei.",
+         "The price of all licenses is set automatically by the server based on the player's level. It is paid once, when you receive the license.")
+    imgui.Spacing()
+    local npc = {
+        {L("Zbor", "Flying"),         { {"1-9", L("$4.500", "$4,500")},  {"10-49", L("$9.000", "$9,000")},   {"50+", L("$18.000", "$18,000")} }},
+        {L("Navigatie", "Sailing"),   { {"1-9", L("$4.250", "$4,250")},  {"10-49", L("$8.500", "$8,500")},   {"50+", L("$17.000", "$17,000")} }},
+        {L("Pescar", "Fishing"),      { {"1-9", L("$1.250", "$1,250")},  {"10-49", L("$2.500", "$2,500")},   {"50+", L("$5.000", "$5,000")} }},
+        {L("Port-Arma", "Gun"),       { {"5-9", L("$5.000", "$5,000")},  {"10-49", L("$10.000", "$10,000")}, {"50+", L("$20.000", "$20,000")} }},
+        {L("Materiale", "Materials"), { {"1-9", L("$4.000", "$4,000")},  {"10-49", L("$8.000", "$8,000")},   {"50+", L("$16.000", "$16,000")} }},
+        {L("Vanator", "Hunter"),      { {"5-9", L("$7.000", "$7,000")},  {"10-49", L("$12.000", "$12,000")}, {"50+", L("$22.000", "$22,000")} }},
+    }
+    local npcRows = {}
+    for _, lic in ipairs(npc) do
+        for k, r in ipairs(lic[2]) do
+            npcRows[#npcRows + 1] = { (k == 1) and lic[1] or "", L("Nivel ", "Level ") .. r[1], r[2] }
+        end
+    end
+    Tbl("licNpcCols",
+        {L("Licenta", "License"), L("Nivel", "Level"), L("Pret la primirea licentei", "Price on receiving the license")},
+        npcRows)
+    imgui.Spacing()
+end
+
 local function renderVehicleDetailsPanel(vehName)
     local found = false
     local data = nil
@@ -3984,9 +4999,9 @@ end
 -- [ RENDER SELECTIE TEME (TAB 8) ] --
 local function renderThemeSettings()
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), "Configurare generala:")
+        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), imgui.pre("cog") .. "Configurare generala:")
     else
-        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), "General configuration:")
+        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), imgui.pre("cog") .. "General configuration:")
     end
     imgui.Separator()
     imgui.Spacing()
@@ -3999,19 +5014,33 @@ local function renderThemeSettings()
     end
     imgui.PopItemWidth()
     
-    imgui.PushItemWidth(150)
-    if iniData.settings.lang == 0 then
-        if imgui.Combo("Tasta 1 (Principala)", combo_key2, comboItemsCArray, keyCount) then
-            iniData.settings.key2 = bindableKeys[combo_key2[0] + 1].id
-            inicfg.save(iniData, directIni)
-        end
-    else
-        if imgui.Combo("Key 1 (Main)", combo_key2, comboItemsCArray, keyCount) then
-            iniData.settings.key2 = bindableKeys[combo_key2[0] + 1].id
-            inicfg.save(iniData, directIni)
+    -- Tasta principala: click pe buton, apoi apesi ORICE tasta (ESC = anulare, BACKSPACE = fara tasta)
+    local isRO = iniData.settings.lang == 0
+    local keyBtnLabel = HH_FA.binding and (isRO and "Apasa o tasta..." or "Press a key...")
+                        or getKeyNameById(iniData.settings.key2)
+    if imgui.Button(keyBtnLabel .. "##bind_key1", imgui.ImVec2(150, 22)) then
+        HH_FA.binding = true
+        HH_FA.bindTime = os.clock()
+    end
+    imgui.SameLine()
+    imgui.Text(isRO and "Tasta 1 (Principala)" or "Key 1 (Main)")
+    if HH_FA.binding then
+        imgui.TextDisabled(isRO and "Apasa tasta dorita. ESC = anulare, BACKSPACE = fara tasta."
+                               or "Press the desired key. ESC = cancel, BACKSPACE = no key.")
+        if os.clock() - (HH_FA.bindTime or 0) > 0.15 then
+            for vk = 8, 254 do
+                if isKeyJustPressed(vk) then
+                    if vk ~= 27 then
+                        iniData.settings.key2 = (vk == 8) and 0 or vk
+                        inicfg.save(iniData, directIni)
+                    end
+                    HH_FA.binding = false
+                    HH_FA.bindTime = os.clock()
+                    break
+                end
+            end
         end
     end
-    imgui.PopItemWidth()    
 
     -- ----- CODUL PENTRU SELECTARE LIMBa -----
     imgui.Spacing()
@@ -4034,7 +5063,7 @@ local function renderThemeSettings()
     imgui.PopItemWidth()
 
     imgui.Spacing()    
-    if imgui.Button(iniData.settings.lang == 0 and "Salveaza schimbarile" or "Save changes", imgui.ImVec2(150, 26)) then
+    if imgui.Button(imgui.pre("save") .. (iniData.settings.lang == 0 and "Salveaza schimbarile" or "Save changes"), imgui.ImVec2(200, 26)) then
         local targetCmd = ffi.string(cmd_buffer):gsub("%s+", "")
         
         if targetCmd ~= "" then
@@ -4089,7 +5118,7 @@ local function renderThemeSettings()
         helperPointsIni.main.overlay_enabled = helperPointsOverlayBuf[0]
         helperPointsSave()
     end
-    if imgui.Button(iniData.settings.lang == 0 and 'Reseteaza punctele##helperpoints_reset' or 'Reset points##helperpoints_reset', imgui.ImVec2(150, 26)) then
+    if imgui.Button(imgui.pre('undo') .. (iniData.settings.lang == 0 and 'Reseteaza punctele##helperpoints_reset' or 'Reset points##helperpoints_reset'), imgui.ImVec2(185, 26)) then
         helperPointsIni.main.score = 0
         helperPointsScoreBuf[0] = 0
         helperPointsSave()
@@ -4099,9 +5128,9 @@ local function renderThemeSettings()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), "Pozitionare Text Helper Duty:")
+        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), imgui.pre("pin") .. "Pozitionare Text Helper Duty:")
     else
-        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), "Helper Duty Text Positioning:")
+        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), imgui.pre("pin") .. "Helper Duty Text Positioning:")
     end
     imgui.Separator()
     imgui.Spacing()
@@ -4130,7 +5159,7 @@ local function renderThemeSettings()
     
     imgui.Spacing()
     if iniData.settings.lang == 0 then
-        if imgui.Button("Reseteaza pozitiile", imgui.ImVec2(250, 26)) then
+        if imgui.Button(imgui.pre("undo") .. "Reseteaza pozitiile", imgui.ImVec2(250, 26)) then
             slider_hduty_x[0] = 1650.0
             slider_hduty_y[0] = 2.5
             iniData.settings.hduty_x = 1650.0
@@ -4139,7 +5168,7 @@ local function renderThemeSettings()
             sampAddChatMessage("{f54242}[HelperHelp]{ffffff} Pozitiile Helper Duty au fost resetate la valorile implicite", -1)
         end
     else
-        if imgui.Button("Reset positions", imgui.ImVec2(250, 26)) then
+        if imgui.Button(imgui.pre("undo") .. "Reset positions", imgui.ImVec2(250, 26)) then
             slider_hduty_x[0] = 1650.0
             slider_hduty_y[0] = 2.5
             iniData.settings.hduty_x = 1650.0
@@ -4152,9 +5181,9 @@ local function renderThemeSettings()
     imgui.Spacing()
 
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), "Selecteaza o tema vizuala:")
+        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), imgui.pre("palette") .. "Selecteaza o tema vizuala:")
     else
-        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), "Select a visual theme:")
+        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), imgui.pre("palette") .. "Select a visual theme:")
     end
     imgui.Separator()
     imgui.Spacing()
@@ -4260,9 +5289,9 @@ local function renderThemeSettings()
     imgui.Spacing()
     
     if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), "Ajustari fine interfata:")
+        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), imgui.pre("sliders") .. "Ajustari fine interfata:")
     else
-        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), "UI Fine adjustments:")
+        imgui.TextColored(imgui.ImVec4(0.5, 0.7, 1.0, 1.0), imgui.pre("sliders") .. "UI Fine adjustments:")
     end
     imgui.Separator()
     imgui.Spacing()
@@ -4892,7 +5921,9 @@ end
 local MainWindow = imgui.OnFrame(function()
     return WinState[0]
 end, function(player)
-    imgui.SetNextWindowSize(imgui.ImVec2(1060, 885), imgui.Cond.FirstUseEver)
+    local dispSz = imgui.GetIO().DisplaySize
+    imgui.SetNextWindowPos(imgui.ImVec2(dispSz.x / 2, dispSz.y / 2), imgui.Cond.FirstUseEver, imgui.ImVec2(0.5, 0.5))
+    imgui.SetNextWindowSize(imgui.ImVec2(math.min(1060, dispSz.x - 40), math.min(885, dispSz.y - 60)), imgui.Cond.FirstUseEver)
     
     imgui.Begin("Helper Menu ##MainWindow", WinState, imgui.WindowFlags.NoCollapse + imgui.WindowFlags.NoTitleBar + imgui.WindowFlags.NoNavInputs)
     
@@ -4901,16 +5932,16 @@ end, function(player)
     
     -- [ TOP BAR ] --
     local windowWidth = imgui.GetWindowWidth()
-    local headerTextWidth = imgui.CalcTextSize(headerText).x
+    local headerShown = imgui.pre("lifering") .. headerText
+    local headerTextWidth = imgui.CalcTextSize(headerShown).x
     local headerCenterX = (windowWidth - headerTextWidth) / 2
     
-    imgui.SetNextWindowPos(imgui.ImVec2(imgui.GetIO().DisplaySize.x / 2, imgui.GetIO().DisplaySize.y / 2), imgui.Cond.FirstUseEver, imgui.ImVec2(0.5, 0.5))
     imgui.SetCursorPosX(headerCenterX)
-    imgui.Text(headerText)
+    imgui.Text(headerShown)
     
     imgui.SameLine(windowWidth - 35)
     imgui.PushStyleColor(imgui.Col.Button, imgui.ImVec4(0, 0, 0, 0))
-    if buttonBlack("X", imgui.ImVec2(25, 20)) then
+    if buttonBlack(imgui.ico("times") ~= "" and imgui.ico("times") or "X", imgui.ImVec2(25, 20)) then
         WinState[0] = false
         imgui.GetIO().WantCaptureKeyboard = false
     end
@@ -4927,7 +5958,11 @@ end, function(player)
             imgui.PushStyleColor(imgui.Col.Button, imgui.GetStyle().Colors[imgui.Col.ButtonActive])
         end
         
-        if buttonBlack(tab_name, imgui.ImVec2(-1, 35)) then
+        imgui.PushStyleVar(imgui.StyleVar.ButtonTextAlign, imgui.ImVec2(0.10, 0.5))
+        local tabPressed = buttonBlack(imgui.tabPre(i) .. tab_name .. "##tab_" .. i, imgui.ImVec2(-1, 35))
+        imgui.PopStyleVar()
+        imgui.navAccent(is_active)
+        if tabPressed then
             active_tab = i
         end
         
@@ -4948,7 +5983,7 @@ end, function(player)
     imgui.PushStyleColor(imgui.Col.ButtonHovered, imgui.ImVec4(0.90, 0.18, 0.18, 1.00))
     imgui.PushStyleColor(imgui.Col.ButtonActive, imgui.ImVec4(1.00, 0.10, 0.10, 1.00))
     imgui.PushStyleColor(imgui.Col.Text, imgui.ImVec4(1,1,1,1))
-    if imgui.Button("Close", imgui.ImVec2(-1, 35)) then
+    if imgui.Button(imgui.pre("signout") .. "Close", imgui.ImVec2(-1, 35)) then
         WinState[0] = false
         imgui.GetIO().WantCaptureKeyboard = false
         if sampSetCursorMode then sampSetCursorMode(0) end
@@ -4973,19 +6008,19 @@ end, function(player)
 
         local raw_search = ffi.string(search_buffer)
         local isSearchActive = (raw_search ~= "")
-        local inputWidth = isSearchActive and -75 or -1 
+        local inputWidth = isSearchActive and -85 or -1 
         
         imgui.PushItemWidth(inputWidth)
         if iniData.settings.lang == 0 then
-            imgui.InputTextWithHint("##search", "Cauta global prin tot scriptul...", search_buffer, 256)
+            imgui.InputTextWithHint("##search", imgui.pre("search") .. "Cauta global prin tot scriptul...", search_buffer, 256)
         else
-            imgui.InputTextWithHint("##search", "Search globally through the entire script...", search_buffer, 256)
+            imgui.InputTextWithHint("##search", imgui.pre("search") .. "Search globally through the entire script...", search_buffer, 256)
         end
         imgui.PopItemWidth()
         
         if isSearchActive then
             imgui.SameLine()
-            if imgui.Button("Clear", imgui.ImVec2(65, 22)) then
+            if imgui.Button(imgui.pre("times") .. "Clear", imgui.ImVec2(75, 22)) then
                 ffi.copy(search_buffer, "")
                 isSearchActive = false
                 raw_search = ""
@@ -5021,11 +6056,11 @@ end, function(player)
                
                 foundAny = true
                 if iniData.settings.lang == 0 then
-                    if imgui.CollapsingHeader("Rezultate din: Panoul Principal") then
+                    if imgui.CollapsingHeader(imgui.pre("home") .. "Rezultate din: Panoul Principal") then
                         imgui.TextWrapped("Bine ai venit in panoul principal!")
                     end
                 else
-                    if imgui.CollapsingHeader("Results from: Main Panel") then
+                    if imgui.CollapsingHeader(imgui.pre("home") .. "Results from: Main Panel") then
                         imgui.TextWrapped("Welcome to the main panel!")
                     end
                 end
@@ -5044,7 +6079,7 @@ end, function(player)
                 foundAny = true
                 local headerLabel = iniData.settings.lang == 0 and ("Rezultate din: Joburi (" .. #jobMatches .. ")") or ("Results from: Jobs (" .. #jobMatches .. ")")
                 
-                if imgui.CollapsingHeader(headerLabel) then
+                if imgui.CollapsingHeader(imgui.pre("briefcase") .. headerLabel) then
                     for _, jm in ipairs(jobMatches) do
                         if imgui.TreeNodeStr(jm.name .. " ##global_job_" .. jm.id) then
                             if jm.id == 1 then renderQuarryDetails()
@@ -5067,9 +6102,10 @@ end, function(player)
                             elseif jm.id == 18 then renderLawyerDetails()
                             elseif jm.id == 19 then renderPocketThiefDetails()
                             elseif jm.id == 20 then renderCraftsmanDetails()
-                            elseif jm.id == 21 then renderFirefighterDetails()
-                            elseif jm.id == 22 then renderDailyJobDetails()
-                            elseif jm.id == 23 then renderJobClashDetails()
+                            elseif jm.id == 21 then renderHunterDetails()
+                            elseif jm.id == 22 then renderFirefighterDetails()
+                            elseif jm.id == 23 then renderDailyJobDetails()
+                            elseif jm.id == 24 then renderJobClashDetails()
                             end
                             imgui.TreePop()
                         end
@@ -5090,7 +6126,7 @@ end, function(player)
                 foundAny = true
                 local vehHeaderLabel = iniData.settings.lang == 0 and ("Rezultate din: Vehicule (" .. #vehMatches .. ")") or ("Results from: Vehicles (" .. #vehMatches .. ")")
                 
-                if imgui.CollapsingHeader(vehHeaderLabel) then
+                if imgui.CollapsingHeader(imgui.pre("car") .. vehHeaderLabel) then
                     for _, vm in ipairs(vehMatches) do
                         imgui.PushStyleColor(imgui.Col.Text, imgui.ImVec4(0.0, 0.8, 1.0, 1.0))
                         local nodeOpen = imgui.TreeNodeStr(vm.Name .. " (" .. vm.Price .. ") ##node_" .. vm.Name)
@@ -5125,7 +6161,7 @@ end, function(player)
                 foundAny = true
                 local crateHeaderLabel = iniData.settings.lang == 0 and ("Rezultate din: Crate-uri (" .. #crateMatches .. ")") or ("Results from: Crates (" .. #crateMatches .. ")")
                 
-                if imgui.CollapsingHeader(crateHeaderLabel) then
+                if imgui.CollapsingHeader(imgui.pre("box") .. crateHeaderLabel) then
                     imgui.Spacing()
                     for _, crate in ipairs(crateMatches) do
                         renderSingleCrateCard(crate)
@@ -5148,7 +6184,7 @@ end, function(player)
             {name = "Escape (Evadare)", nameEN = "Escape", keywords = "escape evadare gard hit puscariasi wanted snitch"},
             {name = "Jail (Inchisoare)", nameEN = "Jail", keywords = "jailtime inchisoare detinuti free jaillist vizite"},
             {name = "Skinuri Factiuni (PD/Mafioti/Pasnice)", nameEN = "Faction Skins (PD/Mafia/Peaceful)", keywords = "skinuri factiuni pd fbi ng taxi paramedics rank lspd tsar bratva verdant"},
-            {name = "Licente (Suspendare & Costuri)", nameEN = "Licenses (Suspension & Costs)", keywords = "licente zbor navigatie pescuit arma port roads viteza confiscare instructor npc"},
+            {name = "Licente (Suspendare & Costuri)", nameEN = "Licenses (Suspension & Costs)", keywords = "licente licenta permis conducere zbor navigatie pescuit pescar arma port-arma materiale vanator hunter roads viteza confiscare instructor npc needlicense renewlicense valabilitate pret"},
             {name = "Niveluri Minime (Sisteme)", nameEN = "Minimum Levels (Systems)", keywords = "niveluri minime barbut spin poker ad trade transfer buybunker rob"},
             {name = "Referral", nameEN = "Referral", keywords = "referral buylevel invitatie prieteni cod account stats"},
             {name = "Safebox (Seifuri)", nameEN = "Safebox (Safes)", keywords = "safebox seif seifuri sb opensafe throw deagle m4 rifle unitati arms dealer"},
@@ -5174,7 +6210,7 @@ end, function(player)
                 foundAny = true
                 local systemHeaderLabel = iniData.settings.lang == 0 and ("Rezultate din: Ghiduri si Sisteme (" .. #systemMatches .. ")") or ("Results from: Guides and Systems (" .. #systemMatches .. ")")
                 
-                if imgui.CollapsingHeader(systemHeaderLabel) then
+                if imgui.CollapsingHeader(imgui.pre("layer") .. systemHeaderLabel) then
                     for _, sm in ipairs(systemMatches) do
                         if imgui.TreeNodeStr(sm.name .. " ##global_sys_" .. sm.id) then
                             if sm.id == 1 then
@@ -5186,7 +6222,7 @@ end, function(player)
                                         imgui.Separator()
                                         imgui.BulletText("Cooldown: O misiune noua la fiecare 4 ore.")
                                         imgui.BulletText("Parasire: [/leavemission] (nu activeaza cooldown-ul).")
-                                        imgui.BulletText("Licente: Poti conduce barci/avioane fara licenta in misiune.")
+                                        imgui.BulletText("Licente: Barci/avioane fara licenta; masinile cer permis.")
                                     imgui.EndChild()
                                     imgui.Spacing()
                                     imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "MISIUNI DISPONIBILE PE NIVELURI:")
@@ -5201,7 +6237,7 @@ end, function(player)
                                         imgui.Text("1. Fura bucati de metal: $15.000 + 5 MP\n2. Fura naveta spatiala: $5.000 + 3 MP\n3. Adu motoarele: $10.000 + 4 MP\n4. Zbor pe Marte: $15.000 + 5 MP")
                                     imgui.EndChild()
                                     imgui.BeginChild("MissionsOGBox", imgui.ImVec2(0, 85), true)
-                                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "OG LOC (Nivel 5+)")
+                                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "OG LOC (Nivel 1+ | Fura discul: Nivel 5+ + licenta arme)")
                                         imgui.Separator()
                                         imgui.Text("1. Fura discul: $15.000 + 5 MP\n2. Fa-ti prieteni noi: $5.000 + 3 MP")
                                     imgui.EndChild()
@@ -5215,7 +6251,7 @@ end, function(player)
                                         imgui.Separator()
                                         imgui.BulletText("Cooldown: A new mission every 4 hours.")
                                         imgui.BulletText("Leave: [/leavemission] (does not trigger cooldown).")
-                                        imgui.BulletText("Licenses: You can drive boats/airplanes without a license during missions.")
+                                        imgui.BulletText("Licenses: Boats/planes need no license; cars need a driving license.")
                                     imgui.EndChild()
                                     imgui.Spacing()
                                     imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), "AVAILABLE MISSIONS BY LEVEL:")
@@ -5230,7 +6266,7 @@ end, function(player)
                                         imgui.Text("1. Steal scrap metal: $15.000 + 5 MP\n2. Steal the spaceship: $5.000 + 3 MP\n3. Bring the engines: $10.000 + 4 MP\n4. Flight to Mars: $15.000 + 5 MP")
                                     imgui.EndChild()
                                     imgui.BeginChild("MissionsOGBox", imgui.ImVec2(0, 85), true)
-                                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "OG LOC (Level 5+)")
+                                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "OG LOC (Level 1+ | Steal the disc: Level 5+ + weapons license)")
                                         imgui.Separator()
                                         imgui.Text("1. Steal the disc: $15.000 + 5 MP\n2. Make new friends: $5.000 + 3 MP")
                                     imgui.EndChild()
@@ -5276,7 +6312,7 @@ end, function(player)
                                         imgui.BulletText("Viteza Max (Staff+Echip): 1 unitate / 10 min")
                                         imgui.BulletText("Consum Provizii (Maxim): 1 unitate / 300 sec")
                                         imgui.BulletText("Pret Vanzare (Departe): $2.000 / unitate | (Aproape): $1.000 / unitate")
-                                        imgui.BulletText("Bonus Ajutoare: 10 '/. din plata finala")
+                                        imgui.BulletText("Bonus Ajutoare: 10 %% din plata finala")
                                     imgui.EndChild()
                                     
                                     imgui.Spacing()
@@ -5356,7 +6392,7 @@ end, function(player)
                                         imgui.BulletText("Max Speed (Staff+Equip): 1 unit / 10 min")
                                         imgui.BulletText("Supplies Consumption (Max): 1 unit / 300 sec")
                                         imgui.BulletText("Selling Price (Far): $2.000 / unit | (Near): $1.000 / unit")
-                                        imgui.BulletText("Supporters Bonus: 10 '/. of the final payment")
+                                        imgui.BulletText("Supporters Bonus: 10 %% of the final payment")
                                     imgui.EndChild()
                                     
                                     imgui.Spacing()
@@ -5403,12 +6439,12 @@ end, function(player)
                                 if iniData.settings.lang == 0 then
                                     imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), "--- SISTEM JOB GOAL ---")
                                     imgui.Separator()
-                                    imgui.BeginChild("GoalDescBox", imgui.ImVec2(0, 95), true)
+                                    imgui.BeginChild("GoalDescBox", imgui.ImVec2(0, 125), true)
                                         imgui.TextColored(imgui.ImVec4(0.0, 1.0, 1.0, 1.0), "DESCRIERE OBIECTIV:")
-                                        imgui.TextWrapped("Job Goal reprezinta suma sau '/.ajul pe care toti jucatorii de pe server trebuie sa il atinga impreuna pentru a debloca premiile zilei. Reset: Zilnic la 00:00.")
+                                        imgui.TextWrapped("Job Goal reprezinta suma sau procentajul pe care toti jucatorii de pe server trebuie sa il atinga impreuna pentru a debloca premiile zilei. Reset: Zilnic la 00:00. Joburile Detective, Lawyer si Craftsman nu sunt contorizate.")
                                     imgui.EndChild()
                                     imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(1.0, 0.8, 0.0, 1.0), "RECOMPENSE LA 100'/. COMPLETAT:")
+                                    imgui.TextColored(imgui.ImVec4(1.0, 0.8, 0.0, 1.0), "RECOMPENSE LA 100%% COMPLETAT:")
                                     imgui.BeginChild("GoalRewardsBox", imgui.ImVec2(0, 90), true)
                                         imgui.Text("Daca obiectivul global si cel individual sunt atinse:")
                                         imgui.BulletText("Bani: intre $25.000 si $50.000\nGold: intre 5 si 10 (aleatoriu)\nRespect Points: intre 5 si 10 puncte")
@@ -5421,12 +6457,12 @@ end, function(player)
                                 else
                                     imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), "--- JOB GOAL SYSTEM ---")
                                     imgui.Separator()
-                                    imgui.BeginChild("GoalDescBox", imgui.ImVec2(0, 95), true)
+                                    imgui.BeginChild("GoalDescBox", imgui.ImVec2(0, 125), true)
                                         imgui.TextColored(imgui.ImVec4(0.0, 1.0, 1.0, 1.0), "OBJECTIVE DESCRIPTION:")
-                                        imgui.TextWrapped("Job Goal represents the sum or '/.age that all players on the server must achieve together to unlock the daily rewards. Reset: Daily at 00:00.")
+                                        imgui.TextWrapped("Job Goal represents the sum or percentage that all players on the server must achieve together to unlock the daily rewards. Reset: Daily at 00:00. The Detective, Lawyer and Craftsman jobs are not counted.")
                                     imgui.EndChild()
                                     imgui.Spacing()
-                                    imgui.TextColored(imgui.ImVec4(1.0, 0.8, 0.0, 1.0), "REWARDS AT 100'/. COMPLETED:")
+                                    imgui.TextColored(imgui.ImVec4(1.0, 0.8, 0.0, 1.0), "REWARDS AT 100%% COMPLETED:")
                                     imgui.BeginChild("GoalRewardsBox", imgui.ImVec2(0, 90), true)
                                         imgui.Text("If both global and individual objectives are met:")
                                         imgui.BulletText("Money: between $25.000 and $50.000\nGold: between 5 and 10 (random)\nRespect Points: between 5 and 10 points")
@@ -5541,7 +6577,7 @@ end, function(player)
                                     imgui.BulletText(isRO and u8("Platinum: Negru | Diamond: Albastru Deschis | Onyx: Portocaliu (in garderoba)") or "Platinum: Black | Diamond: Light Blue | Onyx: Orange (in wardrobe)")
                                     imgui.BulletText(isRO and u8("Skinurile fuzionate vor afisa textul FUSED la ID (/id) si deasupra capului.") or "Fused skins will display the text FUSED next to ID (/id) and above the head.")
                                     imgui.Spacing()
-                                    imgui.TextWrapped(isRO and u8("Raritati: Legendary (4 bonusuri spec. >= 20'/.), Very Rare (3 bonusuri spec. >= 15'/.), Uncommon (2 bonusuri spec. >= 10'/.), Common (Restul).") or "Rarities: Legendary (4 spec. bonuses >= 20'/.), Very Rare (3 spec. bonuses >= 15'/.), Uncommon (2 spec. bonuses >= 10'/.), Common (Rest).")
+                                    imgui.TextWrapped(isRO and u8("Raritati: Legendary (4 bonusuri spec. >= 20%%), Very Rare (3 bonusuri spec. >= 15%%), Uncommon (2 bonusuri spec. >= 10%%), Common (Restul).") or "Rarities: Legendary (4 spec. bonuses >= 20%%), Very Rare (3 spec. bonuses >= 15%%), Uncommon (2 spec. bonuses >= 10%%), Common (Rest).")
                                 imgui.EndChild()
                             
                             elseif sm.id == 6 then
@@ -5597,32 +6633,32 @@ end, function(player)
                                             {2, 60, "1.1x", "Standard"},
                                             {3, 70, "1.2x", "Standard"},
                                             {4, 80, "1.3x", "Bonus: 1,000$ in seiful clanului la payday"},
-                                            {5, 90, "1.4x", "HQ Claim (Off Track Betting) | 5 '/. castig din joburi in seif"},
+                                            {5, 90, "1.4x", "HQ Claim (Off Track Betting) | 5 %% castig din joburi in seif"},
                                             {6, 100, "1.5x", "2 Sloturi vehicule clan | 10,000 capacitate materiale in laborator"},
                                             {7, 110, "1.6x", "10g Droguri in laborator | Slot nou pentru interior HQ (Meat Factory/Motel)"},
-                                            {8, 120, "1.7x", "2 Sloturi vehicule suplimentare | 2,000$ in seif | 10 '/. castig joburi"},
+                                            {8, 120, "1.7x", "2 Sloturi vehicule suplimentare | 2,000$ in seif | 10 %% castig joburi"},
                                             {9, 130, "1.8x", "Setare rang minim vehicule clan (/cvs) | Interior HQ: LS Atrium"},
                                             {10, 140, "1.9x", "20,000 capacitate laborator | 2 Sloturi vehicule suplimentare | War 5 vs 5"},
-                                            {11, 150, "2.0x", "15 '/. castig din joburi in seiful clanului"},
+                                            {11, 150, "2.0x", "15 %% castig din joburi in seiful clanului"},
                                             {12, 160, "2.1x", "3,000$ in seiful clanului la fiecare payday"},
                                             {13, 170, "2.2x", "20g Droguri in laborator | Interior HQ: Madd Dogg"},
-                                            {14, 180, "2.3x", "20 '/. castig din joburi in seif | 30,000 capacitate laborator"},
+                                            {14, 180, "2.3x", "20 %% castig din joburi in seif | 30,000 capacitate laborator"},
                                             {15, 190, "2.4x", "2 Sloturi vehicule suplimentare (Max 10,000,000$ per vehicul)"},
                                             {16, 200, "2.5x", "4,000$ in seiful clanului | Interior HQ: LV Police HQ"},
-                                            {17, 210, "2.6x", "25 '/. castig din joburi in seiful clanului"},
+                                            {17, 210, "2.6x", "25 %% castig din joburi in seiful clanului"},
                                             {18, 220, "2.7x", "40,000 capacitate materiale in laborator"},
                                             {19, 230, "2.8x", "30g Droguri in laborator | Interior HQ: Pleasure Domes"},
                                             {20, 240, "2.9x", "War 10 vs 10 | Custom Clan Crest"},
                                             {21, 250, "3.0x", "Standard"},
                                             {22, 260, "3.1x", "50,000 capacitate materiale in laborator"},
-                                            {23, 270, "3.2x", "27 '/. castig din joburi in seiful clanului"},
+                                            {23, 270, "3.2x", "27 %% castig din joburi in seiful clanului"},
                                             {24, 280, "3.3x", "6,000$ in seiful clanului la fiecare payday"},
                                             {25, 290, "3.4x", "40g Droguri in laborator"},
-                                            {26, 300, "3.5x", "60,000 capacitate materiale | 28 '/. castig din joburi"},
+                                            {26, 300, "3.5x", "60,000 capacitate materiale | 28 %% castig din joburi"},
                                             {27, 310, "3.6x", "Clan Order 1: Deagle (650 mat)"},
                                             {28, 320, "3.7x", "7,000$ in seif | Clan Order 2: AK-47 (3,840 mat)"},
-                                            {29, 330, "3.8x", "29 '/. castig din joburi | Clan Order 3: M4 (6,600 mat)"},
-                                            {30, 350, "3.9x", "70,000 mat | 30 '/. castig joburi | Clan Order 4: Rifle | Raid intre clanuri"}
+                                            {29, 330, "3.8x", "29 %% castig din joburi | Clan Order 3: M4 (6,600 mat)"},
+                                            {30, 350, "3.9x", "70,000 mat | 30 %% castig joburi | Clan Order 4: Rifle | Raid intre clanuri"}
                                         }
 
                                         for _, l in ipairs(data) do
@@ -5688,32 +6724,32 @@ end, function(player)
                                             {2, 60, "1.1x", "Standard"},
                                             {3, 70, "1.2x", "Standard"},
                                             {4, 80, "1.3x", "Bonus: $1,000 to clan safe at payday"},
-                                            {5, 90, "1.4x", "HQ Claim (Off Track Betting) | 5 '/. job earnings to clan safe"},
+                                            {5, 90, "1.4x", "HQ Claim (Off Track Betting) | 5 %% job earnings to clan safe"},
                                             {6, 100, "1.5x", "2 clan vehicle slots | 10,000 lab material capacity"},
                                             {7, 110, "1.6x", "10g Drugs in lab | New interior slot for HQ (Meat Factory/Motel)"},
-                                            {8, 120, "1.7x", "+2 vehicle slots | $2,000 in safe | 10 '/. job earnings"},
+                                            {8, 120, "1.7x", "+2 vehicle slots | $2,000 in safe | 10 %% job earnings"},
                                             {9, 130, "1.8x", "Set minimum vehicle rank (/cvs) | HQ interior: LS Atrium"},
                                             {10, 140, "1.9x", "20,000 lab capacity | +2 vehicle slots | War 5 vs 5"},
-                                            {11, 150, "2.0x", "15 '/. job earnings into clan safe"},
+                                            {11, 150, "2.0x", "15 %% job earnings into clan safe"},
                                             {12, 160, "2.1x", "$3,000 to clan safe each payday"},
                                             {13, 170, "2.2x", "20g Drugs in lab | HQ interior: Madd Dogg"},
-                                            {14, 180, "2.3x", "20 '/. job earnings into safe | 30,000 lab capacity"},
+                                            {14, 180, "2.3x", "20 %% job earnings into safe | 30,000 lab capacity"},
                                             {15, 190, "2.4x", "+2 vehicle slots (Max $10,000,000 per vehicle)"},
                                             {16, 200, "2.5x", "$4,000 in clan safe | HQ interior: LV Police HQ"},
-                                            {17, 210, "2.6x", "25 '/. job earnings into clan safe"},
+                                            {17, 210, "2.6x", "25 %% job earnings into clan safe"},
                                             {18, 220, "2.7x", "40,000 lab material capacity"},
                                             {19, 230, "2.8x", "30g Drugs in lab | HQ interior: Pleasure Domes"},
                                             {20, 240, "2.9x", "War 10 vs 10 | Custom Clan Crest"},
                                             {21, 250, "3.0x", "Standard"},
                                             {22, 260, "3.1x", "50,000 lab material capacity"},
-                                            {23, 270, "3.2x", "27 '/. job earnings into clan safe"},
+                                            {23, 270, "3.2x", "27 %% job earnings into clan safe"},
                                             {24, 280, "3.3x", "$6,000 to clan safe each payday"},
                                             {25, 290, "3.4x", "40g Drugs in lab"},
-                                            {26, 300, "3.5x", "60,000 lab capacity | 28 '/. job earnings"},
+                                            {26, 300, "3.5x", "60,000 lab capacity | 28 %% job earnings"},
                                             {27, 310, "3.6x", "Clan Order 1: Deagle (650 mat)"},
                                             {28, 320, "3.7x", "$7,000 in safe | Clan Order 2: AK-47 (3,840 mat)"},
-                                            {29, 330, "3.8x", "29 '/. job earnings | Clan Order 3: M4 (6,600 mat)"},
-                                            {30, 350, "3.9x", "70,000 mat | 30 '/. job earnings | Clan Order 4: Rifle | Clan raids"}
+                                            {29, 330, "3.8x", "29 %% job earnings | Clan Order 3: M4 (6,600 mat)"},
+                                            {30, 350, "3.9x", "70,000 mat | 30 %% job earnings | Clan Order 4: Rifle | Clan raids"}
                                         }
 
                                         for _, l in ipairs(data_en) do
@@ -5960,6 +6996,7 @@ end, function(player)
                                 imgui.BulletText(u8("Gaining Wanted or entering a vehicle before pickup blocks collection."))
                             end
 
+                            imgui.EndChild() -- [FIX] inchide RobATMDetails
                             elseif sm.id == 8 then -- ROB SOLO
                             imgui.BeginChild("RobSoloDetails", imgui.ImVec2(0, 0), true)              
                             if iniData.settings.lang == 0 then
@@ -6121,6 +7158,7 @@ end, function(player)
                                 imgui.BulletText(u8("Entering the Pay'n Spray COMPLETES THE ROB: Wanted is fully cleared, and you receive base cash + 1 Rob Skill point."))
                             end
 
+                            imgui.EndChild() -- [FIX] inchide RobSoloDetails
                         elseif sm.id == 9 then -- ROB TEAM  
                         if iniData.settings.lang == 0 then
                             imgui.SetWindowFontScale(1.2)  
@@ -6510,85 +7548,7 @@ end, function(player)
                                 end
 
                             elseif sm.id == 13 then -- LICENTE
-                                if iniData.settings.lang == 0 then
-                                    imgui.TextColored(imgui.ImVec4(0.0, 0.8, 1.0, 1.0), "--- SISTEMUL DE LICENTE ---")
-                                    imgui.Separator()
-                                    imgui.BeginChild("LicensesMainBox", imgui.ImVec2(0, 650), true)
-                                        imgui.TextColored(imgui.ImVec4(1.0, 1.0, 0.0, 1.0), u8("INFO GENERAL SI OBTINERE"))   
-                                        imgui.BeginChild("LicenteObtinereBox", imgui.ImVec2(0, 95), true)
-                                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("> Tipuri:")); imgui.SameLine()
-                                            imgui.TextWrapped(u8("Zbor, Navigatie, Pescuit, Materiale (Lvl 1), Port-Arma (Lvl 5)."))
-                                            imgui.Spacing()
-                                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("> Obtinere:")); imgui.SameLine()
-                                            imgui.TextWrapped(u8("[/needlicense] (instructor) sau NPC la HQ S.I. (cost x5)."))
-                                            imgui.Spacing()
-                                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("> Valabilitate:")); imgui.SameLine()
-                                            imgui.TextWrapped(u8("100 ore. Scade cu 1h la PayDay (inclusiv pe /sleep)."))
-                                        imgui.EndChild()
-                                        imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1.0, 0.4, 0.4, 1.0), u8("SUSPENDARE PERMIS (ROADS)"))  
-                                        imgui.BeginChild("LicenteRoadsBox", imgui.ImVec2(0, 150), true)
-                                            imgui.TextColored(imgui.ImVec4(1.0, 0.3, 0.3, 1.0), u8("Confiscare permis pentru 1 ORA:"))
-                                            imgui.BulletText(u8("NOS, Hidraulice, Contrasens, Alcool (3.0), Parcare neregulamentara."))
-                                            imgui.Spacing()
-                                            imgui.TextColored(imgui.ImVec4(1.0, 0.3, 0.3, 1.0), u8("Confiscare dupa VITEZA:"))
-                                            imgui.BulletText(u8("Oras (lim. 100): 150-199 km/h (1h) | 200+ km/h (2h)."))
-                                            imgui.BulletText(u8("Afara (lim. 130): 180-229 km/h (1h) | Autostrada (lim. 160): 210+ km/h (1h)."))
-                                        imgui.EndChild()
-                                        imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(0.6, 0.4, 1.0, 1.0), u8("COSTURI LICENTE (INSTRUCTOR)"))
-                                        imgui.BeginChild("LicenteCostBox", imgui.ImVec2(0, 175), true)
-                                            imgui.Columns(4, "costCols", true)
-                                            imgui.Text(u8("Tip")); imgui.NextColumn(); imgui.Text(u8("Lvl 1-9")); imgui.NextColumn(); imgui.Text(u8("Lvl 10-49")); imgui.NextColumn(); imgui.Text(u8("Lvl 50+")); imgui.NextColumn()
-                                            imgui.Separator()
-                                            local data = {{"Pescar", "$250", "$500", "$1.000"}, {"Materiale", "$800", "$1.600", "$3.200"}, {"Navigatie", "$850", "$1.700", "$3.400"}, {"Zbor", "$900", "$1.800", "$3.600"}, {"Arme", "$1.000", "$2.000", "$4.000"}}
-                                            for _, v in ipairs(data) do imgui.Text(u8(v[1])); imgui.NextColumn(); imgui.Text(v[2]); imgui.NextColumn(); imgui.Text(v[3]); imgui.NextColumn(); imgui.Text(v[4]); imgui.NextColumn() end
-                                            imgui.Separator()
-                                            imgui.TextColored(imgui.ImVec4(0.4, 1.0, 0.4, 1.0), u8("TOTAL")); imgui.NextColumn(); imgui.Text("$3.800"); imgui.NextColumn(); imgui.Text("$7.600"); imgui.NextColumn(); imgui.Text("$15.200"); imgui.Columns(1)
-                                        imgui.EndChild()
-                                        imgui.Spacing(); imgui.Separator()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Sfat: Preturile la NPC sunt de 5 ori (x5) mai mari decat cele de mai sus."))
-                                    imgui.EndChild()
-                                else
-                                    imgui.TextColored(imgui.ImVec4(0.0, 0.8, 1.0, 1.0), "--- LICENSE SYSTEM ---")
-                                    imgui.Separator()
-                                    imgui.BeginChild("LicensesMainBox", imgui.ImVec2(0, 650), true)
-                                        imgui.TextColored(imgui.ImVec4(1.0, 1.0, 0.0, 1.0), u8("GENERAL INFO & OBTAINING"))   
-                                        imgui.BeginChild("LicenteObtinereBox", imgui.ImVec2(0, 95), true)
-                                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("> Types:")); imgui.SameLine()
-                                            imgui.TextWrapped(u8("Flying, Sailing, Fishing, Materials (Lvl 1), Gun License (Lvl 5)."))
-                                            imgui.Spacing()
-                                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("> Obtaining:")); imgui.SameLine()
-                                            imgui.TextWrapped(u8("[/needlicense] (instructor) or NPC at S.I. HQ (x5 cost)."))
-                                            imgui.Spacing()
-                                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("> Validity:")); imgui.SameLine()
-                                            imgui.TextWrapped(u8("100 hours. Decreases by 1h each PayDay (including on /sleep)."))
-                                        imgui.EndChild()
-                                        imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(1.0, 0.4, 0.4, 1.0), u8("LICENSE SUSPENSION (ROADS)"))  
-                                        imgui.BeginChild("LicenteRoadsBox", imgui.ImVec2(0, 150), true)
-                                            imgui.TextColored(imgui.ImVec4(1.0, 0.3, 0.3, 1.0), u8("License confiscation for 1 HOUR:"))
-                                            imgui.BulletText(u8("NOS, Hydraulics, Wrong way, Alcohol (3.0), Illegal parking."))
-                                            imgui.Spacing()
-                                            imgui.TextColored(imgui.ImVec4(1.0, 0.3, 0.3, 1.0), u8("Confiscation for SPEEDING:"))
-                                            imgui.BulletText(u8("City (lim. 100): 150-199 km/h (1h) | 200+ km/h (2h)."))
-                                            imgui.BulletText(u8("Outside (lim. 130): 180-229 km/h (1h) | Highway (lim. 160): 210+ km/h (1h)."))
-                                        imgui.EndChild()
-                                        imgui.Spacing()
-                                        imgui.TextColored(imgui.ImVec4(0.6, 0.4, 1.0, 1.0), u8("LICENSE COSTS (INSTRUCTOR)"))
-                                        imgui.BeginChild("LicenteCostBox", imgui.ImVec2(0, 175), true)
-                                            imgui.Columns(4, "costCols", true)
-                                            imgui.Text(u8("Type")); imgui.NextColumn(); imgui.Text(u8("Lvl 1-9")); imgui.NextColumn(); imgui.Text(u8("Lvl 10-49")); imgui.NextColumn(); imgui.Text(u8("Lvl 50+")); imgui.NextColumn()
-                                            imgui.Separator()
-                                            local data = {{"Fishing", "$250", "$500", "$1.000"}, {"Materials", "$800", "$1.600", "$3.200"}, {"Sailing", "$850", "$1.700", "$3.400"}, {"Flying", "$900", "$1.800", "$3.600"}, {"Gun", "$1.000", "$2.000", "$4.000"}}
-                                            for _, v in ipairs(data) do imgui.Text(u8(v[1])); imgui.NextColumn(); imgui.Text(v[2]); imgui.NextColumn(); imgui.Text(v[3]); imgui.NextColumn(); imgui.Text(v[4]); imgui.NextColumn() end
-                                            imgui.Separator()
-                                            imgui.TextColored(imgui.ImVec4(0.4, 1.0, 0.4, 1.0), u8("TOTAL")); imgui.NextColumn(); imgui.Text("$3.800"); imgui.NextColumn(); imgui.Text("$7.600"); imgui.NextColumn(); imgui.Text("$15.200"); imgui.Columns(1)
-                                        imgui.EndChild()
-                                        imgui.Spacing(); imgui.Separator()
-                                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), u8("Tip: NPC prices are 5 times (x5) higher than the ones above."))
-                                    imgui.EndChild()
-                                end
+                                renderLicensesDetails()
 
                             elseif sm.id == 14 then -- NIVELURI MINIME
                                 imgui.TextColored(imgui.ImVec4(1.0, 0.5, 0.0, 1.0), "--- NIVELURI MINIME ---")
@@ -6732,10 +7692,10 @@ end, function(player)
                                         imgui.BeginChild("RefRewardsBox", imgui.ImVec2(0, 100), true)
                                             imgui.TextColored(whiteColor, u8("You will receive bonuses when your friends buy levels:"))
                                             imgui.Spacing()
-                                            imgui.PushStyleColor(imgui.Col.Text, greenColor); imgui.TextUnformatted("10'/."); imgui.PopStyleColor()
+                                            imgui.PushStyleColor(imgui.Col.Text, greenColor); imgui.TextUnformatted("10%"); imgui.PopStyleColor()
                                             imgui.SameLine(); imgui.TextColored(whiteColor, u8(" -> of the friend's respect points (RP)."))
                                             imgui.Spacing()
-                                            imgui.PushStyleColor(imgui.Col.Text, greenColor); imgui.TextUnformatted("100'/."); imgui.PopStyleColor()
+                                            imgui.PushStyleColor(imgui.Col.Text, greenColor); imgui.TextUnformatted("100%"); imgui.PopStyleColor()
                                             imgui.SameLine(); imgui.TextColored(whiteColor, u8(" -> of the money amount paid by the friend."))
                                         imgui.EndChild()
                                         imgui.TextColored(yellowColor, u8("AVAILABLE COMMANDS"))
@@ -6891,7 +7851,7 @@ end, function(player)
                                 end
 
                                 Category(isRO and "--- SERVICII & COMBUSTIBIL ---" or "--- SERVICES & FUEL ---")
-                                Item("Combustibil: 5$ / '/. (litru)")
+                                Item("Combustibil: 5$ / %% (litru)")
                                 Item("Spital: 100$ | PnS: 200$ | Tractari: 200$")
 
                                 Category(isRO and "--- ARME ---" or "--- WEAPONS ---")
@@ -6914,7 +7874,7 @@ end, function(player)
                                 Item("Accesorii (palarii/ochelari) / Costume: 500$")
                                 Item("Inmatriculare (/carplate) / Culoare: 500$")
                                 Item("Asigurari: 0-100k(500$), 100k-1M(1.000$), 1M-6M(1.500$), 6M+(2.000$)")
-                                Item("Job-uri: Castiguri +15'/. | Job-ul Zilei: SUMA DUBLA")
+                                Item("Job-uri: Castiguri +15%% | Job-ul Zilei: SUMA DUBLA")
 
                             imgui.EndChild()                    
                             imgui.SetWindowFontScale(1.0)  
@@ -7041,6 +8001,7 @@ end, function(player)
                                     imgui.Columns(1)
                                 imgui.EndChild()
                             
+                            imgui.EndChild() -- [FIX] inchide TraderMainBox
                             elseif sm.id == 21 then -- PAYDAY
                             local isRO = (iniData.settings.lang == 0)
                             imgui.TextColored(imgui.ImVec4(0.0, 0.8, 1.0, 1.0), isRO and u8("--- PAYDAY ---") or "--- PAYDAY ---")
@@ -7053,9 +8014,9 @@ end, function(player)
                                 imgui.TextWrapped(isRO and u8("Payday-ul se acorda la ora exacta (XX:00). Necesita 30 min jucate.") or "Payday is granted at the exact hour (XX:00). Requires 30 mins played.")
                                 imgui.Spacing()
                                 imgui.BulletText(isRO and u8("Standard: 1 Respect, 1 Rob, 1 Escape, 1 Clear FP, 1 Accept Point.") or "Standard: 1 Respect, 1 Rob, 1 Escape, 1 Clear FP, 1 Accept Point.")
-                                imgui.BulletText(isRO and u8("Premium: +25 '/. salariu. La 5 ore: bonus de puncte suplimentare.") or "Premium: +25 '/. salary. Every 5 hours: extra points bonus.")
+                                imgui.BulletText(isRO and u8("Premium: +25 %% salariu. La 5 ore: bonus de puncte suplimentare.") or "Premium: +25 %% salary. Every 5 hours: extra points bonus.")
                                 imgui.BulletText(isRO and u8("AFK/Sleep: Acumuleaza doar 1/3 din timp (20min din 60).") or "AFK/Sleep: Accumulates only 1/3 of time (20min out of 60).")
-                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("Dobanda: Standard 0.01 '/. | Dobanda: Premium 0.03 '/.") or "Interest: Standard 0.01 '/. | Interest: Premium 0.03 '/.")
+                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("Dobanda: Standard 0.01 %% | Dobanda: Premium 0.03 %%") or "Interest: Standard 0.01 %% | Interest: Premium 0.03 %%")
                             imgui.EndChild()
                             imgui.Spacing()
                             -- Bonusuri Detaliate
@@ -7071,14 +8032,14 @@ end, function(player)
                                 imgui.BulletText(isRO and u8("10 Payday-uri: Triplu: Respect, FP, Jaf, Evadare + 10 Gold + 1 /bail.") or "10 Paydays: Triple: Respect, FP, Rob, Escape + 10 Gold + 1 /bail.")
                                 imgui.Spacing()
                                 imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), isRO and u8("Bonusuri in functie de Nivel:") or "Level-based Bonuses:")
-                                imgui.TextWrapped(isRO and u8("Job: Lvl 110-129 (5 '/.), 130-149 (10 '/.), 150-169 (15 '/.). Creste cu 5'/. la fiecare 20 nivele pana la 100 '/. (Lvl 490).") or "Job: Lvl 110-129 (5 '/.), 130-149 (10 '/.), 150-169 (15 '/.). Increases by 5'/. every 20 levels up to 100 '/. (Lvl 490).")
+                                imgui.TextWrapped(isRO and u8("Job: Lvl 110-129 (5 %%), 130-149 (10 %%), 150-169 (15 %%). Creste cu 5%% la fiecare 20 nivele pana la 100 %% (Lvl 490).") or "Job: Lvl 110-129 (5 %%), 130-149 (10 %%), 150-169 (15 %%). Increases by 5%% every 20 levels up to 100 %% (Lvl 490).")
                                 imgui.Spacing()
-                                imgui.TextWrapped(isRO and u8("Rob: Lvl 120-139 (5 '/.), 140-159 (10 '/.), 160-179 (15 '/.). Creste cu 5'/. la fiecare 20 nivele pana la 100 '/. (Lvl 500).") or "Rob: Lvl 120-139 (5 '/.), 140-159 (10 '/.), 160-179 (15 '/.). Increases by 5'/. every 20 levels up to 100 '/. (Lvl 500).")
+                                imgui.TextWrapped(isRO and u8("Rob: Lvl 120-139 (5 %%), 140-159 (10 %%), 160-179 (15 %%). Creste cu 5%% la fiecare 20 nivele pana la 100 %% (Lvl 500).") or "Rob: Lvl 120-139 (5 %%), 140-159 (10 %%), 160-179 (15 %%). Increases by 5%% every 20 levels up to 100 %% (Lvl 500).")
                             imgui.EndChild()
                             -- Informatii Payday
                             imgui.TextColored(imgui.ImVec4(1.0, 0.4, 1.0, 1.0), isRO and u8("Informatii afisate la Payday") or "Information displayed at Payday")
                             imgui.BeginChild("RarityBox", imgui.ImVec2(0, 50), true)
-                                imgui.TextWrapped(isRO and u8("Plata, Bonus (25 '/. Premium), Taxa Primar, Chirie, Sold, Dobanda, Profit Business.") or "Payment, Bonus (25 '/. Premium), Mayor Tax, Rent, Balance, Interest, Business Profit.")
+                                imgui.TextWrapped(isRO and u8("Plata, Bonus (25 %% Premium), Taxa Primar, Chirie, Sold, Dobanda, Profit Business.") or "Payment, Bonus (25 %% Premium), Mayor Tax, Rent, Balance, Interest, Business Profit.")
                                 imgui.TextColored(imgui.ImVec4(1, 0, 0, 1), isRO and u8("Nota: Jucatorii cu bani > $5.000.000/$10.000.000 nu primesc dobanda.") or "Note: Players with money > $5.000.000/$10.000.000 do not receive interest.")
                                 imgui.EndChild()    
 
@@ -7129,7 +8090,7 @@ end, function(player)
             if #bizMatches > 0 then
             foundAny = true
             local bizHeaderLabel = iniData.settings.lang == 0 and ("Rezultate din: Categorii Bizuri (" .. #bizMatches .. ")") or ("Results from: Business Categories (" .. #bizMatches .. ")")
-            if imgui.CollapsingHeader(u8(bizHeaderLabel)) then
+            if imgui.CollapsingHeader(imgui.pre("building") .. u8(bizHeaderLabel)) then
                 for _, bm in ipairs(bizMatches) do
                     if imgui.TreeNodeStr(u8(bm.name) .. " ##global_biz_" .. bm.id) then
                             if bm.id == 1 then -- BANCI
@@ -7162,7 +8123,7 @@ end, function(player)
                                     imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("TRANSFER BANCAR:"))
                                     imgui.TextWrapped(u8("- Comanda: [/transfer]"))
                                     imgui.TextWrapped(u8("- Necesar: Minim Nivel 3"))
-                                    imgui.TextWrapped(u8("- Taxa: 1 '/. din suma transferata"))
+                                    imgui.TextWrapped(u8("- Taxa: 1 %% din suma transferata"))
                                     imgui.SetWindowFontScale(1.0)
                                 imgui.EndChild()
                                 imgui.Spacing(); imgui.Separator()
@@ -7194,7 +8155,7 @@ end, function(player)
                                     imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "BANK TRANSFER:")
                                     imgui.TextWrapped("- Command: [/transfer]")
                                     imgui.TextWrapped("- Requirement: Minimum Level 3")
-                                    imgui.TextWrapped("- Fee: 1 '/. of the transferred amount")
+                                    imgui.TextWrapped("- Fee: 1 %% of the transferred amount")
                                     imgui.SetWindowFontScale(1.0)
                                 imgui.EndChild()
                                 imgui.Spacing(); imgui.Separator()
@@ -7215,20 +8176,20 @@ end, function(player)
                                 imgui.Columns(2, "gasInfoCols_Search", false)
                                 if iniData.settings.lang == 0 then
                                     imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), u8("COMENZI:"))
-                                    imgui.BulletText("/fill ['/.]") 
+                                    imgui.BulletText("/fill [%%]") 
                                     imgui.BulletText("/fillgascan")
                                     imgui.NextColumn()
                                     imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), u8("REZERVOR:"))
-                                    imgui.Text(u8("Normal: 100'/."))
-                                    imgui.Text(u8("Premium: 150'/."))
+                                    imgui.Text(u8("Normal: 100%%"))
+                                    imgui.Text(u8("Premium: 150%%"))
                                 else
                                     imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), "COMMANDS:")
-                                    imgui.BulletText("/fill ['/.]") 
+                                    imgui.BulletText("/fill [%%]") 
                                     imgui.BulletText("/fillgascan")
                                     imgui.NextColumn()
                                     imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "FUEL TANK:")
-                                    imgui.Text("Normal: 100'/.")
-                                    imgui.Text("Premium: 150'/.")
+                                    imgui.Text("Normal: 100%%")
+                                    imgui.Text("Premium: 150%%")
                                 end
                                 imgui.Columns(1)
                             imgui.EndChild()
@@ -7417,13 +8378,13 @@ end, function(player)
                                     imgui.TextColored(imgui.ImVec4(0.26, 0.65, 0.39, 1), ">> ") imgui.SameLine()
                                     imgui.Text(u8("Magazinele sunt marcate cu: felie de pizza, clopotel sau burger."))
                                     imgui.TextColored(imgui.ImVec4(0.26, 0.65, 0.39, 1), ">> ") imgui.SameLine()
-                                    imgui.Text(u8("Comanda [/eat] / LALT: +20'/. HP | Cost: $30"))
+                                    imgui.Text(u8("Comanda [/eat] / LALT: +20%% HP | Cost: $30"))
                                 else
                                     imgui.Text("The server has a total of 28 fast foods on the map.")
                                     imgui.TextColored(imgui.ImVec4(0.26, 0.65, 0.39, 1), ">> ") imgui.SameLine()
                                     imgui.Text("Stores are marked with: pizza slice, bell, or burger.")
                                     imgui.TextColored(imgui.ImVec4(0.26, 0.65, 0.39, 1), ">> ") imgui.SameLine()
-                                    imgui.Text("Command [/eat] / LALT: +20'/. HP | Cost: $30")
+                                    imgui.Text("Command [/eat] / LALT: +20%% HP | Cost: $30")
                                 end
                             imgui.EndChild()
                             
@@ -7831,17 +8792,17 @@ end, function(player)
                                 imgui.Separator()
                                 imgui.Columns(2, "tunePriceCols_Search", false)
                                 if iniData.settings.lang == 0 then
-                                    imgui.BulletText(u8("Paint Jobs: 1.15'/.")); imgui.BulletText(u8("Nitro (10): 0.8'/."))
-                                    imgui.BulletText(u8("Roti / Exhaust: 0.8'/.")); imgui.BulletText(u8("Hidraulice: 0.25'/."))
+                                    imgui.BulletText(u8("Paint Jobs: 1.15%%")); imgui.BulletText(u8("Nitro (10): 0.8%%"))
+                                    imgui.BulletText(u8("Roti / Exhaust: 0.8%%")); imgui.BulletText(u8("Hidraulice: 0.25%%"))
                                     imgui.NextColumn()
-                                    imgui.BulletText(u8("Neoane: 1.15'/. (Doar Premium)")); imgui.BulletText(u8("Bari / Spoiler / Praguri: 0.5'/."))
-                                    imgui.BulletText(u8("Capota / Lampi / Vents: 0.5'/.")); imgui.BulletText(u8("Culori: $25 (Pret fix)"))
+                                    imgui.BulletText(u8("Neoane: 1.15%% (Doar Premium)")); imgui.BulletText(u8("Bari / Spoiler / Praguri: 0.5%%"))
+                                    imgui.BulletText(u8("Capota / Lampi / Vents: 0.5%%")); imgui.BulletText(u8("Culori: $25 (Pret fix)"))
                                 else
-                                    imgui.BulletText("Paint Jobs: 1.15'/."); imgui.BulletText("Nitro (10): 0.8%'/.")
-                                    imgui.BulletText("Wheels / Exhaust: 0.8'/."); imgui.BulletText("Hydraulics: 0.25'/.")
+                                    imgui.BulletText("Paint Jobs: 1.15%%"); imgui.BulletText("Nitro (10): 0.8%%")
+                                    imgui.BulletText("Wheels / Exhaust: 0.8%%"); imgui.BulletText("Hydraulics: 0.25%%")
                                     imgui.NextColumn()
-                                    imgui.BulletText("Neon: 1.15'/. (Premium only)"); imgui.BulletText("Bumpers / Spoiler / Skirts: 0.5'/.")
-                                    imgui.BulletText("Hood / Lights / Vents: 0.5'/."); imgui.BulletText("Colors: $25 (Fixed price)")
+                                    imgui.BulletText("Neon: 1.15%% (Premium only)"); imgui.BulletText("Bumpers / Spoiler / Skirts: 0.5%%")
+                                    imgui.BulletText("Hood / Lights / Vents: 0.5%%"); imgui.BulletText("Colors: $25 (Fixed price)")
                                 end
                                 imgui.Columns(1)
                             imgui.EndChild()
@@ -8263,13 +9224,13 @@ end, function(player)
                                     imgui.BulletText(u8("Cerinta: Ai nevoie de minim nivel 3 pentru a juca.")); 
                                     imgui.BulletText(u8("Jucatori: Minim 2, maxim 6 persoane per masa.")); 
                                     imgui.BulletText(u8("Sistem: Texas Hold'em (2 carti in mana, 5 pe masa).")); 
-                                    imgui.BulletText(u8("Taxa: Castigatorul primeste 95'/. din pot (5'/. taxa server).")); 
+                                    imgui.BulletText(u8("Taxa: Castigatorul primeste 95%% din pot (5%% taxa server).")); 
                                     imgui.BulletText(u8("Locatie: Diamond Casino - ID 156"))
                                 else
                                     imgui.BulletText("Requirement: You need at least level 3 to play."); 
                                     imgui.BulletText("Players: Min 2, max 6 per table."); 
                                     imgui.BulletText("System: Texas Hold'em (2 hole cards, 5 on the board)."); 
-                                    imgui.BulletText("Fee: Winner receives 95'/. of the pot (5'/. server fee)."); 
+                                    imgui.BulletText("Fee: Winner receives 95%% of the pot (5%% server fee)."); 
                                     imgui.BulletText("Location: Diamond Casino - ID 156")
                                 end
                             imgui.EndChild()
@@ -8727,7 +9688,7 @@ end, function(player)
         foundAny = true
         local shopHeaderLabel = iniData.settings.lang == 0 and ("Rezultate din: Categorii Shop (" .. #shopMatches .. ")") or ("Results from: Shop Categories (" .. #shopMatches .. ")")
         
-        if imgui.CollapsingHeader(u8(shopHeaderLabel)) then
+        if imgui.CollapsingHeader(imgui.pre("cart") .. u8(shopHeaderLabel)) then
             for _, sh in ipairs(shopMatches) do
                 local displayName = iniData.settings.lang == 0 and sh.name or sh.nameEN
                 if imgui.TreeNodeStr(u8(displayName) .. " ##global_shop_" .. sh.id) then
@@ -8762,15 +9723,15 @@ end, function(player)
                     
                     imgui.BeginChild("PremiumBenefits", imgui.ImVec2(0, 0), true)
                         local benefits = (iniData.settings.lang == 0) and {
-                            "Dobanda banca: 0.01 -> 0.03", "Salariu payday: +25'/.", "Bani joburi: +50'/.",
+                            "Dobanda banca: 0.01 -> 0.03", "Salariu payday: +25%%", "Bani joburi: +50%%",
                             "Bonus 5 ore: Respect, Jaf, Evadare, Accept, -1 FP", "Respect: Nu se pierde la /buylevel",
                             "Vehicule sport: Acces Turismo, Bullet, Infernus etc.", "Limite: Jaf (20), Evadare (40), Accept (300)",
-                            "Comanda /mp3 oriunde", "Combustibil: pana la 150'/.", "Race: miza pana la $2000", "Friends list: pana la 60 sloturi"
+                            "Comanda /mp3 oriunde", "Combustibil: pana la 150%%", "Race: miza pana la $2000", "Friends list: pana la 60 sloturi"
                         } or {
-                            "Bank interest: 0.01 -> 0.03", "Payday salary: +25'/.", "Job money: +50'/.",
+                            "Bank interest: 0.01 -> 0.03", "Payday salary: +25%%", "Job money: +50%%",
                             "5-hour bonus: Respect, Rob, Escape, Accept, -1 FP", "Respect: No loss on /buylevel",
                             "Sport vehicles: Access to Turismo, Bullet, Infernus etc.", "Limits: Rob (20), Escape (40), Accept (300)",
-                            "Command /mp3 anywhere", "Fuel: up to 150'/.", "Race: stake up to $2000", "Friends list: up to 60 slots"
+                            "Command /mp3 anywhere", "Fuel: up to 150%%", "Race: stake up to $2000", "Friends list: up to 60 slots"
                         }
                         
                         for _, b in ipairs(benefits) do
@@ -8870,8 +9831,8 @@ end, function(player)
 
                     imgui.BeginChild("GoldIntro", imgui.ImVec2(0, 55), true)
                         imgui.TextWrapped(iniData.settings.lang == 0 and 
-                            u8("Mai jos gasiti vehiculele serverului ce pot fi achizitionate cu Gold. Vehiculele nu pot fi vandute jucatorilor, doar returnate DealerShip-ului pentru 40'/. din valoare. Nu este necesar cont premium.") 
-                            or "Below you can find the server vehicles that can be purchased with Gold. Vehicles cannot be sold to players, only returned to the Dealership for 40'/. of their value. Premium account is not required.")
+                            u8("Mai jos gasiti vehiculele serverului ce pot fi achizitionate cu Gold. Vehiculele nu pot fi vandute jucatorilor, doar returnate DealerShip-ului pentru 40%% din valoare. Nu este necesar cont premium.") 
+                            or "Below you can find the server vehicles that can be purchased with Gold. Vehicles cannot be sold to players, only returned to the Dealership for 40%% of their value. Premium account is not required.")
                     imgui.EndChild()
 
                     imgui.Spacing()
@@ -8904,7 +9865,7 @@ end, function(player)
                             "Tunabil: Numele tuning-ului sau 'Nu este tunabil'."
                         } or {
                             "Dealership Price: The purchase price.",
-                            "Refund: 40 '/. of value back at the Dealership.",
+                            "Refund: 40 %% of value back at the Dealership.",
                             "Max Speed: The vehicle's speed limit.",
                             "Seats: Maximum capacity.",
                             "Tunable: Tuning name or 'Not tunable'."
@@ -9943,7 +10904,7 @@ end, function(player)
 
              if ("setari tema vizuala opacitate meniu stil structura margini scalare taste comanda bind-uri bind taste hotkey grosime margini butoane fereastra settings theme visual opacity menu style structure margins scaling keys command bindings hotkey thickness buttons window"):find(current_search:lower(), 1, true) then
                 foundAny = true
-                if imgui.CollapsingHeader(iniData.settings.lang == 0 and "Rezultate din: Setari Sistem" or "Results from: System Settings") then
+                if imgui.CollapsingHeader(imgui.pre("cog") .. (iniData.settings.lang == 0 and "Rezultate din: Setari Sistem" or "Results from: System Settings")) then
                     imgui.Spacing()
                     renderThemeSettings()
                     imgui.Spacing()
@@ -9959,6 +10920,7 @@ end, function(player)
         imgui.Spacing()
         imgui.SetWindowFontScale(1.4)
         local title = (iniData.settings.lang == 0) and u8("PANOU CENTRAL - GHID COMENZI RAPIDE") or "CENTRAL PANEL - QUICK COMMAND GUIDE"
+        title = imgui.pre("home") .. title
         imgui.SetCursorPosX((imgui.GetWindowWidth() - imgui.CalcTextSize(title).x) / 2)
         imgui.TextColored(imgui.ImVec4(0.5, 0.14, 1.00, 1.0), title)
         imgui.SetWindowFontScale(1.0)           
@@ -9973,7 +10935,7 @@ end, function(player)
                 local desc = (iniData.settings.lang == 0) and u8(descRO) or descEN
                 imgui.BeginChild("CmdCard_" .. cmd, imgui.ImVec2(-1, 38), true)
                     imgui.SetCursorPos(imgui.ImVec2(10, 10))
-                    imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), cmd)
+                    imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), imgui.pre("terminal") .. cmd)
                     imgui.SameLine(220)
                     imgui.TextColored(imgui.ImVec4(0.6, 0.6, 0.6, 1.0), "|")
                     imgui.SameLine(240)
@@ -9983,7 +10945,7 @@ end, function(player)
             end
 
             -- Header INFO CUTII & VEHICULE
-            if imgui.CollapsingHeader((iniData.settings.lang == 0) and u8("INFO CUTII & VEHICULE") or "CRATE & VEHICLE INFO") then
+            if imgui.CollapsingHeader(imgui.pre("box") .. ((iniData.settings.lang == 0) and u8("INFO CUTII & VEHICULE") or "CRATE & VEHICLE INFO")) then
                 imgui.Spacing()
                 DrawCmdCard("/anredcrate / .redcrate", "Informatii despre cutie", "Crate information")
                 DrawCmdCard("/aninfernus / .infernus", "Informatii despre masina", "Car information")
@@ -9992,7 +10954,7 @@ end, function(player)
             imgui.Spacing()
 
             -- Header APLICATII FACTIUNI
-            if imgui.CollapsingHeader((iniData.settings.lang == 0) and u8("APLICATII FACTIUNI") or "FACTION APPLICATIONS") then
+            if imgui.CollapsingHeader(imgui.pre("users") .. ((iniData.settings.lang == 0) and u8("APLICATII FACTIUNI") or "FACTION APPLICATIONS")) then
                 imgui.Spacing()
                 DrawCmdCard("/anapplyp / .applyp", "Aplicare factiune pasnica", "Apply for peaceful faction")
                 DrawCmdCard("/anapplym / .applym", "Aplicare mafie", "Apply for mafia")
@@ -10003,7 +10965,7 @@ end, function(player)
             imgui.Spacing()
 
             -- Header GENERAL & ECONOMIE
-            if imgui.CollapsingHeader((iniData.settings.lang == 0) and u8("GENERAL & ECONOMIE") or "GENERAL & ECONOMY") then
+            if imgui.CollapsingHeader(imgui.pre("coins") .. ((iniData.settings.lang == 0) and u8("GENERAL & ECONOMIE") or "GENERAL & ECONOMY")) then
                 imgui.Spacing()
                 DrawCmdCard("/anbani / .bani", "Cum faci bani rapid", "How to make money fast")
                 DrawCmdCard("/anrp / .rp", "Respect Points (Payday)", "Respect Points (Payday)")
@@ -10014,7 +10976,7 @@ end, function(player)
             imgui.Spacing()
 
              -- Header COMENZI & GENERALE
-            if imgui.CollapsingHeader((iniData.settings.lang == 0) and u8("COMENZI GENERALE") or "GENERAL COMMANDS") then
+            if imgui.CollapsingHeader(imgui.pre("terminal") .. ((iniData.settings.lang == 0) and u8("COMENZI GENERALE") or "GENERAL COMMANDS")) then
                 imgui.Spacing()
                 DrawCmdCard("/naiurea / .naiurea", "N aiurea /n doar pentru intrebari!", "Don't ask random questions!, /n for help!")
                 imgui.Spacing()
@@ -10046,7 +11008,10 @@ end, function(player)
                             imgui.PushStyleColor(imgui.Col.ButtonActive, themeActive)
                             imgui.PushStyleColor(imgui.Col.Text, imgui.ImVec4(1, 1, 1, 1))
 
-                            if imgui.Button(name .. "##btn_" .. idx, imgui.ImVec2(160, 30)) then
+                            imgui.PushStyleVar(imgui.StyleVar.ButtonTextAlign, imgui.ImVec2(0.07, 0.5))
+                            local jobNavPressed = imgui.Button(imgui.jobPre(idx) .. name .. "##btn_" .. idx, imgui.ImVec2(160, 30))
+                            imgui.PopStyleVar()
+                            if jobNavPressed then
                                 selected_job = idx
                             end
                             
@@ -10079,9 +11044,10 @@ end, function(player)
                     elseif selected_job == 18 then renderLawyerDetails()
                     elseif selected_job == 19 then renderPocketThiefDetails()
                     elseif selected_job == 20 then renderCraftsmanDetails()
-                    elseif selected_job == 21 then renderFirefighterDetails()
-                    elseif selected_job == 22 then renderDailyJobDetails()
-                    elseif selected_job == 23 then renderJobClashDetails()
+                    elseif selected_job == 21 then renderHunterDetails()
+                    elseif selected_job == 22 then renderFirefighterDetails()
+                    elseif selected_job == 23 then renderDailyJobDetails()
+                    elseif selected_job == 24 then renderJobClashDetails()
                     end
                 imgui.EndChild()
 
@@ -10093,7 +11059,7 @@ end, function(player)
                         imgui.Spacing()
                         
                         for idx, cat in ipairs(vehicle_categories) do
-                            if imgui.Selectable(cat.name, false, 0, imgui.ImVec2(0, 25)) then
+                            if imgui.Selectable(imgui.pre("car") .. cat.name .. "##vcat_" .. idx, false, 0, imgui.ImVec2(0, 25)) then
                                 selected_category = idx
                                 selected_vehicle_name = ""
                             end
@@ -10106,7 +11072,7 @@ end, function(player)
                         imgui.PushStyleColor(imgui.Col.ButtonActive, imgui.ImVec4(1.00, 0.10, 0.10, 1.00))
                         imgui.PushStyleColor(imgui.Col.Text, imgui.ImVec4(1.00, 1.00, 1.00, 1.00))
                         
-                        if imgui.Button("<< " .. (iniData.settings.lang == 0 and u8("Inapoi") or "Back") .. " >>", imgui.ImVec2(-1, 28)) then
+                        if imgui.Button(imgui.pre("undo") .. (iniData.settings.lang == 0 and u8("Inapoi") or "Back") .. "##vback", imgui.ImVec2(-1, 28)) then
                             selected_category = 0
                             selected_vehicle_name = ""
                         end
@@ -10177,7 +11143,10 @@ end, function(player)
                         imgui.PushStyleColor(imgui.Col.ButtonActive, themeActive)
                         imgui.PushStyleColor(imgui.Col.Text, imgui.ImVec4(1, 1, 1, 1))
 
-                        if imgui.Button(displayName .. "##sys_btn_" .. idx, imgui.ImVec2(170, 30)) then
+                        imgui.PushStyleVar(imgui.StyleVar.ButtonTextAlign, imgui.ImVec2(0.07, 0.5))
+                        local sysNavPressed = imgui.Button(imgui.pre("chevron") .. displayName .. "##sys_btn_" .. idx, imgui.ImVec2(170, 30))
+                        imgui.PopStyleVar()
+                        if sysNavPressed then
                             selected_system = idx
                         end
                         
@@ -10205,11 +11174,11 @@ end, function(player)
                         if iniData.settings.lang == 0 then
                             imgui.BulletText(u8("Cooldown: O misiune noua la fiecare 4 ore."))
                             imgui.BulletText(u8("Parasire: [/leavemission] (nu activeaza cooldown-ul)."))
-                            imgui.BulletText(u8("Licente: Poti conduce barci/avioane fara licenta in misiune."))
+                            imgui.BulletText(u8("Licente: Barci/avioane fara licenta; masinile cer permis."))
                         else
                             imgui.BulletText("Cooldown: A new mission every 4 hours.")
                             imgui.BulletText("Leave: [/leavemission] (does not trigger cooldown).")
-                            imgui.BulletText("Licenses: You can drive boats/planes without a license during missions.")
+                            imgui.BulletText("Licenses: Boats/planes need no license; cars need a driving license.")
                         end
                     imgui.EndChild()
                     
@@ -10223,13 +11192,13 @@ end, function(player)
                     imgui.EndChild()
                     
                     imgui.BeginChild("MissionsDimitriBox", imgui.ImVec2(0, 120), true)
-                        imgui.TextColored(imgui.ImVec4(0.3, 0.7, 1, 1), "DIMITRI PETRENKO (Level 3+)")
+                        imgui.TextColored(imgui.ImVec4(0.3, 0.7, 1, 1), "DIMITRI PETRENKO (Level 1+)")
                         imgui.Separator()
                         imgui.Text((iniData.settings.lang == 0) and u8("1. Fura bucati de metal: $15.000 + 5 MP\n2. Fura naveta spatiala: $5.000 + 3 MP\n3. Adu motoarele: $10.000 + 4 MP\n4. Zbor pe Marte: $15.000 + 5 MP") or "1. Steal metal pieces: $15,000 + 5 MP\n2. Steal space shuttle: $5,000 + 3 MP\n3. Bring the engines: $10,000 + 4 MP\n4. Fly to Mars: $15,000 + 5 MP")
                     imgui.EndChild()
                     
                     imgui.BeginChild("MissionsOGBox", imgui.ImVec2(0, 85), true)
-                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "OG LOC (Level 5+)")
+                        imgui.TextColored(imgui.ImVec4(1, 0.5, 0, 1), "OG LOC (Level 1+ | Steal the disc: Level 5+ + weapons license)")
                         imgui.Separator()
                         imgui.Text((iniData.settings.lang == 0) and u8("1. Fura discul: $15.000 + 5 MP\n2. Fa-ti prieteni noi: $5.000 + 3 MP") or "1. Steal the disc: $15,000 + 5 MP\n2. Make new friends: $5,000 + 3 MP")
                     imgui.EndChild()
@@ -10276,7 +11245,7 @@ end, function(player)
                                     imgui.BulletText("Stocul poate fi vandut incepand cu minim 1 unitate.");
                                     imgui.BulletText("Pret per unitate: $1.000 (aproape) | $2.000 (departe). Exemplu: 100 unitati = $100k / $200k.");
                                     imgui.BulletText("in functie de stoc, se folosesc mai multe vehicule Bandito. Poti chema prieteni sa te ajute!");
-                                    imgui.BulletText("Fiecare ajutor primeste 10'/. bonus din plata finala (fara a scadea din banii tai).");
+                                    imgui.BulletText("Fiecare ajutor primeste 10%% bonus din plata finala (fara a scadea din banii tai).");
                                     imgui.BulletText("Timp alocat: 5 minute (aproape) | 10 minute (departe).");
                                     imgui.BulletText("Conditie productie: Bunkerul are nevoie de provizii si proprietarul trebuie sa fie online.");
                                     imgui.BulletText("Viteza productie - Fara imbunatatiri: 1 unitate / 20 minute");
@@ -10360,7 +11329,7 @@ end, function(player)
                                     imgui.BulletText("Stock can be sold starting from a minimum of 1 unit.");
                                     imgui.BulletText("Price per unit: $1,000 (near) | $2,000 (far). Example: 100 units = $100k / $200k.");
                                     imgui.BulletText("Depending on the stock, multiple Bandito vehicles are used. You can invite friends to help!");
-                                    imgui.BulletText("Each helper receives a 10'/. bonus from the final payment (without deducting from your money).");
+                                    imgui.BulletText("Each helper receives a 10%% bonus from the final payment (without deducting from your money).");
                                     imgui.BulletText("Time limit: 5 minutes (near) | 10 minutes (far).");
                                     imgui.BulletText("Production condition: The bunker needs supplies and the owner must be online.");
                                     imgui.BulletText("Production speed - No upgrades: 1 unit / 20 minutes");
@@ -10413,12 +11382,12 @@ end, function(player)
                     if isRO then
                         imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), "--- SISTEM JOB GOAL ---")
                         imgui.Separator()
-                        imgui.BeginChild("GoalDescBox", imgui.ImVec2(0, 95), true)
+                        imgui.BeginChild("GoalDescBox", imgui.ImVec2(0, 125), true)
                             imgui.TextColored(imgui.ImVec4(0.0, 1.0, 1.0, 1.0), "DESCRIERE OBIECTIV:")
-                            imgui.TextWrapped("Job Goal reprezinta suma sau '/.ajul pe care toti jucatorii de pe server trebuie sa il atinga impreuna pentru a debloca premiile zilei. Reset: Zilnic la 00:00.")
+                            imgui.TextWrapped("Job Goal reprezinta suma sau procentajul pe care toti jucatorii de pe server trebuie sa il atinga impreuna pentru a debloca premiile zilei. Reset: Zilnic la 00:00. Joburile Detective, Lawyer si Craftsman nu sunt contorizate.")
                         imgui.EndChild()
                         imgui.Spacing()
-                        imgui.TextColored(imgui.ImVec4(1.0, 0.8, 0.0, 1.0), "RECOMPENSE LA 100'/. COMPLETAT:")
+                        imgui.TextColored(imgui.ImVec4(1.0, 0.8, 0.0, 1.0), "RECOMPENSE LA 100%% COMPLETAT:")
                         imgui.BeginChild("GoalRewardsBox", imgui.ImVec2(0, 90), true)
                             imgui.Text("Daca obiectivul global si cel individual sunt atinse:")
                             imgui.BulletText("Bani: intre $25.000 si $50.000\nGold: intre 5 si 10 (aleatoriu)\nRespect Points: intre 5 si 10 puncte")
@@ -10431,12 +11400,12 @@ end, function(player)
                     else
                         imgui.TextColored(imgui.ImVec4(0.0, 1.0, 0.0, 1.0), "--- JOB GOAL SYSTEM ---")
                         imgui.Separator()
-                        imgui.BeginChild("GoalDescBox", imgui.ImVec2(0, 95), true)
+                        imgui.BeginChild("GoalDescBox", imgui.ImVec2(0, 125), true)
                             imgui.TextColored(imgui.ImVec4(0.0, 1.0, 1.0, 1.0), "OBJECTIVE DESCRIPTION:")
-                            imgui.TextWrapped("Job Goal represents the sum or '/.age that all players on the server must reach together to unlock the daily rewards. Reset: Daily at 00:00.")
+                            imgui.TextWrapped("Job Goal represents the sum or percentage that all players on the server must reach together to unlock the daily rewards. Reset: Daily at 00:00. The Detective, Lawyer and Craftsman jobs are not counted.")
                         imgui.EndChild()
                         imgui.Spacing()
-                        imgui.TextColored(imgui.ImVec4(1.0, 0.8, 0.0, 1.0), "REWARDS AT 100'/. COMPLETED:")
+                        imgui.TextColored(imgui.ImVec4(1.0, 0.8, 0.0, 1.0), "REWARDS AT 100%% COMPLETED:")
                         imgui.BeginChild("GoalRewardsBox", imgui.ImVec2(0, 90), true)
                             imgui.Text("If the global and individual objective are reached:")
                             imgui.BulletText("Money: between $25,000 and $50,000\nGold: between 5 and 10 (randomly)\nRespect Points: between 5 and 10 points")
@@ -10540,7 +11509,7 @@ end, function(player)
                         imgui.BulletText(isRO and u8("Platinum: Negru | Diamond: Albastru Deschis | Onyx: Portocaliu (in garderoba)") or "Platinum: Black | Diamond: Light Blue | Onyx: Orange (in wardrobe)")
                         imgui.BulletText(isRO and u8("Skinurile fuzionate vor afisa textul FUSED la ID (/id) si deasupra capului.") or "Fused skins will display the text FUSED next to ID (/id) and above the head.")
                         imgui.Spacing()
-                        imgui.TextWrapped(isRO and u8("Raritati: Legendary (4 bonusuri spec. >= 20'/.), Very Rare (3 bonusuri spec. >= 15'/.), Uncommon (2 bonusuri spec. >= 10'/.), Common (Restul).") or "Rarities: Legendary (4 spec. bonuses >= 20'/.), Very Rare (3 spec. bonuses >= 15'/.), Uncommon (2 spec. bonuses >= 10'/.), Common (Rest).")
+                        imgui.TextWrapped(isRO and u8("Raritati: Legendary (4 bonusuri spec. >= 20%%), Very Rare (3 bonusuri spec. >= 15%%), Uncommon (2 bonusuri spec. >= 10%%), Common (Restul).") or "Rarities: Legendary (4 spec. bonuses >= 20%%), Very Rare (3 spec. bonuses >= 15%%), Uncommon (2 spec. bonuses >= 10%%), Common (Rest).")
                     imgui.EndChild()
 
                     elseif selected_system == 6 then -- CLAN XP
@@ -10596,32 +11565,32 @@ end, function(player)
                                             {2, 60, "1.1x", "Standard"},
                                             {3, 70, "1.2x", "Standard"},
                                             {4, 80, "1.3x", "Bonus: 1,000$ in seiful clanului la payday"},
-                                            {5, 90, "1.4x", "HQ Claim (Off Track Betting) | 5 '/. castig din joburi in seif"},
+                                            {5, 90, "1.4x", "HQ Claim (Off Track Betting) | 5 %% castig din joburi in seif"},
                                             {6, 100, "1.5x", "2 Sloturi vehicule clan | 10,000 capacitate materiale in laborator"},
                                             {7, 110, "1.6x", "10g Droguri in laborator | Slot nou pentru interior HQ (Meat Factory/Motel)"},
-                                            {8, 120, "1.7x", "2 Sloturi vehicule suplimentare | 2,000$ in seif | 10 '/. castig joburi"},
+                                            {8, 120, "1.7x", "2 Sloturi vehicule suplimentare | 2,000$ in seif | 10 %% castig joburi"},
                                             {9, 130, "1.8x", "Setare rang minim vehicule clan (/cvs) | Interior HQ: LS Atrium"},
                                             {10, 140, "1.9x", "20,000 capacitate laborator | 2 Sloturi vehicule suplimentare | War 5 vs 5"},
-                                            {11, 150, "2.0x", "15 '/. castig din joburi in seiful clanului"},
+                                            {11, 150, "2.0x", "15 %% castig din joburi in seiful clanului"},
                                             {12, 160, "2.1x", "3,000$ in seiful clanului la fiecare payday"},
                                             {13, 170, "2.2x", "20g Droguri in laborator | Interior HQ: Madd Dogg"},
-                                            {14, 180, "2.3x", "20 '/. castig din joburi in seif | 30,000 capacitate laborator"},
+                                            {14, 180, "2.3x", "20 %% castig din joburi in seif | 30,000 capacitate laborator"},
                                             {15, 190, "2.4x", "2 Sloturi vehicule suplimentare (Max 10,000,000$ per vehicul)"},
                                             {16, 200, "2.5x", "4,000$ in seiful clanului | Interior HQ: LV Police HQ"},
-                                            {17, 210, "2.6x", "25 '/. castig din joburi in seiful clanului"},
+                                            {17, 210, "2.6x", "25 %% castig din joburi in seiful clanului"},
                                             {18, 220, "2.7x", "40,000 capacitate materiale in laborator"},
                                             {19, 230, "2.8x", "30g Droguri in laborator | Interior HQ: Pleasure Domes"},
                                             {20, 240, "2.9x", "War 10 vs 10 | Custom Clan Crest"},
                                             {21, 250, "3.0x", "Standard"},
                                             {22, 260, "3.1x", "50,000 capacitate materiale in laborator"},
-                                            {23, 270, "3.2x", "27 '/. castig din joburi in seiful clanului"},
+                                            {23, 270, "3.2x", "27 %% castig din joburi in seiful clanului"},
                                             {24, 280, "3.3x", "6,000$ in seiful clanului la fiecare payday"},
                                             {25, 290, "3.4x", "40g Droguri in laborator"},
-                                            {26, 300, "3.5x", "60,000 capacitate materiale | 28 '/. castig din joburi"},
+                                            {26, 300, "3.5x", "60,000 capacitate materiale | 28 %% castig din joburi"},
                                             {27, 310, "3.6x", "Clan Order 1: Deagle (650 mat)"},
                                             {28, 320, "3.7x", "7,000$ in seif | Clan Order 2: AK-47 (3,840 mat)"},
-                                            {29, 330, "3.8x", "29 '/. castig din joburi | Clan Order 3: M4 (6,600 mat)"},
-                                            {30, 350, "3.9x", "70,000 mat | 30 '/. castig joburi | Clan Order 4: Rifle | Raid intre clanuri"}
+                                            {29, 330, "3.8x", "29 %% castig din joburi | Clan Order 3: M4 (6,600 mat)"},
+                                            {30, 350, "3.9x", "70,000 mat | 30 %% castig joburi | Clan Order 4: Rifle | Raid intre clanuri"}
                                         }
 
                                         for _, l in ipairs(data) do
@@ -10687,32 +11656,32 @@ end, function(player)
                                             {2, 60, "1.1x", "Standard"},
                                             {3, 70, "1.2x", "Standard"},
                                             {4, 80, "1.3x", "Bonus: $1,000 to clan safe at payday"},
-                                            {5, 90, "1.4x", "HQ Claim (Off Track Betting) | 5 '/. job earnings to clan safe"},
+                                            {5, 90, "1.4x", "HQ Claim (Off Track Betting) | 5 %% job earnings to clan safe"},
                                             {6, 100, "1.5x", "2 clan vehicle slots | 10,000 lab material capacity"},
                                             {7, 110, "1.6x", "10g Drugs in lab | New interior slot for HQ (Meat Factory/Motel)"},
-                                            {8, 120, "1.7x", "+2 vehicle slots | $2,000 in safe | 10 '/. job earnings"},
+                                            {8, 120, "1.7x", "+2 vehicle slots | $2,000 in safe | 10 %% job earnings"},
                                             {9, 130, "1.8x", "Set minimum vehicle rank (/cvs) | HQ interior: LS Atrium"},
                                             {10, 140, "1.9x", "20,000 lab capacity | +2 vehicle slots | War 5 vs 5"},
-                                            {11, 150, "2.0x", "15 '/. job earnings into clan safe"},
+                                            {11, 150, "2.0x", "15 %% job earnings into clan safe"},
                                             {12, 160, "2.1x", "$3,000 to clan safe each payday"},
                                             {13, 170, "2.2x", "20g Drugs in lab | HQ interior: Madd Dogg"},
-                                            {14, 180, "2.3x", "20 '/. job earnings into safe | 30,000 lab capacity"},
+                                            {14, 180, "2.3x", "20 %% job earnings into safe | 30,000 lab capacity"},
                                             {15, 190, "2.4x", "+2 vehicle slots (Max $10,000,000 per vehicle)"},
                                             {16, 200, "2.5x", "$4,000 in clan safe | HQ interior: LV Police HQ"},
-                                            {17, 210, "2.6x", "25 '/. job earnings into clan safe"},
+                                            {17, 210, "2.6x", "25 %% job earnings into clan safe"},
                                             {18, 220, "2.7x", "40,000 lab material capacity"},
                                             {19, 230, "2.8x", "30g Drugs in lab | HQ interior: Pleasure Domes"},
                                             {20, 240, "2.9x", "War 10 vs 10 | Custom Clan Crest"},
                                             {21, 250, "3.0x", "Standard"},
                                             {22, 260, "3.1x", "50,000 lab material capacity"},
-                                            {23, 270, "3.2x", "27 '/. job earnings into clan safe"},
+                                            {23, 270, "3.2x", "27 %% job earnings into clan safe"},
                                             {24, 280, "3.3x", "$6,000 to clan safe each payday"},
                                             {25, 290, "3.4x", "40g Drugs in lab"},
-                                            {26, 300, "3.5x", "60,000 lab capacity | 28 '/. job earnings"},
+                                            {26, 300, "3.5x", "60,000 lab capacity | 28 %% job earnings"},
                                             {27, 310, "3.6x", "Clan Order 1: Deagle (650 mat)"},
                                             {28, 320, "3.7x", "$7,000 in safe | Clan Order 2: AK-47 (3,840 mat)"},
-                                            {29, 330, "3.8x", "29 '/. job earnings | Clan Order 3: M4 (6,600 mat)"},
-                                            {30, 350, "3.9x", "70,000 mat | 30 '/. job earnings | Clan Order 4: Rifle | Clan raids"}
+                                            {29, 330, "3.8x", "29 %% job earnings | Clan Order 3: M4 (6,600 mat)"},
+                                            {30, 350, "3.9x", "70,000 mat | 30 %% job earnings | Clan Order 4: Rifle | Clan raids"}
                                         }
 
                                         for _, l in ipairs(data_en) do
@@ -10959,6 +11928,7 @@ end, function(player)
                                 imgui.BulletText(u8("Gaining Wanted or entering a vehicle before pickup blocks collection."))
                             end
 
+                            imgui.EndChild() -- [FIX] inchide RobATMDetails
                     elseif selected_system == 8 then -- ROB SOLO
                     imgui.BeginChild("RobSoloDetails", imgui.ImVec2(0, 0), true)              
                             if iniData.settings.lang == 0 then
@@ -11120,6 +12090,7 @@ end, function(player)
                                 imgui.BulletText(u8("Entering the Pay'n Spray COMPLETES THE ROB: Wanted is fully cleared, and you receive base cash + 1 Rob Skill point."))
                             end
 
+                            imgui.EndChild() -- [FIX] inchide RobSoloDetails
                    elseif selected_system == 9 then -- Rob Team  
                                          if iniData.settings.lang == 0 then
                             imgui.SetWindowFontScale(1.2)  
@@ -11492,69 +12463,7 @@ end, function(player)
                     imgui.EndChild()
 
                     elseif selected_system == 13 then -- LICENTE
-                    local isRO = (iniData.settings.lang == 0)
-
-                    imgui.TextColored(imgui.ImVec4(0.0, 0.8, 1.0, 1.0), isRO and u8("--- SISTEMUL DE LICENTE ---") or "--- LICENSE SYSTEM ---")
-                    imgui.Separator()
-                    imgui.BeginChild("LicensesMainBox", imgui.ImVec2(0, 650), true)
-
-                        imgui.TextColored(imgui.ImVec4(1.0, 1.0, 0.0, 1.0), isRO and u8("INFO GENERAL SI OBTINERE") or "GENERAL INFO AND OBTAINING")   
-                        imgui.BeginChild("LicenteObtinereBox", imgui.ImVec2(0, 95), true)
-                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("> Tipuri:") or "> Types:")
-                            imgui.SameLine()
-                            imgui.TextWrapped(isRO and u8("Zbor, Navigatie, Pescuit, Materiale (Lvl 1), Port-Arma (Lvl 5).") or "Flight, Sailing, Fishing, Materials (Lvl 1), Gun License (Lvl 5).")
-                            imgui.Spacing()
-                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("> Obtinere:") or "> Obtaining:")
-                            imgui.SameLine()
-                            imgui.TextWrapped(isRO and u8("[/needlicense] (instructor) sau NPC la HQ S.I. (cost x5).") or "[/needlicense] (instructor) or NPC at S.I. HQ (cost x5).")
-                            imgui.Spacing()
-                            imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("> Valabilitate:") or "> Validity:")
-                            imgui.SameLine()
-                            imgui.TextWrapped(isRO and u8("100 ore. Scade cu 1h la PayDay (inclusiv pe /sleep).") or "100 hours. Decreases by 1h at PayDay (including during /sleep).")
-                        imgui.EndChild()
-
-                        imgui.Spacing()
-
-                        imgui.TextColored(imgui.ImVec4(1.0, 0.4, 0.4, 1.0), isRO and u8("SUSPENDARE PERMIS (ROADS)") or "LICENSE SUSPENSION (ROADS)")  
-                        imgui.BeginChild("LicenteRoadsBox", imgui.ImVec2(0, 150), true)
-                            imgui.TextColored(imgui.ImVec4(1.0, 0.3, 0.3, 1.0), isRO and u8("Confiscare permis pentru 1 ORA:") or "License confiscation for 1 HOUR:")
-                            imgui.BulletText(isRO and u8("NOS, Hidraulice, Contrasens, Alcool (3.0), Parcare neregulamentara.") or "NOS, Hydraulics, Wrong way, Alcohol (3.0), Illegal parking.")
-                            imgui.Spacing()
-                            imgui.TextColored(imgui.ImVec4(1.0, 0.3, 0.3, 1.0), isRO and u8("Confiscare dupa VITEZA:") or "Confiscation by SPEEDING:")
-                            imgui.BulletText(isRO and u8("Oras (lim. 100): 150-199 km/h (1h) | 200+ km/h (2h).") or "City (limit 100): 150-199 km/h (1h) | 200+ km/h (2h).")
-                            imgui.BulletText(isRO and u8("Afara (lim. 130): 180-229 km/h (1h) | Autostrada (lim. 160): 210+ km/h (1h).") or "Outside (limit 130): 180-229 km/h (1h) | Highway (limit 160): 210+ km/h (1h).")
-                        imgui.EndChild()
-
-                        imgui.Spacing()
-
-                        imgui.TextColored(imgui.ImVec4(0.6, 0.4, 1.0, 1.0), isRO and u8("COSTURI LICENTE (INSTRUCTOR)") or "LICENSE COSTS (INSTRUCTOR)")
-                        imgui.BeginChild("LicenteCostBox", imgui.ImVec2(0, 175), true)
-                            imgui.Columns(4, "costCols", true)
-                            imgui.Text(isRO and u8("Tip") or "Type"); imgui.NextColumn()
-                            imgui.Text("Lvl 1-9"); imgui.NextColumn()
-                            imgui.Text("Lvl 10-49"); imgui.NextColumn()
-                            imgui.Text("Lvl 50+"); imgui.NextColumn()
-                            imgui.Separator()
-                            
-                            local types = {
-                                {isRO and u8("Pescar") or "Fishing", "$250", "$500", "$1.000"},
-                                {isRO and u8("Materiale") or "Materials", "$800", "$1.600", "$3.200"},
-                                {isRO and u8("Navigatie") or "Sailing", "$850", "$1.700", "$3.400"},
-                                {isRO and u8("Zbor") or "Flight", "$900", "$1.800", "$3.600"},
-                                {isRO and u8("Arme") or "Weapons", "$1.000", "$2.000", "$4.000"}
-                            }
-                            for _, row in ipairs(types) do
-                                imgui.Text(row[1]); imgui.NextColumn(); imgui.Text(row[2]); imgui.NextColumn(); imgui.Text(row[3]); imgui.NextColumn(); imgui.Text(row[4]); imgui.NextColumn()
-                            end
-                            imgui.Separator()
-                            imgui.TextColored(imgui.ImVec4(0.4, 1.0, 0.4, 1.0), "TOTAL"); imgui.NextColumn()
-                            imgui.Text("$3.800"); imgui.NextColumn(); imgui.Text("$7.600"); imgui.NextColumn(); imgui.Text("$15.200"); imgui.Columns(1)
-                        imgui.EndChild()
-
-                        imgui.Spacing()
-                        imgui.Separator()
-                        imgui.TextColored(imgui.ImVec4(1, 1, 1, 0.6), isRO and u8("Sfat: Preturile la NPC sunt de 5 ori (x5) mai mari decat cele de mai sus.") or "Tip: NPC prices are 5 times (x5) higher than those above.")
-                    imgui.EndChild()
+                        renderLicensesDetails()
 
                    elseif selected_system == 14 then -- NIVELURI MINIME
                     local isRO = (iniData.settings.lang == 0)
@@ -11655,7 +12564,7 @@ end, function(player)
                             imgui.Spacing()
                             
                             imgui.PushStyleColor(imgui.Col.Text, greenColor)
-                            imgui.TextUnformatted("10'/.")
+                            imgui.TextUnformatted("10%")
                             imgui.PopStyleColor()
                             imgui.SameLine()
                             imgui.TextColored(whiteColor, isRO and u8(" -> din punctele de respect (RP) ale prietenului.") or " -> of the friend's Respect Points (RP).")
@@ -11663,7 +12572,7 @@ end, function(player)
                             imgui.Spacing()
                             
                             imgui.PushStyleColor(imgui.Col.Text, greenColor)
-                            imgui.TextUnformatted("100'/.")
+                            imgui.TextUnformatted("100%")
                             imgui.PopStyleColor()
                             imgui.SameLine()
                             imgui.TextColored(whiteColor, isRO and u8(" -> din suma de bani platita de prieten.") or " -> of the money paid by the friend.")
@@ -11807,7 +12716,7 @@ end, function(player)
                         end
 
                         Category(isRO and "--- SERVICII & COMBUSTIBIL ---" or "--- SERVICES & FUEL ---")
-                        Item("Combustibil: 5$ / '/. (litru)")
+                        Item("Combustibil: 5$ / %% (litru)")
                         Item("Spital: 100$ | PnS: 200$ | Tractari: 200$")
 
                         Category(isRO and "--- ARME ---" or "--- WEAPONS ---")
@@ -11830,7 +12739,7 @@ end, function(player)
                         Item("Accesorii (palarii/ochelari) / Costume: 500$")
                         Item("Inmatriculare (/carplate) / Culoare: 500$")
                         Item("Asigurari: 0-100k(500$), 100k-1M(1.000$), 1M-6M(1.500$), 6M+(2.000$)")
-                        Item("Job-uri: Castiguri +15'/. | Job-ul Zilei: SUMA DUBLA")
+                        Item("Job-uri: Castiguri +15%% | Job-ul Zilei: SUMA DUBLA")
 
                     imgui.EndChild()                    
                     imgui.SetWindowFontScale(1.0)  
@@ -11913,9 +12822,9 @@ end, function(player)
                         -- RARITATE
                         imgui.TextColored(imgui.ImVec4(1.0, 0.4, 1.0, 1.0), isRO and u8("RARITATE SKINURI") or "SKIN RARITY")
                         imgui.BeginChild("RarityBox", imgui.ImVec2(0, 95), true)
-                            imgui.TextColored(imgui.ImVec4(1, 0.84, 0, 1), "Legendary: 4 bonusuri speciale (20'/.+)")
-                            imgui.TextColored(imgui.ImVec4(0.5, 0.5, 1, 1), "Very Rare: 3 bonusuri speciale (15'/.+)")
-                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Uncommon: 2 bonusuri speciale (10'/.+)")
+                            imgui.TextColored(imgui.ImVec4(1, 0.84, 0, 1), "Legendary: 4 bonusuri speciale (20%%+)")
+                            imgui.TextColored(imgui.ImVec4(0.5, 0.5, 1, 1), "Very Rare: 3 bonusuri speciale (15%%+)")
+                            imgui.TextColored(imgui.ImVec4(0, 1, 0, 1), "Uncommon: 2 bonusuri speciale (10%%+)")
                             imgui.Text("Common: Restul")
                         imgui.EndChild()
                         -- RECICLARE 
@@ -11957,6 +12866,7 @@ end, function(player)
                             imgui.Columns(1)
                         imgui.EndChild()
 
+                            imgui.EndChild() -- [FIX] inchide TraderMainBox
                         elseif selected_system == 21 then -- Payday
                         local isRO = (iniData.settings.lang == 0)
                         imgui.TextColored(imgui.ImVec4(0.0, 0.8, 1.0, 1.0), isRO and u8("--- PayDay ---") or "--- Payday ---")
@@ -11968,9 +12878,9 @@ end, function(player)
                                 imgui.TextWrapped(isRO and u8("Payday-ul se acorda la ora exacta (XX:00). Necesita 30 min jucate.") or "Payday is granted at the exact hour (XX:00). Requires 30 mins played.")
                                 imgui.Spacing()
                                 imgui.BulletText(isRO and u8("Standard: 1 Respect, 1 Rob, 1 Escape, 1 Clear FP, 1 Accept Point.") or "Standard: 1 Respect, 1 Rob, 1 Escape, 1 Clear FP, 1 Accept Point.")
-                                imgui.BulletText(isRO and u8("Premium: +25 '/. salariu. La 5 ore: bonus de puncte suplimentare.") or "Premium: +25 '/. salary. Every 5 hours: extra points bonus.")
+                                imgui.BulletText(isRO and u8("Premium: +25 %% salariu. La 5 ore: bonus de puncte suplimentare.") or "Premium: +25 %% salary. Every 5 hours: extra points bonus.")
                                 imgui.BulletText(isRO and u8("AFK/Sleep: Acumuleaza doar 1/3 din timp (20min din 60).") or "AFK/Sleep: Accumulates only 1/3 of time (20min out of 60).")
-                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("Dobanda: Standard 0.01 '/. | Dobanda: Premium 0.03 '/.") or "Interest: Standard 0.01 '/. | Interest: Premium 0.03 '/.")
+                                imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("Dobanda: Standard 0.01 %% | Dobanda: Premium 0.03 %%") or "Interest: Standard 0.01 %% | Interest: Premium 0.03 %%")
                             imgui.EndChild()
                             imgui.Spacing()
                             -- Bonusuri Detaliate
@@ -11986,19 +12896,20 @@ end, function(player)
                                 imgui.BulletText(isRO and u8("10 Payday-uri: Triplu: Respect, FP, Jaf, Evadare + 10 Gold + 1 /bail.") or "10 Paydays: Triple: Respect, FP, Rob, Escape + 10 Gold + 1 /bail.")
                                 imgui.Spacing()
                                 imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), isRO and u8("Bonusuri in functie de Nivel:") or "Level-based Bonuses:")
-                                imgui.TextWrapped(isRO and u8("Job: Lvl 110-129 (5 '/.), 130-149 (10 '/.), 150-169 (15 '/.). Creste cu 5'/. la fiecare 20 nivele pana la 100 '/. (Lvl 490).") or "Job: Lvl 110-129 (5 '/.), 130-149 (10 '/.), 150-169 (15 '/.). Increases by 5'/. every 20 levels up to 100 '/. (Lvl 490).")
+                                imgui.TextWrapped(isRO and u8("Job: Lvl 110-129 (5 %%), 130-149 (10 %%), 150-169 (15 %%). Creste cu 5%% la fiecare 20 nivele pana la 100 %% (Lvl 490).") or "Job: Lvl 110-129 (5 %%), 130-149 (10 %%), 150-169 (15 %%). Increases by 5%% every 20 levels up to 100 %% (Lvl 490).")
                                 imgui.Spacing()
-                                imgui.TextWrapped(isRO and u8("Rob: Lvl 120-139 (5 '/.), 140-159 (10 '/.), 160-179 (15 '/.). Creste cu 5'/. la fiecare 20 nivele pana la 100 '/. (Lvl 500).") or "Rob: Lvl 120-139 (5 '/.), 140-159 (10 '/.), 160-179 (15 '/.). Increases by 5'/. every 20 levels up to 100 '/. (Lvl 500).")
+                                imgui.TextWrapped(isRO and u8("Rob: Lvl 120-139 (5 %%), 140-159 (10 %%), 160-179 (15 %%). Creste cu 5%% la fiecare 20 nivele pana la 100 %% (Lvl 500).") or "Rob: Lvl 120-139 (5 %%), 140-159 (10 %%), 160-179 (15 %%). Increases by 5%% every 20 levels up to 100 %% (Lvl 500).")
                             imgui.EndChild()
                             -- Informatii Payday
                             imgui.TextColored(imgui.ImVec4(1.0, 0.4, 1.0, 1.0), isRO and u8("Informatii afisate la Payday") or "Information displayed at Payday")
                             imgui.BeginChild("RarityBox", imgui.ImVec2(0, 50), true)
-                                imgui.TextWrapped(isRO and u8("Plata, Bonus (25 '/. Premium), Taxa Primar, Chirie, Sold, Dobanda, Profit Business.") or "Payment, Bonus (25 '/. Premium), Mayor Tax, Rent, Balance, Interest, Business Profit.")
+                                imgui.TextWrapped(isRO and u8("Plata, Bonus (25 %% Premium), Taxa Primar, Chirie, Sold, Dobanda, Profit Business.") or "Payment, Bonus (25 %% Premium), Mayor Tax, Rent, Balance, Interest, Business Profit.")
                                 imgui.TextColored(imgui.ImVec4(1, 0, 0, 1), isRO and u8("Nota: Jucatorii cu bani > $5.000.000/$10.000.000 nu primesc dobanda.") or "Note: Players with money > $5.000.000/$10.000.000 do not receive interest.")
                             imgui.EndChild()
                        
                     imgui.EndChild()
                 end            
+                    imgui.EndChild() -- [FIX] inchide SystemDetailsDisplayArea
 
             -- [ PANEL DREAPTA: RENDERING AFACERI LOCAL ] --        
             elseif active_tab == 6 then
@@ -12041,7 +12952,10 @@ end, function(player)
                         imgui.PushStyleColor(imgui.Col.ButtonActive, themeActive)
                         imgui.PushStyleColor(imgui.Col.Text, imgui.ImVec4(1, 1, 1, 1))
 
-                        if imgui.Button(biz_label .. "##biz_btn_" .. idx, imgui.ImVec2(180, 30)) then
+                        imgui.PushStyleVar(imgui.StyleVar.ButtonTextAlign, imgui.ImVec2(0.07, 0.5))
+                        local bizNavPressed = imgui.Button(imgui.pre("chevron") .. biz_label .. "##biz_btn_" .. idx, imgui.ImVec2(180, 30))
+                        imgui.PopStyleVar()
+                        if bizNavPressed then
                             selected_biz = idx
                         end
                         
@@ -12101,7 +13015,7 @@ end, function(player)
                         imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("TRANSFER BANCAR:") or "BANK TRANSFER:")
                         imgui.TextWrapped("- " .. (isRO and u8("Comanda: [/transfer]") or "Command: [/transfer]"))
                         imgui.TextWrapped("- " .. (isRO and u8("Necesar: Minim Nivel 3") or "Requirement: Min Level 3"))
-                        imgui.TextWrapped("- " .. (isRO and u8("Taxa: 1 '/. din suma transferata") or "Fee: 1 '/. of the transferred amount"))
+                        imgui.TextWrapped("- " .. (isRO and u8("Taxa: 1 %% din suma transferata") or "Fee: 1 %% of the transferred amount"))
                         imgui.SetWindowFontScale(1.0)
                     imgui.EndChild()
                     
@@ -12125,12 +13039,12 @@ end, function(player)
                     imgui.BeginChild("GasGeneralInfo", imgui.ImVec2(0, 95), true)
                         imgui.Columns(2, "gasInfoCols", false)
                         imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), isRO and u8("COMENZI:") or "COMMANDS:")
-                        imgui.BulletText("/fill ['/.]") 
+                        imgui.BulletText("/fill [%%]") 
                         imgui.BulletText("/fillgascan")
                         imgui.NextColumn()
                         imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("REZERVOR:") or "FUEL TANK:")
-                        imgui.Text(isRO and u8("Normal: 100'/.") or "Normal: 100'/.")
-                        imgui.Text(isRO and u8("Premium: 150'/.") or "Premium: 150'/.")
+                        imgui.Text(isRO and u8("Normal: 100%%") or "Normal: 100%%")
+                        imgui.Text(isRO and u8("Premium: 150%%") or "Premium: 150%%")
                         imgui.Columns(1)
                     imgui.EndChild()
                     
@@ -12315,7 +13229,7 @@ end, function(player)
                         imgui.Text(isRO and u8("Magazinele sunt marcate cu: felie de pizza, clopotel sau burger.") or "Stores are marked with: pizza slice, bell or burger.") 
                         
                         imgui.TextColored(imgui.ImVec4(0.26, 0.65, 0.39, 1), ">> ") imgui.SameLine()
-                        imgui.Text(isRO and u8("Comanda [/eat] / LALT: +20'/. HP | Cost: $30") or "Command [/eat] / LALT: +20'/. HP | Cost: $30")
+                        imgui.Text(isRO and u8("Comanda [/eat] / LALT: +20%% HP | Cost: $30") or "Command [/eat] / LALT: +20%% HP | Cost: $30")
                     imgui.EndChild()
                     
                     imgui.Spacing()
@@ -12767,14 +13681,14 @@ end, function(player)
                         imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), isRO and u8("PRETURI COMPONENTE (DIN PRETUL MASINII):") or "COMPONENT PRICES (OF CAR VALUE):")
                         imgui.Separator()
                         imgui.Columns(2, "tunePriceCols", false)
-                        imgui.BulletText("Paint Jobs: 1.15'/.")
-                        imgui.BulletText("Nitro (10): 0.8'/.")
-                        imgui.BulletText((isRO and u8("Roti / Exhaust") or "Wheels / Exhaust") .. ": 0.8'/.")
-                        imgui.BulletText((isRO and u8("Hidraulice") or "Hydraulics") .. ": 0.25'/.")
+                        imgui.BulletText("Paint Jobs: 1.15%%")
+                        imgui.BulletText("Nitro (10): 0.8%%")
+                        imgui.BulletText((isRO and u8("Roti / Exhaust") or "Wheels / Exhaust") .. ": 0.8%%")
+                        imgui.BulletText((isRO and u8("Hidraulice") or "Hydraulics") .. ": 0.25%%")
                         imgui.NextColumn()
-                        imgui.BulletText((isRO and u8("Neoane: 1.15'/. (Doar Premium)") or "Neon: 1.15'/. (Premium Only)"))
-                        imgui.BulletText((isRO and u8("Bari / Spoiler / Praguri") or "Bumpers / Spoiler / Skirts") .. ": 0.5'/.")
-                        imgui.BulletText((isRO and u8("Capota / Lampi / Vents") or "Hood / Lamps / Vents") .. ": 0.5'/.")
+                        imgui.BulletText((isRO and u8("Neoane: 1.15%% (Doar Premium)") or "Neon: 1.15%% (Premium Only)"))
+                        imgui.BulletText((isRO and u8("Bari / Spoiler / Praguri") or "Bumpers / Spoiler / Skirts") .. ": 0.5%%")
+                        imgui.BulletText((isRO and u8("Capota / Lampi / Vents") or "Hood / Lamps / Vents") .. ": 0.5%%")
                         imgui.BulletText((isRO and u8("Culori: $25 (Pret fix)") or "Colors: $25 (Fixed price)"))
                         imgui.Columns(1)
                     imgui.EndChild()
@@ -13196,7 +14110,7 @@ end, function(player)
                         imgui.BulletText(isRO and u8("Cerinta: Ai nevoie de minim nivel 3 pentru a juca.") or "Requirement: Minimum level 3 to play.")
                         imgui.BulletText(isRO and u8("Jucatori: Minim 2, maxim 6 persoane per masa.") or "Players: Min 2, max 6 per table.")
                         imgui.BulletText(isRO and u8("Sistem: Texas Hold'em (2 carti in mana, 5 pe masa).") or "System: Texas Hold'em (2 hole cards, 5 community).")
-                        imgui.BulletText(isRO and u8("Taxa: Castigatorul primeste 95'/. din pot (5'/. taxa server).") or "Tax: Winner receives 95'/. of pot (5'/. server tax).")
+                        imgui.BulletText(isRO and u8("Taxa: Castigatorul primeste 95%% din pot (5%% taxa server).") or "Tax: Winner receives 95%% of pot (5%% server tax).")
                         imgui.BulletText("Locatie: Diamond Casino - ID 156")
                     imgui.EndChild()
                     
@@ -13597,7 +14511,10 @@ end, function(player)
                         imgui.PushStyleColor(imgui.Col.ButtonActive, themeActive)
                         imgui.PushStyleColor(imgui.Col.Text, imgui.ImVec4(1, 1, 1, 1))
 
-                        if imgui.Button(name .. "##shop_btn_" .. idx, imgui.ImVec2(180, 30)) then
+                        imgui.PushStyleVar(imgui.StyleVar.ButtonTextAlign, imgui.ImVec2(0.07, 0.5))
+                        local shopNavPressed = imgui.Button(imgui.pre("chevron") .. name .. "##shop_btn_" .. idx, imgui.ImVec2(180, 30))
+                        imgui.PopStyleVar()
+                        if shopNavPressed then
                             selected_shop = idx 
                         end
                         
@@ -13636,12 +14553,12 @@ end, function(player)
                             "Dobanda banca: 0.01 -> 0.03", "Salariu payday: +25 la suta", "Bani joburi: +50 la suta",
                             "Bonus 5 ore: Respect, Jaf, Evadare, Accept, -1 FP", "Respect: Nu se pierde la /buylevel",
                             "Vehicule sport: Acces Turismo, Bullet, Infernus etc.", "Limite: Jaf (20), Evadare (40), Accept (300)",
-                            "Comanda /mp3 oriunde", "Combustibil: pana la 150'/.", "Race: miza pana la $2000", "Friends list: pana la 60 sloturi"
+                            "Comanda /mp3 oriunde", "Combustibil: pana la 150%%", "Race: miza pana la $2000", "Friends list: pana la 60 sloturi"
                         } or {
                             "Bank interest: 0.01 -> 0.03", "Payday salary: +25 la suta", "Job money: +50 la suta",
                             "5-hour bonus: Respect, Rob, Escape, Accept, -1 FP", "Respect: No loss on /buylevel",
                             "Sport vehicles: Access to Turismo, Bullet, Infernus etc.", "Limits: Rob (20), Escape (40), Accept (300)",
-                            "Command /mp3 anywhere", "Fuel: up to 150'/.", "Race: stake up to $2000", "Friends list: up to 60 slots"
+                            "Command /mp3 anywhere", "Fuel: up to 150%%", "Race: stake up to $2000", "Friends list: up to 60 slots"
                         }
                         
                         for _, b in ipairs(benefits) do
@@ -13720,8 +14637,8 @@ end, function(player)
                 imgui.Spacing()
 
                 imgui.BeginChild("GoldIntro", imgui.ImVec2(0, 50), true)
-                    imgui.TextWrapped(isRO and u8("Mai jos gasiti vehiculele serverului ce pot fi achizitionate cu Gold. Vehiculele nu pot fi vandute jucatorilor, doar returnate DealerShip-ului pentru 40'/. din valoare. Nu este necesar cont premium.") 
-                    or "Below you can find the server vehicles that can be purchased with Gold. Vehicles cannot be sold to players, only returned to the Dealership for 40'/. of their value. Premium account is not required.")
+                    imgui.TextWrapped(isRO and u8("Mai jos gasiti vehiculele serverului ce pot fi achizitionate cu Gold. Vehiculele nu pot fi vandute jucatorilor, doar returnate DealerShip-ului pentru 40%% din valoare. Nu este necesar cont premium.") 
+                    or "Below you can find the server vehicles that can be purchased with Gold. Vehicles cannot be sold to players, only returned to the Dealership for 40%% of their value. Premium account is not required.")
                 imgui.EndChild()
 
                 imgui.Spacing()
@@ -13772,7 +14689,7 @@ end, function(player)
                         "Tunabil: Numele tuning-ului sau 'Nu este tunabil'."
                     } or {
                         "Dealership Price: The purchase price.",
-                        "Refund: 40 '/. of value back at the Dealership.",
+                        "Refund: 40 %% of value back at the Dealership.",
                         "Max Speed: The vehicle's speed limit.",
                         "Seats: Maximum capacity.",
                         "Tunable: Tuning name or 'Not tunable'."
@@ -14764,7 +15681,7 @@ end, function(player)
                 renderThemeSettings()
                 
             else
-                imgui.TextWrapped(isRO and u8("Aici poti adauga optiunile specifice pentru tabul ") .. tabs[active_tab] or ("Here you can add specific options for tab " .. tabs[active_tab]))
+                imgui.TextWrapped((iniData.settings.lang == 0) and u8("Aici poti adauga optiunile specifice pentru tabul ") .. tabs[active_tab] or ("Here you can add specific options for tab " .. tabs[active_tab]))
             end
         end
 
@@ -15115,11 +16032,11 @@ end
     local cGray  = "{B4B4B4}"
     sampAddChatMessage(cGray .. "______________________________________________________", -1)    
     if iniData.settings.lang == 0 then
-        sampAddChatMessage(string.format("%s>> %sScriptul %sHelper Help v3.1 %sa fost incarcat cu succes!", cMain, cWhite, cMain, cWhite), -1)
+        sampAddChatMessage(string.format("%s>> %sScriptul %sHelper Help v1.0a %sa fost incarcat cu succes!", cMain, cWhite, cMain, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sFoloseste comanda %s/%s %ssau tasta %s[%s] %spentru meniu.", cMain, cWhite, cMain, iniData.settings.cmd, cWhite, cMain, activeKeysStr, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sDiscord Support: %sallecsei %s| Inspirat de la %sTupi & Madalin", cMain, cWhite, cMain, cWhite, cWhite), -1)        
     else
-        sampAddChatMessage(string.format("%s>> %sScript %sHelper Help v3.1 %shas been successfully loaded!", cMain, cWhite, cMain, cWhite), -1)
+        sampAddChatMessage(string.format("%s>> %sScript %sHelper Help v1.0a %shas been successfully loaded!", cMain, cWhite, cMain, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sUse command %s/%s %sor key %s[%s] %sfor the menu.", cMain, cWhite, cMain, iniData.settings.cmd, cWhite, cMain, activeKeysStr, cWhite), -1)
         sampAddChatMessage(string.format("%s>> %sDiscord Support: %sallecsei %s| Inspired by %sTupi & Madalin", cMain, cWhite, cMain, cWhite, cWhite), -1)        
     end
@@ -15148,7 +16065,7 @@ end
         if not sampIsChatInputActive() and not sampIsDialogActive() then
             local k2 = iniData.settings.key2
 
-            if k2 > 0 and isKeyJustPressed(k2) then
+            if k2 > 0 and not HH_FA.binding and (os.clock() - (HH_FA.bindTime or 0)) > 0.3 and isKeyJustPressed(k2) then
                 WinState[0] = not WinState[0]
             end
         end
