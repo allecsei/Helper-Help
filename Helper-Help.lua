@@ -619,6 +619,7 @@ local iniData = inicfg.load({
         pos_y = 28,
         locked = true,
         overlay_enabled = true,
+        chat_message = true,
     }
 }, directIni)
 
@@ -645,6 +646,7 @@ local helperPointsScoreBuf = imgui.new.float(helperPointsIni.main.score)
 local helperPointsGoalBuf = imgui.new.float(helperPointsIni.main.goal)
 local helperPointsLockedBuf = imgui.new.bool(helperPointsIni.main.locked)
 local helperPointsOverlayBuf = imgui.new.bool(helperPointsIni.main.overlay_enabled ~= false)
+local helperPointsChatMsgBuf = imgui.new.bool(helperPointsIni.main.chat_message ~= false)
 
 local function helperPointsSave()
     inicfg.save(iniData, directIni)
@@ -686,9 +688,11 @@ local function helperPointsAdd(amount, colorHex)
     local pointsLabel = iniData.settings.lang == 0
                       and (isSingular and 'punct' or 'puncte')
                       or (isSingular and 'point' or 'points')
-    sampAddChatMessage(('[HelperPoints] {FFFFFF}+%s %s {%s}(total: %s)'):format(
-        helperPointsFormat(amount), pointsLabel, colorHex, helperPointsFormat(helperPointsIni.main.score)
-    ), -1)
+    if helperPointsIni.main.chat_message ~= false then
+        sampAddChatMessage(('[HelperPoints] {FFFFFF}+%s %s {%s}(total: %s)'):format(
+            helperPointsFormat(amount), pointsLabel, colorHex, helperPointsFormat(helperPointsIni.main.score)
+        ), -1)
+    end
 end
 
 local function helperPointsHandleMessage(text)
@@ -1458,108 +1462,256 @@ local function renderFishermanDetails()
     imgui.Separator()
   end
 
+-- ===== SHOP: VIP ACCOUNT (folosit in tabul Shop si in cautarea globala) =====
+function imgui.shopVipDetails(globalMode)
+    local ro = (iniData.settings.lang == 0)
+    local sfx = globalMode and "_g" or ""
+
+    if globalMode then
+        local w = imgui.GetWindowWidth() - 40
+        imgui.SetWindowFontScale(1.5)
+        local title = ro and "C O N T   V I P" or "V I P   A C C O U N T"
+        imgui.SetCursorPosX((w - imgui.CalcTextSize(title).x) / 2)
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), title)
+        imgui.SetWindowFontScale(1.0)
+    else
+        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), ro and "--- CONT VIP ---" or "--- VIP ACCOUNT ---")
+    end
+    imgui.Separator()
+    imgui.Spacing()
+
+    imgui.BeginChild("VipIntro" .. sfx, imgui.ImVec2(0, 105), true)
+        imgui.TextWrapped(ro and u8("Pentru jucatorii care isi doresc beneficii suplimentare pe langa cele oferite de contul premium, exista inca un stagiu: Cont VIP. Se achizitioneaza exclusiv cu Gold, din magazinul virtual din joc, folosind comanda /shop. La achizitie, functiile specifice contului premium iti sunt puse automat la dispozitie.")
+            or "For players who want extra perks on top of the premium account, there is one more tier: VIP Account. It is bought exclusively with Gold from the in-game virtual shop, using the /shop command. When you buy it, the premium account features are made available to you automatically.")
+    imgui.EndChild()
+
+    imgui.Spacing()
+    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), ro and "PACHETE DISPONIBILE:" or "AVAILABLE PACKAGES:")
+
+    imgui.BeginChild("VipPackages" .. sfx, imgui.ImVec2(0, 215), true)
+        imgui.Text(ro and u8("1 Saptamana: 200 Gold\n1 Luna: 750 Gold\n3 Luni: 2000 Gold\n6 Luni: 3750 Gold\n1 An: 7000 Gold")
+            or "1 Week: 200 Gold\n1 Month: 750 Gold\n3 Months: 2000 Gold\n6 Months: 3750 Gold\n1 Year: 7000 Gold")
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+        imgui.TextWrapped(ro and u8("Pachetele se pot combina pentru a mari durata. Exemplu: primele doua pachete costa 950 Gold si iti dau cont VIP pe o luna si o saptamana (37 de zile).")
+            or "Packages can be combined to extend the duration. Example: the first two packages cost 950 Gold and give you VIP for one month and one week (37 days).")
+        imgui.Spacing()
+        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), ro and u8("Nota: Preturile sunt cele standard; in joc pot fi mai mici in perioadele de reduceri.")
+            or "Note: Prices are the standard ones; in-game they can be lower during discount periods.")
+    imgui.EndChild()
+
+    imgui.Spacing()
+    imgui.TextColored(imgui.ImVec4(0.2, 1, 0.2, 1), ro and "BENEFICII (lista completa in joc: /vipaccount):" or "BENEFITS (full list in-game: /vipaccount):")
+
+    imgui.BeginChild("VipBenefits" .. sfx, imgui.ImVec2(0, globalMode and 420 or 0), true)
+        local benefits = ro and {
+            "Rata dobanzii bancare creste la 0.06.",
+            "Pragurile pentru dobanda bancara cresc la 15.000.000$ sau bunuri evaluate la cel putin 7.500.000$.",
+            "Primesti cu 50%% mai multi bani la payday.",
+            "Castigi cu 100%% mai multi bani din joburi si activitati de factiune.",
+            "La fiecare 2 ore jucate: 1 punct de Respect, 1 de Jaf, 1 de Evadare, 1 de Accept si -1 FP.",
+            "Punctele de Respect in exces se pastreaza pentru nivelul urmator la /buylevel.",
+            "Poti cumpara/vinde vehicule Premium de la Dealership sau de la alti jucatori.",
+            "Limite puncte: Jaf 50, Evadare 100, Accept 500.",
+            "Poti folosi /mp3 pentru a asculta muzica in afara vehiculelor.",
+            "Poti alimenta vehiculele cu pana la 200%% combustibil.",
+            "Poti incepe curse cu /race cu o miza de pana la 5.000$.",
+            "Poti adauga pana la 200 de prieteni pe /friends.",
+            "Ai acces la chatul /vip.",
+            "Nivelul de wanted scade la fiecare 13 minute in loc de 15, inainte de bonusurile skinului.",
+            "Poti activa/dezactiva numele colorat in chat.",
+            "Poti avea pana la 10 vehicule personale spawnate simultan.",
+            "Primesti 80%% din pretul inregistrat al vehiculului cand vinzi vehicule personale sau de clan inapoi la Dealership (cele cu pret inregistrat 0$ se vand tot pentru 0$).",
+            "Profilul de pe website afiseaza un skin animat, care executa o animatie din joc."
+        } or {
+            "Bank interest rate increases to 0.06.",
+            "Bank interest thresholds increase to $15,000,000 or assets valued at at least $7,500,000.",
+            "You receive 50%% more money at payday.",
+            "You earn 100%% more money from jobs and faction activities.",
+            "Every 2 hours played: 1 Respect point, 1 Rob point, 1 Escape point, 1 Accept point and -1 FP.",
+            "Excess Respect points are kept for the next level at /buylevel.",
+            "You can buy/sell Premium vehicles from the Dealership or from other players.",
+            "Point limits: Rob 50, Escape 100, Accept 500.",
+            "You can use /mp3 to listen to music outside of vehicles.",
+            "You can refuel vehicles up to 200%% fuel.",
+            "You can start races with /race with a stake of up to $5,000.",
+            "You can add up to 200 friends on /friends.",
+            "You have access to the /vip chat.",
+            "Your wanted level drops every 13 minutes instead of 15, before skin bonuses.",
+            "You can enable/disable the colored name in chat.",
+            "You can have up to 10 personal vehicles spawned at the same time.",
+            "You receive 80%% of the registered price of the vehicle when you sell personal or clan vehicles back to the Dealership (vehicles with a registered price of $0 still sell for $0).",
+            "Your character profile on the website shows an animated skin that plays an in-game animation."
+        }
+        for _, b in ipairs(benefits) do
+            imgui.Bullet()
+            imgui.TextWrapped(ro and u8(b) or b)
+        end
+
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+        imgui.TextColored(imgui.ImVec4(0.4, 0.8, 1, 1), ro and "REGULAMENTUL CHATULUI VIP (/vip):" or "VIP CHAT RULES (/vip):")
+        imgui.Bullet()
+        imgui.TextWrapped(ro and u8("Chatul /vip poate fi vazut de toti membrii VIP de pe server si este considerat chat global.")
+            or "The /vip chat can be seen by all VIP members on the server and is considered a global chat.")
+        imgui.Bullet()
+        imgui.TextWrapped(ro and u8("Pe langa regulile generale ale chaturilor globale se aplica si reguli mai stricte, pentru o atmosfera placuta intre membrii VIP.")
+            or "On top of the general global chat rules, stricter rules apply to keep a pleasant atmosphere among VIP members.")
+        imgui.Bullet()
+        imgui.TextWrapped(ro and u8("Regulament complet: rules.b-zone.ro (sectiunea Chatul VIP).")
+            or "Full rules: rules.b-zone.ro (VIP Chat section).")
+
+        imgui.Spacing()
+        imgui.Separator()
+        imgui.Spacing()
+        imgui.TextColored(imgui.ImVec4(1, 0.6, 0.2, 1), ro and "PERSONALIZAREA PROFILULUI DE WEBSITE:" or "WEBSITE PROFILE CUSTOMIZATION:")
+        imgui.Bullet()
+        imgui.TextWrapped(ro and u8("Contul VIP iti permite sa configurezi afisarea skinului pe profilul de website: animatie, lumina, particule, rama, culoare nume.")
+            or "VIP lets you configure how your skin is displayed on your website profile: animation, light, particles, frame, name color.")
+        imgui.Bullet()
+        imgui.TextWrapped(ro and u8("Meniul se deschide de pe website, din My Account, cu butonul VIP Account preferences (o coroana).")
+            or "The menu is opened from the website, in My Account, with the VIP Account preferences button (a crown).")
+        imgui.Bullet()
+        imgui.TextWrapped(ro and u8("De retinut: nu toate skin-urile au animatie 3D (de exemplu skin CJ). Daca animatia nu merge, schimba skinul in joc si reincearca.")
+            or "Keep in mind: not all skins have a 3D animation (for example the CJ skin). If the animation doesn't work, change your skin in-game and try again.")
+    imgui.EndChild()
+end
+
 local function renderTruckerDetails()
+    local ro = (iniData.settings.lang == 0)
     imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.jobPre(7) .. "T R U C K E R") 
     imgui.Separator()
     
-    imgui.BeginChild("TruckerBase", imgui.ImVec2(0, 95), true)  
-        if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("info") .. "GENERAL:")
-            imgui.Separator()
-            imgui.Spacing()
-            imgui.Bullet() 
-            imgui.TextWrapped("Nivel: 1+ (Job Legal)  |  Sloturi Muncitori: 50  |  Timp Misiune: 15 minute")
-            imgui.Spacing()
-            imgui.Bullet() 
-            imgui.TextWrapped("Comanda Lucru: /work  |  Comanda Decuplare: /detach  |  Recuplare: 20 secunde")
-        else
-            imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("info") .. "GENERAL:")
-            imgui.Separator()
-            imgui.Spacing()
-            imgui.Bullet() 
-            imgui.TextWrapped("Level: 1+ (Legal Job)  |  Worker Slots: 50  |  Mission Time: 15 minutes")
-            imgui.Spacing()
-            imgui.Bullet() 
-            imgui.TextWrapped("Work Command: /work  |  Detach Command: /detach  |  Reattach: 20 seconds")
-        end
+    -- GENERAL
+    imgui.BeginChild("TruckerBase", imgui.ImVec2(0, 200), true)  
+        imgui.TextColored(imgui.ImVec4(0, 1, 1, 1), imgui.pre("info") .. "GENERAL:")
+        imgui.Separator()
+        imgui.Spacing()
+        imgui.Bullet() 
+        imgui.TextWrapped(ro and "Nivel: 1+ (Job Legal)  |  Maxim 50 jucatori simultan  |  Timp Misiune: 15 minute (de la un capat la altul al traseului, altfel pierzi misiunea)"
+            or "Level: 1+ (Legal Job)  |  Max 50 players working at once  |  Mission Time: 15 minutes (to get from one end of the route to the other, otherwise the mission is lost)")
+        imgui.Bullet() 
+        imgui.TextWrapped(ro and "/work: primesti camionul si remorca  |  /detach: decupleaza remorca curenta (merge si cu TIR si remorca personale)"
+            or "/work: you get the truck and trailer  |  /detach: detaches the current trailer (works with personal trucks and trailers too)")
+        imgui.Bullet() 
+        imgui.TextWrapped(ro and "Camionul este incuiat pe durata muncii si nu consuma combustibil."
+            or "The truck is locked while you work and does not use fuel.")
+        imgui.Bullet() 
+        imgui.TextWrapped(ro and "Daca parasesti vehiculul, ai 20 de secunde sa te intorci in el, altfel pierzi cursa."
+            or "If you leave the vehicle, you have 20 seconds to get back in, otherwise you lose the run.")
+        imgui.Bullet() 
+        imgui.TextWrapped(ro and "In partea dreapta-jos apare un chenar cu informatii despre job."
+            or "A box with job information is shown in the bottom right.")
     imgui.EndChild()
     imgui.Spacing()
     
-    if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("box") .. "TIPURI DE INCARCATURI:")
-    else
-        imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("box") .. "CARGO TYPES:")
-    end
+    -- TIPURI DE TRANSPORT
+    imgui.TextColored(imgui.ImVec4(1, 0.8, 0, 1), imgui.pre("box") .. (ro and "TIPURI DE TRANSPORT (4):" or "TRANSPORT TYPES (4):"))
 
-    imgui.BeginChild("CargoTypes", imgui.ImVec2(0, 120), true)  
+    imgui.BeginChild("CargoTypes", imgui.ImVec2(0, 150), true)  
         imgui.Columns(2, "cargoCols", false)
-        if iniData.settings.lang == 0 then
+        if ro then
             imgui.TextColored(imgui.ImVec4(0.1, 0.8, 0.1, 1), "[SKILL 1] Comercial")
-            imgui.TextWrapped("- Sansa 15: +1 Extra Skill Point.")
+            imgui.TextWrapped("- 15%% sansa: +1 Extra Skill Point (pe cursa dus-intors).")
             imgui.Spacing()
-            imgui.TextColored(imgui.ImVec4(0.9, 0.5, 0.1, 1), "[SKILL 4] Constructii")
-            imgui.TextWrapped("- Garantat: 20-40 Lemn/Bumbac/Aur sau 40-60 Argint.")
+            imgui.TextColored(imgui.ImVec4(0.9, 0.5, 0.1, 1), "[SKILL 4] Materiale de Constructii")
+            imgui.TextWrapped("- Garantat: 20-40 Lemn/Bumbac/Aur sau 40-60 Argint pentru mester. Limita 999 materiale.")
             imgui.NextColumn()
             imgui.TextColored(imgui.ImVec4(0.1, 0.6, 0.9, 1), "[SKILL 7] Fuel")
-            imgui.TextWrapped("- Sansa 25: +30 Cash pe cursa.")
+            imgui.TextWrapped("- 25%% sansa: +30%% bani pe cursa respectiva.")
             imgui.Spacing()
             imgui.TextColored(imgui.ImVec4(0.8, 0.2, 0.8, 1), "[SKILL 9] Marfa")
-            imgui.TextWrapped("- Sansa 5: Cutie aleatorie (Crate).")       
+            imgui.TextWrapped("- 5%% sansa: o cutie aleatorie (Crate).")       
         else
             imgui.TextColored(imgui.ImVec4(0.1, 0.8, 0.1, 1), "[SKILL 1] Commercial")
-            imgui.TextWrapped("- 15 Chance: +1 Extra Skill Point.")
+            imgui.TextWrapped("- 15%% chance: +1 Extra Skill Point (per round trip).")
             imgui.Spacing()
-            imgui.TextColored(imgui.ImVec4(0.9, 0.5, 0.1, 1), "[SKILL 4] Construction")
-            imgui.TextWrapped("- Guaranteed: 20-40 Wood/Cotton/Gold or 40-60 Silver.")
+            imgui.TextColored(imgui.ImVec4(0.9, 0.5, 0.1, 1), "[SKILL 4] Construction Materials")
+            imgui.TextWrapped("- Guaranteed: 20-40 Wood/Cotton/Gold or 40-60 Silver for the craftsman. Cap is 999 materials.")
             imgui.NextColumn()
             imgui.TextColored(imgui.ImVec4(0.1, 0.6, 0.9, 1), "[SKILL 7] Fuel")
-            imgui.TextWrapped("- 25 Chance: +30 Cash per run.")
+            imgui.TextWrapped("- 25%% chance: +30%% money for that run.")
             imgui.Spacing()
             imgui.TextColored(imgui.ImVec4(0.8, 0.2, 0.8, 1), "[SKILL 9] Cargo")
-            imgui.TextWrapped("- 5 Chance: Random box (Crate).")       
+            imgui.TextWrapped("- 5%% chance: a random box (Crate).")       
         end
         imgui.Columns(1)
     imgui.EndChild()
     imgui.Spacing()
-    
-    if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("list") .. "ANALIZA RUTE (S1 - S10):")
-    else
-        imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("list") .. "ROUTE ANALYSIS (S1 - S10):")
-    end
 
-    imgui.BeginChild("RoutesList", imgui.ImVec2(0, 150), true)  
-        imgui.Columns(3, "routeCols", false)
-        if iniData.settings.lang == 0 then
-            imgui.Text("Destinatie") imgui.NextColumn()
-            imgui.Text("Dist.") imgui.NextColumn()
-            imgui.Text("Plata (S1-10)") imgui.NextColumn()
-        else
-            imgui.Text("Destination") imgui.NextColumn()
-            imgui.Text("Dist.") imgui.NextColumn()
-            imgui.Text("Payout (S1-10)") imgui.NextColumn()
-        end
+    -- REMORCA SI PARCARE
+    imgui.TextColored(imgui.ImVec4(1, 0.6, 0.2, 1), imgui.pre("truck") .. (ro and "REMORCA SI PARCARE:" or "TRAILER AND PARKING:"))
+
+    imgui.BeginChild("TruckerTrailer", imgui.ImVec2(0, 290), true)  
+        imgui.Bullet() 
+        imgui.TextWrapped(ro and "Remorca se ataseaza manual: manevreaza TIR-ul pana intri in cupla ei (se autocupleaza). Este marcata cu o sageata galbena pe harta si deasupra ei; daca esti departe, pe harta apare un punct rosu in loc de cel galben."
+            or "The trailer is attached manually: drive the truck into its hitch (it couples automatically). It is marked with a yellow arrow on the map and above it; if you are far away, a red dot is shown on the map instead of the yellow one.")
+        imgui.Bullet() 
+        imgui.TextWrapped(ro and "Daca un TIR (personal sau de job) incearca sa cupleze remorca altui jucator, este inghetat 4 secunde si mutat la o distanta sigura de remorca."
+            or "If any truck (personal or job) tries to hook another player's trailer, it is frozen for 4 seconds and moved to a safe distance from the trailer.")
+        imgui.Bullet() 
+        imgui.TextWrapped(ro and "Livrare: punct rosu pe harta + zona portocalie = parcarea (zona fara coliziuni). La intrarea in zona alegi parcare automata sau manuala."
+            or "Delivery: red point on the map + orange zone = the parking area (no collisions). When you enter the zone you choose automatic or manual parking.")
+        imgui.Spacing()
+        imgui.TextColored(imgui.ImVec4(0.7, 0.7, 0.7, 1), ro and "Parcare automata:" or "Automatic parking:")
+        imgui.Bullet() 
+        imgui.TextWrapped(ro and "Parcheaza remorca automat, fara niciun bonus."
+            or "Parks the trailer automatically, with no bonus.")
+        imgui.Spacing()
+        imgui.TextColored(imgui.ImVec4(0.2, 1, 0.2, 1), ro and "Parcare manuala:" or "Manual parking:")
+        imgui.Bullet() 
+        imgui.TextWrapped(ro and "Primesti un loc liber aleatoriu in parcare; trebuie sa intri cu spatele. Cand remorca e in pozitia buna, foloseste /detach."
+            or "You get a random free spot in the parking lot; you must reverse in. When the trailer is in the right position, use /detach.")
+        imgui.Bullet() 
+        imgui.TextWrapped(ro and "Bonus: +1 Extra Skill Point daca ai sub skill 10, altfel se converteste in +20%% bani la finalul cursei."
+            or "Bonus: +1 Extra Skill Point if you are under skill 10, otherwise it is converted into +20%% money at the end of the run.")
+        imgui.Bullet() 
+        imgui.TextWrapped(ro and "Daca toate locurile sunt ocupate, se alege automat parcarea automata. Bonusurile nu se aplica in timpul tutorialului."
+            or "If all spots are taken, automatic parking is selected. These bonuses do not apply during the tutorial.")
+    imgui.EndChild()
+    imgui.Spacing()
+    
+    -- RUTE
+    imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("list") .. (ro and "RUTE (9) - PLATA S1 -> S10:" or "ROUTES (9) - PAYOUT S1 -> S10:"))
+
+    imgui.BeginChild("RoutesList", imgui.ImVec2(0, 245), true)  
+        imgui.Columns(4, "routeCols", false)
+        imgui.Text(ro and "Destinatie" or "Destination") imgui.NextColumn()
+        imgui.Text(ro and "Dist." or "Dist.") imgui.NextColumn()
+        imgui.Text(ro and "Parcari" or "Spots") imgui.NextColumn()
+        imgui.Text(ro and "Plata (S1-10)" or "Payout (S1-10)") imgui.NextColumn()
         imgui.Separator()
         
         local routes = {
-            {"Ocean Docks (LS)", "10.3 KM", "$1134 - $1866"},
-            {"Bayside (SF)", "10.6 KM", "$1237 - $1761"},
-            {"Rockshore (LV)", "9.8 KM", "$868 - $1096"},
-            {"Creek (LV)", "12.4 KM", "$1062 - $1621"},
-            {"Whetstone (SF)", "10.3 KM", "$1036 - $1516"}
+            {"Ocean Docks (LS)", "10.3 KM", "9", "$1,134 - $1,866"},
+            {"Bayside Marina (SF)", "10.6 KM", "8", "$1,237 - $1,761"},
+            {"Whetstone (SF)", "10.3 KM", "5", "$1,036 - $1,516"},
+            {"Santa Flora (SF)", "8.6 KM", "7", "$1,062 - $1,621"},
+            {"Rockshore East (LV)", "9.8 KM", "3", "$868 - $1,096"},
+            {"Creek (LV)", "12.4 KM", "8", "$1,062 - $1,621"},
+            {"Prickle Pine (LV)", "9.7 KM", "11", "$1,062 - $1,621"},
+            {"LVA Freight Depot (LV)", "5.6 KM", "9", "$1,062 - $1,621"},
+            {"Whitewood Estates (LV)", "7.2 KM", "6", "$1,062 - $1,621"}
         }
         for _, r in ipairs(routes) do
             imgui.Text(r[1]) imgui.NextColumn()
             imgui.Text(r[2]) imgui.NextColumn()
             imgui.Text(r[3]) imgui.NextColumn()
+            imgui.Text(r[4]) imgui.NextColumn()
         end
         imgui.Columns(1)
+        imgui.Separator()
+        imgui.TextWrapped(ro and "Plata este aproximativa si nu include bonusul de cont premium (+50%% din plata de baza) sau alte bonusuri active pe cont."
+            or "Payout is approximate and does not include the premium account bonus (+50%% of the base pay) or other active bonuses on your account.")
     imgui.EndChild()
     imgui.Spacing()
     
-    imgui.BeginChild("TruckerProg", imgui.ImVec2(0, 155), true)  
-        if iniData.settings.lang == 0 then
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "CURSE NECESARE PENTRU SKILL:")
+    -- PROGRES SKILL
+    imgui.BeginChild("TruckerProg", imgui.ImVec2(0, 170), true)  
+        if ro then
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "CURSE NECESARE PENTRU SKILL (o cursa = dus-intors):")
             imgui.Separator()
             imgui.Spacing()      
             imgui.Columns(2, "progCols", false) 
@@ -1575,7 +1727,7 @@ local function renderTruckerDetails()
             imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), "Skill 9 -> 10:") imgui.SameLine() imgui.Text("350 curse")
             imgui.TextColored(imgui.ImVec4(1, 1, 1, 1), "Total Skill 10: 1.900 Curse")  
         else
-            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "RUNS REQUIRED FOR SKILL UPGRADE:")
+            imgui.TextColored(imgui.ImVec4(0, 1, 0.95, 1), imgui.pre("star") .. "RUNS REQUIRED FOR SKILL UPGRADE (one run = round trip):")
             imgui.Separator()
             imgui.Spacing()      
             imgui.Columns(2, "progCols", false) 
@@ -1595,44 +1747,28 @@ local function renderTruckerDetails()
     imgui.EndChild()
     imgui.Spacing()
     
-    if iniData.settings.lang == 0 then
-        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), imgui.pre("car") .. "VEHICULE:")
-    else
-        imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), imgui.pre("car") .. "VEHICLES:")
-    end
+    -- VEHICULE
+    imgui.TextColored(imgui.ImVec4(1, 1, 0, 1), imgui.pre("car") .. (ro and "VEHICULE (in functie de skill):" or "VEHICLES (by skill):"))
 
-    imgui.BeginChild("TruckerFleet", imgui.ImVec2(0, 100), true)  
+    imgui.BeginChild("TruckerFleet", imgui.ImVec2(0, 135), true)  
         imgui.Columns(3, "fleetCols", false)
-        if iniData.settings.lang == 0 then
-            imgui.Text("Camion") imgui.NextColumn()
-            imgui.Text("Viteza") imgui.NextColumn()
-            imgui.Text("Model Real") imgui.NextColumn()
-            imgui.Separator()
-            imgui.Text("Linerunner (Skill 1)") imgui.NextColumn()
-            imgui.Text("110 KM/h") imgui.NextColumn()
-            imgui.Text("Kenworth W900L") imgui.NextColumn()
-            imgui.Text("Tanker (Skill 3)") imgui.NextColumn()
-            imgui.Text("120 KM/h") imgui.NextColumn()
-            imgui.Text("Int. Paystar") imgui.NextColumn()
-            imgui.Text("Roadtrain (Skill 5)") imgui.NextColumn()
-            imgui.Text("142 KM/h") imgui.NextColumn()
-            imgui.Text("4964 Heritage")
-        else
-            imgui.Text("Truck") imgui.NextColumn()
-            imgui.Text("Speed") imgui.NextColumn()
-            imgui.Text("Real Model") imgui.NextColumn()
-            imgui.Separator()
-            imgui.Text("Linerunner (Skill 1)") imgui.NextColumn()
-            imgui.Text("110 KM/h") imgui.NextColumn()
-            imgui.Text("Kenworth W900L") imgui.NextColumn()
-            imgui.Text("Tanker (Skill 3)") imgui.NextColumn()
-            imgui.Text("120 KM/h") imgui.NextColumn()
-            imgui.Text("Int. Paystar") imgui.NextColumn()
-            imgui.Text("Roadtrain (Skill 5)") imgui.NextColumn()
-            imgui.Text("142 KM/h") imgui.NextColumn()
-            imgui.Text("4964 Heritage")
-        end
+        imgui.Text(ro and "Camion" or "Truck") imgui.NextColumn()
+        imgui.Text(ro and "Viteza" or "Speed") imgui.NextColumn()
+        imgui.Text(ro and "Model Real" or "Real Model") imgui.NextColumn()
+        imgui.Separator()
+        imgui.Text("Linerunner (Skill 1-2)") imgui.NextColumn()
+        imgui.Text("110 KM/h") imgui.NextColumn()
+        imgui.Text("Kenworth W900L") imgui.NextColumn()
+        imgui.Text("Tanker (Skill 3-4)") imgui.NextColumn()
+        imgui.Text("120 KM/h") imgui.NextColumn()
+        imgui.Text("Int. Paystar") imgui.NextColumn()
+        imgui.Text("Roadtrain (Skill 5-10)") imgui.NextColumn()
+        imgui.Text("142 KM/h") imgui.NextColumn()
+        imgui.Text("4964 Heritage") imgui.NextColumn()
         imgui.Columns(1)
+        imgui.Separator()
+        imgui.TextWrapped(ro and "Toate au 2 locuri si sunt tunabile la TransFender. Vitezele sunt aceleasi cu sau fara remorca."
+            or "All have 2 seats and can be tuned at TransFender. Speeds are the same with or without a trailer.")
     imgui.EndChild()
 end
 
@@ -5116,6 +5252,10 @@ local function renderThemeSettings()
     end
     if imgui.Checkbox(iniData.settings.lang == 0 and 'Activeaza overlay-ul##helperpoints_enabled' or 'Enable overlay##helperpoints_enabled', helperPointsOverlayBuf) then
         helperPointsIni.main.overlay_enabled = helperPointsOverlayBuf[0]
+        helperPointsSave()
+    end
+    if imgui.Checkbox(iniData.settings.lang == 0 and 'Mesaj in chat (+puncte)##helperpoints_chatmsg' or 'Chat message (+points)##helperpoints_chatmsg', helperPointsChatMsgBuf) then
+        helperPointsIni.main.chat_message = helperPointsChatMsgBuf[0]
         helperPointsSave()
     end
     if imgui.Button(imgui.pre('undo') .. (iniData.settings.lang == 0 and 'Reseteaza punctele##helperpoints_reset' or 'Reset points##helperpoints_reset'), imgui.ImVec2(185, 26)) then
@@ -9647,6 +9787,7 @@ end, function(player)
 
     local shopData = {
         {name = "Cont Premium", nameEN = "Premium Account", keywords = "premium vip gold beneficii cont salariu payday dobanda banca job hours", id_real = 1},
+        {name = "Cont VIP", nameEN = "VIP Account", keywords = "vip cont gold beneficii chat /vip vipaccount dobanda payday profil website skin animat coroana preturi pachete", id_real = 27},
         {name = "Vouchere", nameEN = "Vouchers", keywords = "vouchere voucher plata staff trade expirare", id_real = 2},
         {name = "Cumpara Gold", nameEN = "Buy Gold", keywords = "gold cumpara moneda premium website rpg", id_real = 3},
         {name = "Vehicule Gold", nameEN = "Gold Vehicles", keywords = "vehicule gold masini motor elicoptere infernus bullet turismo dealership", id_real = 4},
@@ -10894,6 +11035,9 @@ end, function(player)
                         imgui.TextColored(imgui.ImVec4(0.2, 1, 0.2, 1), "/wt")
                         imgui.TextWrapped((iniData.settings.lang == 0) and u8("Comanda pentru a vorbi (necesita Walkie-Talkie din 24/7).") or "Command to speak (requires Walkie-Talkie from 24/7).")
                     imgui.EndChild()    
+
+                    elseif sh.id == 27 then -- VIP ACCOUNT
+                    imgui.shopVipDetails(true)
                 end
                     
                     imgui.TreePop()
@@ -14492,14 +14636,17 @@ end, function(player)
                         "House Interiors", "House Garage", "Clans", "Clan Name & Tag", 
                         "Clan Color", "Clan HQ Claim", "Clan HQ Interior", "Clear Faction Punish", 
                         "Change Nickname", "Clear Warn", "Change Sex", "Safebox", 
-                        "Marathon", "Private Frequency"
+                        "Marathon", "Private Frequency", "VIP Account"
                     }
+                    -- ordinea afisata (VIP Account vine dupa Premium Account); id-urile interne raman neschimbate
+                    local shop_order = {1, 27, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26}
                     
                     local themeButton = imgui.GetStyle().Colors[imgui.Col.Button]
                     local themeHovered = imgui.GetStyle().Colors[imgui.Col.ButtonHovered]
                     local themeActive = imgui.GetStyle().Colors[imgui.Col.ButtonActive]
 
-                    for idx, name in ipairs(shop_items) do
+                    for _, idx in ipairs(shop_order) do
+                        local name = shop_items[idx]
                         local isSelected = (selected_shop == idx)
                         
                         if isSelected then
@@ -15588,6 +15735,9 @@ end, function(player)
                     imgui.TextWrapped(isRO and u8("Comanda pentru a vorbi (necesita Walkie-Talkie din 24/7).") or "Command to speak (requires Walkie-Talkie from 24/7).")
                 imgui.EndChild()
 
+                elseif selected_shop == 27 then -- VIP ACCOUNT
+                    imgui.shopVipDetails(false)
+
                 else
                     imgui.Text(isRO and u8("Selecteaza o categorie din stanga.") or "Select a category from the left.")
                 end
@@ -15737,6 +15887,17 @@ end
     -- [ INREGISTRARE COMANDA PRINCIPALA MIMGUI ] --
     sampRegisterChatCommand(iniData.settings.cmd, function()
         WinState[0] = not WinState[0]
+    end)
+
+    -- [ COMANDA /hpmsg - ACTIVEAZA / DEZACTIVEAZA MESAJUL HELPERPOINTS DIN CHAT ] --
+    sampRegisterChatCommand("hpmsg", function()
+        local enabled = not (helperPointsIni.main.chat_message ~= false)
+        helperPointsIni.main.chat_message = enabled
+        helperPointsChatMsgBuf[0] = enabled
+        helperPointsSave()
+        local isRO = (iniData.settings.lang == 0)
+        local state = enabled and (isRO and "{00FF00}ACTIVAT" or "{00FF00}ON") or (isRO and "{FF0000}DEZACTIVAT" or "{FF0000}OFF")
+        sampAddChatMessage(((isRO and "[HelperPoints] {FFFFFF}Mesajul din chat a fost " or "[HelperPoints] {FFFFFF}Chat message is now ") .. state), -1)
     end)
 
     -- [ INREGISTRARE COMENZI AUTOMATE VEHICULE ] --
