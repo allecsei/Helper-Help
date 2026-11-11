@@ -623,7 +623,6 @@ local iniData = inicfg.load({
     }
 }, directIni)
 
--- Migrare unica: daca exista vechiul HelperPoints.ini, preluam valorile in HelperHelp.ini si il stergem
 do
     local oldPoints = inicfg.load(nil, 'HelperPoints')
     if oldPoints and oldPoints.main then
