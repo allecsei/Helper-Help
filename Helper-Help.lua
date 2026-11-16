@@ -610,7 +610,9 @@ local iniData = inicfg.load({
         key2 = vkeys.VK_F3,
         hduty_x = 1650.0,
         hduty_y = 2.5,
-        lang = 0 -- 0 = Romana, 1 = Engleza  
+        lang = 0, -- 0 = Romana, 1 = Engleza  
+        greet_ro = "Salut!",
+        greet_en = "Hi!"
     },
     points = {
         score = 0.0,
@@ -636,6 +638,20 @@ do
     end
 end
 inicfg.save(iniData, directIni)
+
+-- [ SALUT PERSONALIZAT ] --
+-- Inceputul raspunsurilor (Salut! / Hi!) se poate seta din Setari si se salveaza in HelperHelp.ini
+if iniData.settings.greet_ro == nil then iniData.settings.greet_ro = "Salut!" end
+if iniData.settings.greet_en == nil then iniData.settings.greet_en = "Hi!" end
+-- isRO = true -> salutul in romana, false -> engleza
+-- ui = true -> text UTF-8 pentru ImGui; altfel convertit in CP1251 pentru chat
+function HH_FA.greet(isRO, ui)
+    local g = tostring(isRO and iniData.settings.greet_ro or iniData.settings.greet_en)
+    g = g:gsub("%%", "")              -- % ar strica string.format
+    if ui then return g end
+    local ok, res = pcall(function() return u8:decode(g) end)
+    return ok and res or g
+end
 
 -- [ HELPER POINTS ] --
 -- Punctele sunt salvate direct in HelperHelp.ini, sectiunea [points]
@@ -750,6 +766,8 @@ local slider_hduty_y = imgui.new.float(iniData.settings.hduty_y)
 
 -- Buffere mimgui specializate pentru bind-uri
 local cmd_buffer = imgui.new.char[64](iniData.settings.cmd)
+local greet_ro_buffer = imgui.new.char[64](tostring(iniData.settings.greet_ro))
+local greet_en_buffer = imgui.new.char[64](tostring(iniData.settings.greet_en))
 local combo_key2 = imgui.new.int(getKeyComboIndexById(iniData.settings.key2))
 
 -- [ BUTTON STYLE HELPERS ] --
@@ -5197,8 +5215,35 @@ local function renderThemeSettings()
     end
     imgui.PopItemWidth()
 
+    -- ----- SALUT PERSONALIZAT (inceputul raspunsurilor) -----
+    imgui.Spacing()
+    do
+        local isROg = iniData.settings.lang == 0
+        imgui.Text(isROg and "Inceputul raspunsurilor (salut):" or "Start of replies (greeting):")
+        imgui.PushItemWidth(150)
+        if imgui.InputText((isROg and "Salut Romana" or "Romanian greeting") .. "##greet_ro", greet_ro_buffer, 64) then
+            iniData.settings.greet_ro = ffi.string(greet_ro_buffer):gsub("%%", "")
+        end
+        if imgui.InputText((isROg and "Salut Engleza" or "English greeting") .. "##greet_en", greet_en_buffer, 64) then
+            iniData.settings.greet_en = ffi.string(greet_en_buffer):gsub("%%", "")
+        end
+        imgui.PopItemWidth()
+        if imgui.Button((isROg and "Reseteaza salut" or "Reset greeting") .. "##greet_reset", imgui.ImVec2(150, 22)) then
+            iniData.settings.greet_ro = "Salut!"
+            iniData.settings.greet_en = "Hi!"
+            ffi.copy(greet_ro_buffer, "Salut!")
+            ffi.copy(greet_en_buffer, "Hi!")
+            inicfg.save(iniData, directIni)
+        end
+        imgui.TextDisabled(isROg and "Se salveaza in HelperHelp.ini cand apesi Salveaza schimbarile."
+                                  or "Saved to HelperHelp.ini when you press Save changes.")
+    end
+
     imgui.Spacing()    
     if imgui.Button(imgui.pre("save") .. (iniData.settings.lang == 0 and "Salveaza schimbarile" or "Save changes"), imgui.ImVec2(200, 26)) then
+        iniData.settings.greet_ro = ffi.string(greet_ro_buffer):gsub("%%", "")
+        iniData.settings.greet_en = ffi.string(greet_en_buffer):gsub("%%", "")
+        inicfg.save(iniData, directIni)
         local targetCmd = ffi.string(cmd_buffer):gsub("%s+", "")
         
         if targetCmd ~= "" then
@@ -11114,7 +11159,7 @@ end, function(player)
                 DrawCmdCard("/anrp / .rp", "Respect Points (Payday)", "Respect Points (Payday)")
                 DrawCmdCard("/anmp / .mp", "Mission Points", "Mission Points")
                 DrawCmdCard("/angold / .gold", "Metode obtinere Gold", "Methods to get Gold")
-                DrawCmdCard("/cninfo / .info", "Salut! Nu detinem aceasta informatie", "Hello! We don't have this information")
+                DrawCmdCard("/cninfo / .info", "" .. HH_FA.greet(true, true) .. " Nu detinem aceasta informatie", "" .. HH_FA.greet(false, true) .. " We don't have this information")
             end
             imgui.Spacing()
 
@@ -15908,9 +15953,9 @@ end
         local isRO = (iniData.settings.lang == 0)
         local msg
         if isRO then
-            msg = string.format("{00ccff}Salut! {FFFFFF}Un vehicul de tip {00ccff}%s{FFFFFF} costa {33aa33}%s{FFFFFF} in Dealership si prinde {ff6347}%s{FFFFFF}.", data.Name, data.Price, data.Speed)
+            msg = string.format("{00ccff}" .. HH_FA.greet(true) .. " {FFFFFF}Un vehicul de tip {00ccff}%s{FFFFFF} costa {33aa33}%s{FFFFFF} in Dealership si prinde {ff6347}%s{FFFFFF}.", data.Name, data.Price, data.Speed)
         else
-            msg = string.format("{00ccff}Hi! {FFFFFF}A vehicle of {00ccff}%s{FFFFFF} costs {33aa33}%s{FFFFFF} in Dealership and reaches {ff6347}%s{FFFFFF}.", data.Name, data.Price, data.Speed)
+            msg = string.format("{00ccff}" .. HH_FA.greet(false) .. " {FFFFFF}A vehicle of {00ccff}%s{FFFFFF} costs {33aa33}%s{FFFFFF} in Dealership and reaches {ff6347}%s{FFFFFF}.", data.Name, data.Price, data.Speed)
         end
         sampAddChatMessage(msg, -1)
     end)
@@ -15920,9 +15965,9 @@ end
         local isRO = (iniData.settings.lang == 0)
         local msg
         if isRO then
-            msg = string.format("/an Salut! Un vehicul de tip %s costa %s in Dealership si prinde viteza maxima de %s.", data.Name, data.Price, data.Speed)
+            msg = string.format("/an " .. HH_FA.greet(true) .. " Un vehicul de tip %s costa %s in Dealership si prinde viteza maxima de %s.", data.Name, data.Price, data.Speed)
         else
-            msg = string.format("/an Hi! A vehicle of %s costs %s in Dealership and reaches a top speed of %s.", data.Name, data.Price, data.Speed)
+            msg = string.format("/an " .. HH_FA.greet(false) .. " A vehicle of %s costs %s in Dealership and reaches a top speed of %s.", data.Name, data.Price, data.Speed)
         end
         sampSendChat(msg)
     end)
@@ -15944,9 +15989,9 @@ for _, data in ipairs(cratesData) do
         local isRO = (iniData.settings.lang == 0)
         local msg
         if isRO then
-            msg = string.format("{FFFFFF}Salut! {00ff00}%s {FFFFFF}(%s / %s) contine: {00ff00}%s.", data.name, data.priceMP, data.priceGold, itemsString)
+            msg = string.format("{FFFFFF}" .. HH_FA.greet(true) .. " {00ff00}%s {FFFFFF}(%s / %s) contine: {00ff00}%s.", data.name, data.priceMP, data.priceGold, itemsString)
         else
-            msg = string.format("{FFFFFF}Hi! {00ff00}%s {FFFFFF}(%s / %s) contains: {00ff00}%s.", data.name, data.priceMP, data.priceGold, itemsString)
+            msg = string.format("{FFFFFF}" .. HH_FA.greet(false) .. " {00ff00}%s {FFFFFF}(%s / %s) contains: {00ff00}%s.", data.name, data.priceMP, data.priceGold, itemsString)
         end
         sampAddChatMessage(msg, -1)
     end)
@@ -15955,9 +16000,9 @@ for _, data in ipairs(cratesData) do
         local isRO = (iniData.settings.lang == 0)
         local msg
         if isRO then
-            msg = string.format("/an Salut! %s (%s / %s) contine: %s.", data.name, data.priceMP, data.priceGold, itemsString)
+            msg = string.format("/an " .. HH_FA.greet(true) .. " %s (%s / %s) contine: %s.", data.name, data.priceMP, data.priceGold, itemsString)
         else
-            msg = string.format("/an Hi! %s (%s / %s) contains: %s.", data.name, data.priceMP, data.priceGold, itemsString)
+            msg = string.format("/an " .. HH_FA.greet(false) .. " %s (%s / %s) contains: %s.", data.name, data.priceMP, data.priceGold, itemsString)
         end
         sampSendChat(msg)
     end)
@@ -15967,135 +16012,135 @@ end
    -- Pasnice
     sampRegisterChatCommand("anapplyp", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Poti aplica intr-o factiune pasnica intrand pe rpg.b-zone.ro daca ai minim nivel 7." 
-                        or "/an Hi! You can apply for a peaceful faction by visiting rpg.b-zone.ro if you are at least level 7."
+        local msg = isRO and "/an " .. HH_FA.greet(true) .. " Poti aplica intr-o factiune pasnica intrand pe rpg.b-zone.ro daca ai minim nivel 7." 
+                        or "/an " .. HH_FA.greet(false) .. " You can apply for a peaceful faction by visiting rpg.b-zone.ro if you are at least level 7."
         sampSendChat(msg)
     end)
 
     sampRegisterChatCommand(".applyp", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti aplica intr-o factiune pasnica intrand pe {09ff00}rpg.b-zone.ro {FFFFFF}daca ai minim {09ff00}nivel 7." 
-                        or "{09ff00}Hi! {FFFFFF}You can apply for a peaceful faction by visiting {09ff00}rpg.b-zone.ro {FFFFFF}if you are at least {09ff00}level 7."
+        local msg = isRO and "{09ff00}" .. HH_FA.greet(true) .. " {FFFFFF}Poti aplica intr-o factiune pasnica intrand pe {09ff00}rpg.b-zone.ro {FFFFFF}daca ai minim {09ff00}nivel 7." 
+                        or "{09ff00}" .. HH_FA.greet(false) .. " {FFFFFF}You can apply for a peaceful faction by visiting {09ff00}rpg.b-zone.ro {FFFFFF}if you are at least {09ff00}level 7."
         sampAddChatMessage(msg, -1)
     end)
 
     -- Mafii
     sampRegisterChatCommand("anapplym", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Poti aplica intr-o mafie intrand pe rpg.b-zone.ro daca ai minim nivel 25." 
-                        or "/an Hi! You can apply for a mafia by visiting rpg.b-zone.ro if you are at least level 25."
+        local msg = isRO and "/an " .. HH_FA.greet(true) .. " Poti aplica intr-o mafie intrand pe rpg.b-zone.ro daca ai minim nivel 25." 
+                        or "/an " .. HH_FA.greet(false) .. " You can apply for a mafia by visiting rpg.b-zone.ro if you are at least level 25."
         sampSendChat(msg)
     end)
 
     sampRegisterChatCommand(".applym", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti aplica intr-o mafie intrand pe {09ff00}rpg.b-zone.ro {FFFFFF}daca ai minim {09ff00}nivel 25." 
-                        or "{09ff00}Hi! {FFFFFF}You can apply for a mafia by visiting {09ff00}rpg.b-zone.ro {FFFFFF}if you are at least {09ff00}level 25."
+        local msg = isRO and "{09ff00}" .. HH_FA.greet(true) .. " {FFFFFF}Poti aplica intr-o mafie intrand pe {09ff00}rpg.b-zone.ro {FFFFFF}daca ai minim {09ff00}nivel 25." 
+                        or "{09ff00}" .. HH_FA.greet(false) .. " {FFFFFF}You can apply for a mafia by visiting {09ff00}rpg.b-zone.ro {FFFFFF}if you are at least {09ff00}level 25."
         sampAddChatMessage(msg, -1)
     end)
 
         -- Departament
     sampRegisterChatCommand("anapplypd", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Poti aplica intr-un departament intrand pe rpg.b-zone.ro daca ai minim nivel 15 si skill 5 detectiv." 
-                        or "/an Hi! You can apply for a department by visiting rpg.b-zone.ro if you are at least level 15 and have detective skill 5."
+        local msg = isRO and "/an " .. HH_FA.greet(true) .. " Poti aplica intr-un departament intrand pe rpg.b-zone.ro daca ai minim nivel 15 si skill 5 detectiv." 
+                        or "/an " .. HH_FA.greet(false) .. " You can apply for a department by visiting rpg.b-zone.ro if you are at least level 15 and have detective skill 5."
         sampSendChat(msg)
     end)
 
     sampRegisterChatCommand(".applyd", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti aplica intr-un departament intrand pe {09ff00}rpg.b-zone.ro {FFFFFF}daca ai minim {09ff00}nivel 15 si skill 5 detectiv." 
-                        or "{09ff00}Hi! {FFFFFF}You can apply for a department by visiting {09ff00}rpg.b-zone.ro {FFFFFF}if you are at least {09ff00}level 15 and detective skill 5."
+        local msg = isRO and "{09ff00}" .. HH_FA.greet(true) .. " {FFFFFF}Poti aplica intr-un departament intrand pe {09ff00}rpg.b-zone.ro {FFFFFF}daca ai minim {09ff00}nivel 15 si skill 5 detectiv." 
+                        or "{09ff00}" .. HH_FA.greet(false) .. " {FFFFFF}You can apply for a department by visiting {09ff00}rpg.b-zone.ro {FFFFFF}if you are at least {09ff00}level 15 and detective skill 5."
         sampAddChatMessage(msg, -1)
     end)
 
     -- Bani
     sampRegisterChatCommand("anbani", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Poti face bani lucrand la joburi, /tasks, /missions, Quest, Gift, /maraton, factiuni, /reward, Jocuri de Noroc, etc." 
-                        or "/an Hi! You can make money by working at jobs, /tasks, /missions, Quest, Gift, /marathon, factions, /reward, Gambling, etc."
+        local msg = isRO and "/an " .. HH_FA.greet(true) .. " Poti face bani lucrand la joburi, /tasks, /missions, Quest, Gift, /maraton, factiuni, /reward, Jocuri de Noroc, etc." 
+                        or "/an " .. HH_FA.greet(false) .. " You can make money by working at jobs, /tasks, /missions, Quest, Gift, /marathon, factions, /reward, Gambling, etc."
         sampSendChat(msg)
     end)
 
     sampRegisterChatCommand(".bani", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti face bani lucrand la {09ff00}joburi, /tasks, /missions, Quest, Gift, /maraton, factiuni, /reward, Jocuri de Noroc, etc." 
-                        or "{09ff00}Hi! {FFFFFF}You can make money working at {09ff00}jobs, /tasks, /missions, Quest, Gift, /marathon, factions, /reward, Gambling, etc."
+        local msg = isRO and "{09ff00}" .. HH_FA.greet(true) .. " {FFFFFF}Poti face bani lucrand la {09ff00}joburi, /tasks, /missions, Quest, Gift, /maraton, factiuni, /reward, Jocuri de Noroc, etc." 
+                        or "{09ff00}" .. HH_FA.greet(false) .. " {FFFFFF}You can make money working at {09ff00}jobs, /tasks, /missions, Quest, Gift, /marathon, factions, /reward, Gambling, etc."
         sampAddChatMessage(msg, -1)
     end)
 
     -- RP (Respect Points)
     sampRegisterChatCommand("anrp", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Primesti un punct de respect per payday (2 in intervalul 19-22), poti face taskurile sau deschide cutia portocalie." 
-                        or "/an Hi! You receive one respect point per payday (2 between 19-22), you can do tasks or open the orange crate."
+        local msg = isRO and "/an " .. HH_FA.greet(true) .. " Primesti un punct de respect per payday (2 in intervalul 19-22), poti face taskurile sau deschide cutia portocalie." 
+                        or "/an " .. HH_FA.greet(false) .. " You receive one respect point per payday (2 between 19-22), you can do tasks or open the orange crate."
         sampSendChat(msg)
     end)
 
     sampRegisterChatCommand(".rp", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Primesti un punct de respect per {09ff00}payday (2 in intervalul 19-22){FFFFFF}, poti face {09ff00}taskurile {FFFFFF}sau deschide {09ff00}cutia portocalie." 
-                        or "{09ff00}Hi! {FFFFFF}You receive one respect point per {09ff00}payday (2 between 19-22){FFFFFF}, you can do {09ff00}tasks {FFFFFF}or open the {09ff00}orange crate."
+        local msg = isRO and "{09ff00}" .. HH_FA.greet(true) .. " {FFFFFF}Primesti un punct de respect per {09ff00}payday (2 in intervalul 19-22){FFFFFF}, poti face {09ff00}taskurile {FFFFFF}sau deschide {09ff00}cutia portocalie." 
+                        or "{09ff00}" .. HH_FA.greet(false) .. " {FFFFFF}You receive one respect point per {09ff00}payday (2 between 19-22){FFFFFF}, you can do {09ff00}tasks {FFFFFF}or open the {09ff00}orange crate."
         sampAddChatMessage(msg, -1)
     end)
 
         -- Gold
     sampRegisterChatCommand("angold", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Poti obtine de pe rpg.b-zone.ro, Quest, Gift, Obiective, /buylevel, /bonus, /rewards, /goldaward si /achievements." 
-                        or "/an Hi! You can get Gold from rpg.b-zone.ro, Quests, Gift, Objectives, /buylevel, /bonus, /rewards, /goldaward, and /achievements."
+        local msg = isRO and "/an " .. HH_FA.greet(true) .. " Poti obtine de pe rpg.b-zone.ro, Quest, Gift, Obiective, /buylevel, /bonus, /rewards, /goldaward si /achievements." 
+                        or "/an " .. HH_FA.greet(false) .. " You can get Gold from rpg.b-zone.ro, Quests, Gift, Objectives, /buylevel, /bonus, /rewards, /goldaward, and /achievements."
         sampSendChat(msg)
     end)
 
     sampRegisterChatCommand(".gold", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti obtine de pe {09ff00}rpg.b-zone.ro, {FFFFFF}Quest, Gift, Obiective, {09ff00}/buylevel, /bonus, /rewards, /goldaward si /achievements." 
-                        or "{09ff00}Hi! {FFFFFF}You can get Gold from {09ff00}rpg.b-zone.ro, {FFFFFF}Quests, Gift, Objectives, {09ff00}/buylevel, /bonus, /rewards, /goldaward and /achievements."
+        local msg = isRO and "{09ff00}" .. HH_FA.greet(true) .. " {FFFFFF}Poti obtine de pe {09ff00}rpg.b-zone.ro, {FFFFFF}Quest, Gift, Obiective, {09ff00}/buylevel, /bonus, /rewards, /goldaward si /achievements." 
+                        or "{09ff00}" .. HH_FA.greet(false) .. " {FFFFFF}You can get Gold from {09ff00}rpg.b-zone.ro, {FFFFFF}Quests, Gift, Objectives, {09ff00}/buylevel, /bonus, /rewards, /goldaward and /achievements."
         sampAddChatMessage(msg, -1)
     end)
 
     -- Mission Points (MP)
     sampRegisterChatCommand("anmp", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Poti face rost de puncte de misiune realizand misiunile din (/misiuni) sau completand taskurile din (/tasks)." 
-                        or "/an Hi! You can get mission points by doing missions from (/misiuni) or completing tasks from (/tasks)."
+        local msg = isRO and "/an " .. HH_FA.greet(true) .. " Poti face rost de puncte de misiune realizand misiunile din (/misiuni) sau completand taskurile din (/tasks)." 
+                        or "/an " .. HH_FA.greet(false) .. " You can get mission points by doing missions from (/misiuni) or completing tasks from (/tasks)."
         sampSendChat(msg)
     end)
 
     sampRegisterChatCommand(".mp", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Poti face rost de puncte de misiune realizand misiunile din {09ff00}(/misiuni) {FFFFFF}sau completand taskurile din {09ff00}(/tasks)." 
-                        or "{09ff00}Hi! {FFFFFF}You can get mission points by doing missions from {09ff00}(/misiuni) {FFFFFF}or completing tasks from {09ff00}(/tasks)."
+        local msg = isRO and "{09ff00}" .. HH_FA.greet(true) .. " {FFFFFF}Poti face rost de puncte de misiune realizand misiunile din {09ff00}(/misiuni) {FFFFFF}sau completand taskurile din {09ff00}(/tasks)." 
+                        or "{09ff00}" .. HH_FA.greet(false) .. " {FFFFFF}You can get mission points by doing missions from {09ff00}(/misiuni) {FFFFFF}or completing tasks from {09ff00}(/tasks)."
         sampAddChatMessage(msg, -1)
     end)
 
     -- Apply Factions
     sampRegisterChatCommand("anapplyf", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/an Salut! Acceseaza rpg.b-zone.ro > Factions si apasa pe butonul 'Apply' din dreptul factiunii unde doresti sa aplici." 
-                        or "/an Hi! Visit rpg.b-zone.ro > Factions and click the 'Apply' button next to the faction you want to join."
+        local msg = isRO and "/an " .. HH_FA.greet(true) .. " Acceseaza rpg.b-zone.ro > Factions si apasa pe butonul 'Apply' din dreptul factiunii unde doresti sa aplici." 
+                        or "/an " .. HH_FA.greet(false) .. " Visit rpg.b-zone.ro > Factions and click the 'Apply' button next to the faction you want to join."
         sampSendChat(msg)
     end)
 
     sampRegisterChatCommand(".applyf", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Acceseaza {09ff00}rpg.b-zone.ro > Factions {FFFFFF}si apasa pe butonul {09ff00}'Apply' {FFFFFF}din dreptul factiunii unde doresti sa aplici." 
-                        or "{09ff00}Hi! {FFFFFF}Visit {09ff00}rpg.b-zone.ro > Factions {FFFFFF}and click the {09ff00}'Apply' {FFFFFF}button next to the faction you want to join."
+        local msg = isRO and "{09ff00}" .. HH_FA.greet(true) .. " {FFFFFF}Acceseaza {09ff00}rpg.b-zone.ro > Factions {FFFFFF}si apasa pe butonul {09ff00}'Apply' {FFFFFF}din dreptul factiunii unde doresti sa aplici." 
+                        or "{09ff00}" .. HH_FA.greet(false) .. " {FFFFFF}Visit {09ff00}rpg.b-zone.ro > Factions {FFFFFF}and click the {09ff00}'Apply' {FFFFFF}button next to the faction you want to join."
         sampAddChatMessage(msg, -1)
     end)
 
       -- Nu detinem informatii
     sampRegisterChatCommand("cninfo", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "/cn Salut! Nu detinem aceasta informatie." 
-                        or "/cn Hi! We do not have this information."
+        local msg = isRO and "/cn " .. HH_FA.greet(true) .. " Nu detinem aceasta informatie." 
+                        or "/cn " .. HH_FA.greet(false) .. " We do not have this information."
         sampSendChat(msg)
     end)
 
     sampRegisterChatCommand(".info", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Nu detinem aceasta informatie." 
-                        or "{09ff00}Hi! {FFFFFF}We do not have this information."
+        local msg = isRO and "{09ff00}" .. HH_FA.greet(true) .. " {FFFFFF}Nu detinem aceasta informatie." 
+                        or "{09ff00}" .. HH_FA.greet(false) .. " {FFFFFF}We do not have this information."
         sampAddChatMessage(msg, -1)
     end)
 
@@ -16109,8 +16154,8 @@ end
 
     sampRegisterChatCommand(".naiurea", function()
         local isRO = (iniData.settings.lang == 0)
-        local msg = isRO and "{09ff00}Salut! {FFFFFF}Foloseste /n doar pentru intrebari, fara /n aiurea." 
-                        or "{09ff00}Hi! {FFFFFF}Use /n only for questions, not /n random."
+        local msg = isRO and "{09ff00}" .. HH_FA.greet(true) .. " {FFFFFF}Foloseste /n doar pentru intrebari, fara /n aiurea." 
+                        or "{09ff00}" .. HH_FA.greet(false) .. " {FFFFFF}Use /n only for questions, not /n random."
         sampAddChatMessage(msg, -1)
     end)
 
