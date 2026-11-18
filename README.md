@@ -22,10 +22,10 @@ O colecție de scripturi și unelte Lua pentru helperii de pe serverul B-Zone, c
 Aici poți vedea interfața scriptului în acțiune:
 
 <p align="center">
-  <img src="https://i.imgur.com/BGczJ0n.png" width="500" />
-  <img src="https://i.imgur.com/xyO3xhz.png" width="500" />
-  <img src="https://i.imgur.com/8JoMGOS.png" width="500" />
-  <img src="https://i.imgur.com/onYiRuF.png" width="500" />
+  <img src="https://i.imgur.com/BGczJ0n.png" width="400" />
+  <img src="https://i.imgur.com/xyO3xhz.png" width="400" />
+  <img src="https://i.imgur.com/8JoMGOS.png" width="400" />
+  <img src="https://i.imgur.com/onYiRuF.png" width="400" />
 </p>
 
 ---
