@@ -46,5 +46,4 @@ Odată intrat în joc pe serverul B-Zone, tastează comanda setată în script s
 ---
 
 ## 📜 Autor
-* **[TLG] allecsei** (allecsei)
-* *Created by allecsei*
+ **[TLG] allecsei** 
